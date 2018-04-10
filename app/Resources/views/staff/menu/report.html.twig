@@ -1,0 +1,31 @@
+{% extends 'staff/layout.html.twig' %}
+
+{% block title 'Report Menu' %}
+
+{% block stylesheets %}
+    <style>
+        table thead tr th:nth-child(2), table tbody tr td:nth-child(2) { width: 50% }
+    </style>
+{% endblock %}
+
+{% block content %}
+    {% set menu = app.session.get('menu') %}
+    
+    {% if menu['report'] %}
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th colspan="2" class="bg-info lead">
+                        <strong>Group</strong>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Entity</td>
+                    <td>{{ include('action.html.twig', {'url': path('report_entity_index'), 'label': 'Show', 'button': 'btn btn-info', 'icon': 'glyphicon glyphicon-info-sign'}) }}</td>
+                </tr>
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}
