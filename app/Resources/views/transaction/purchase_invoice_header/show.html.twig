@@ -1,0 +1,58 @@
+{% extends 'transaction/layout.html.twig' %}
+
+{% block title 'Show Purchase Invoice Header' %}
+
+{% block actions %}
+    {{ include('transaction/actions.html.twig') }}
+{% endblock %}
+
+{% block content %}
+    <table class="table table-bordered table-striped">
+        <tbody>
+            <tr>
+                <th>Transaction Date</th>
+                <td>{{ purchaseInvoiceHeader.transactionDate|default ? purchaseInvoiceHeader.transactionDate|date('Y-m-d') }}</td>
+            </tr>
+            <tr>
+                <th>Tax Invoice Code</th>
+                <td>{{ purchaseInvoiceHeader.taxInvoiceCode|default }}</td>
+            </tr>
+            <tr>
+                <th>Supplier Invoice</th>
+                <td>{{ purchaseInvoiceHeader.supplierInvoice|default }}</td>
+            </tr>
+            <tr>
+                <th>Sub Total</th>
+                <td>{{ purchaseInvoiceHeader.subTotal|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <th>Discount</th>
+                <td>{{ purchaseInvoiceHeader.discount|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <th>Tax Nominal</th>
+                <td>{{ purchaseInvoiceHeader.taxNominal|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <th>Shipping Fee</th>
+                <td>{{ purchaseInvoiceHeader.shippingFee|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <th>Total Return</th>
+                <td>{{ purchaseInvoiceHeader.totalReturn|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <th>Grand Total</th>
+                <td>{{ purchaseInvoiceHeader.grandTotal|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <th>Note</th>
+                <td>{{ purchaseInvoiceHeader.note|default }}</td>
+            </tr>
+            <tr>
+                <th>Is Tax</th>
+                <td>{{ purchaseInvoiceHeader.isTax|default ? 'Yes' : 'No' }}</td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock %}

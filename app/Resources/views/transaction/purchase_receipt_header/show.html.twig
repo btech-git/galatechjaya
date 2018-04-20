@@ -1,0 +1,34 @@
+{% extends 'transaction/layout.html.twig' %}
+
+{% block title 'Show Purchase Receipt Header' %}
+
+{% block actions %}
+    {{ include('transaction/actions.html.twig') }}
+{% endblock %}
+
+{% block content %}
+    <table class="table table-bordered table-striped">
+        <tbody>
+            <tr>
+                <th>Transaction Date</th>
+                <td>{{ purchaseReceiptHeader.transactionDate|default ? purchaseReceiptHeader.transactionDate|date('Y-m-d') }}</td>
+            </tr>
+            <tr>
+                <th>Note</th>
+                <td>{{ purchaseReceiptHeader.note|default }}</td>
+            </tr>
+            <tr>
+                <th>Grand Total</th>
+                <td>{{ purchaseReceiptHeader.grandTotal|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <th>Total Payment</th>
+                <td>{{ purchaseReceiptHeader.totalPayment|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <th>Remaining</th>
+                <td>{{ purchaseReceiptHeader.remaining|default|number_format(2) }}</td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock %}

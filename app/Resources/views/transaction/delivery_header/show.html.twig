@@ -1,0 +1,26 @@
+{% extends 'transaction/layout.html.twig' %}
+
+{% block title 'Show Delivery Header' %}
+
+{% block actions %}
+    {{ include('transaction/actions.html.twig') }}
+{% endblock %}
+
+{% block content %}
+    <table class="table table-bordered table-striped">
+        <tbody>
+            <tr>
+                <th>Transaction Date</th>
+                <td>{{ deliveryHeader.transactionDate|default ? deliveryHeader.transactionDate|date('Y-m-d') }}</td>
+            </tr>
+            <tr>
+                <th>Reference</th>
+                <td>{{ deliveryHeader.reference|default }}</td>
+            </tr>
+            <tr>
+                <th>Note</th>
+                <td>{{ deliveryHeader.note|default }}</td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends 'transaction/layout.html.twig' %}
+
+{% block title 'Show Sale Return Header' %}
+
+{% block actions %}
+    {{ include('transaction/actions.html.twig') }}
+{% endblock %}
+
+{% block content %}
+    <table class="table table-bordered table-striped">
+        <tbody>
+            <tr>
+                <th>Transaction Date</th>
+                <td>{{ saleReturnHeader.transactionDate|default ? saleReturnHeader.transactionDate|date('Y-m-d') }}</td>
+            </tr>
+            <tr>
+                <th>Note</th>
+                <td>{{ saleReturnHeader.note|default }}</td>
+            </tr>
+            <tr>
+                <th>Sub Total</th>
+                <td>{{ saleReturnHeader.subTotal|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <th>Tax Nominal</th>
+                <td>{{ saleReturnHeader.taxNominal|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <th>Shipping Fee</th>
+                <td>{{ saleReturnHeader.shippingFee|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <th>Grand Total</th>
+                <td>{{ saleReturnHeader.grandTotal|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <th>Is Tax</th>
+                <td>{{ saleReturnHeader.isTax|default ? 'Yes' : 'No' }}</td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock %}

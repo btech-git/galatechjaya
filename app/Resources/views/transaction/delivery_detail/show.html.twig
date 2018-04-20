@@ -1,0 +1,18 @@
+{% extends 'transaction/layout.html.twig' %}
+
+{% block title 'Show Delivery Detail' %}
+
+{% block actions %}
+    {{ include('transaction/actions.html.twig') }}
+{% endblock %}
+
+{% block content %}
+    <table class="table table-bordered table-striped">
+        <tbody>
+            <tr>
+                <th>Quantity</th>
+                <td>{{ deliveryDetail.quantity|default }}</td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends 'transaction/layout.html.twig' %}
+
+{% block title 'Show Purchase Payment Header' %}
+
+{% block actions %}
+    {{ include('transaction/actions.html.twig') }}
+{% endblock %}
+
+{% block content %}
+    <table class="table table-bordered table-striped">
+        <tbody>
+            <tr>
+                <th>Transaction Date</th>
+                <td>{{ purchasePaymentHeader.transactionDate|default ? purchasePaymentHeader.transactionDate|date('Y-m-d') }}</td>
+            </tr>
+            <tr>
+                <th>Note</th>
+                <td>{{ purchasePaymentHeader.note|default }}</td>
+            </tr>
+            <tr>
+                <th>Total Amount</th>
+                <td>{{ purchasePaymentHeader.totalAmount|default|number_format(2) }}</td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock %}

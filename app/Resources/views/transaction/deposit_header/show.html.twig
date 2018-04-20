@@ -1,0 +1,26 @@
+{% extends 'transaction/layout.html.twig' %}
+
+{% block title 'Show Deposit Header' %}
+
+{% block actions %}
+    {{ include('transaction/actions.html.twig') }}
+{% endblock %}
+
+{% block content %}
+    <table class="table table-bordered table-striped">
+        <tbody>
+            <tr>
+                <th>Transaction Date</th>
+                <td>{{ depositHeader.transactionDate|default ? depositHeader.transactionDate|date('Y-m-d') }}</td>
+            </tr>
+            <tr>
+                <th>Note</th>
+                <td>{{ depositHeader.note|default }}</td>
+            </tr>
+            <tr>
+                <th>Total Amount</th>
+                <td>{{ depositHeader.totalAmount|default|number_format(2) }}</td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock %}

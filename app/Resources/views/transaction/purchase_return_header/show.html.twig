@@ -1,0 +1,42 @@
+{% extends 'transaction/layout.html.twig' %}
+
+{% block title 'Show Purchase Return Header' %}
+
+{% block actions %}
+    {{ include('transaction/actions.html.twig') }}
+{% endblock %}
+
+{% block content %}
+    <table class="table table-bordered table-striped">
+        <tbody>
+            <tr>
+                <th>Transaction Date</th>
+                <td>{{ purchaseReturnHeader.transactionDate|default ? purchaseReturnHeader.transactionDate|date('Y-m-d') }}</td>
+            </tr>
+            <tr>
+                <th>Note</th>
+                <td>{{ purchaseReturnHeader.note|default }}</td>
+            </tr>
+            <tr>
+                <th>Sub Total</th>
+                <td>{{ purchaseReturnHeader.subTotal|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <th>Tax Nominal</th>
+                <td>{{ purchaseReturnHeader.taxNominal|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <th>Shipping Fee</th>
+                <td>{{ purchaseReturnHeader.shippingFee|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <th>Grand Total</th>
+                <td>{{ purchaseReturnHeader.grandTotal|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <th>Is Tax</th>
+                <td>{{ purchaseReturnHeader.isTax|default ? 'Yes' : 'No' }}</td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock %}

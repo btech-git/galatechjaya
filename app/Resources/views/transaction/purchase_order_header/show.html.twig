@@ -1,0 +1,46 @@
+{% extends 'transaction/layout.html.twig' %}
+
+{% block title 'Show Purchase Order Header' %}
+
+{% block actions %}
+    {{ include('transaction/actions.html.twig') }}
+{% endblock %}
+
+{% block content %}
+    <table class="table table-bordered table-striped">
+        <tbody>
+            <tr>
+                <th>Transaction Date</th>
+                <td>{{ purchaseOrderHeader.transactionDate|default ? purchaseOrderHeader.transactionDate|date('Y-m-d') }}</td>
+            </tr>
+            <tr>
+                <th>Note</th>
+                <td>{{ purchaseOrderHeader.note|default }}</td>
+            </tr>
+            <tr>
+                <th>Sub Total</th>
+                <td>{{ purchaseOrderHeader.subTotal|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <th>Discount</th>
+                <td>{{ purchaseOrderHeader.discount|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <th>Tax Nominal</th>
+                <td>{{ purchaseOrderHeader.taxNominal|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <th>Shipping Fee</th>
+                <td>{{ purchaseOrderHeader.shippingFee|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <th>Grand Total</th>
+                <td>{{ purchaseOrderHeader.grandTotal|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <th>Is Tax</th>
+                <td>{{ purchaseOrderHeader.isTax|default ? 'Yes' : 'No' }}</td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock %}

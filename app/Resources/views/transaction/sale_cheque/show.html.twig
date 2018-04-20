@@ -1,0 +1,38 @@
+{% extends 'transaction/layout.html.twig' %}
+
+{% block title 'Show Sale Cheque' %}
+
+{% block actions %}
+    {{ include('transaction/actions.html.twig') }}
+{% endblock %}
+
+{% block content %}
+    <table class="table table-bordered table-striped">
+        <tbody>
+            <tr>
+                <th>Transaction Date</th>
+                <td>{{ saleCheque.transactionDate|default ? saleCheque.transactionDate|date('Y-m-d') }}</td>
+            </tr>
+            <tr>
+                <th>Date Due</th>
+                <td>{{ saleCheque.dateDue|default ? saleCheque.dateDue|date('Y-m-d') }}</td>
+            </tr>
+            <tr>
+                <th>Cheque Number</th>
+                <td>{{ saleCheque.chequeNumber|default }}</td>
+            </tr>
+            <tr>
+                <th>Amount</th>
+                <td>{{ saleCheque.amount|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <th>Bank Name</th>
+                <td>{{ saleCheque.bankName|default }}</td>
+            </tr>
+            <tr>
+                <th>Note</th>
+                <td>{{ saleCheque.note|default }}</td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock %}

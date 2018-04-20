@@ -1,0 +1,50 @@
+{% set grid_layout = 'datagrid.html.twig' %}
+
+{{ grid_top(grid) }}
+
+<table data-role="table" class="table table-bordered table-striped table-condensed table-hover">
+    <thead>
+        <tr data-action="sort" class="alert alert-info">
+            <th data-group="purchaseReturnHeader" data-field="transactionDate">Transaction Date</th>
+            <th data-group="purchaseReturnHeader" data-field="note">Note</th>
+            <th data-group="purchaseReturnHeader" data-field="subTotal">Sub Total</th>
+            <th data-group="purchaseReturnHeader" data-field="taxNominal">Tax Nominal</th>
+            <th data-group="purchaseReturnHeader" data-field="shippingFee">Shipping Fee</th>
+            <th data-group="purchaseReturnHeader" data-field="grandTotal">Grand Total</th>
+            <th data-group="purchaseReturnHeader" data-field="isTax">Is Tax</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for purchaseReturnHeader in grid.data %}
+            <tr data-field-id="{{ purchaseReturnHeader.id }}">
+                <td class="text-left">{{ purchaseReturnHeader.transactionDate|default ? purchaseReturnHeader.transactionDate|date('Y-m-d') }}</td>
+                <td class="text-left">{{ purchaseReturnHeader.note|default }}</td>
+                <td class="text-right">{{ purchaseReturnHeader.subTotal|default|number_format(2) }}</td>
+                <td class="text-right">{{ purchaseReturnHeader.taxNominal|default|number_format(2) }}</td>
+                <td class="text-right">{{ purchaseReturnHeader.shippingFee|default|number_format(2) }}</td>
+                <td class="text-right">{{ purchaseReturnHeader.grandTotal|default|number_format(2) }}</td>
+                <td class="text-left">{{ purchaseReturnHeader.isTax|default ? 'Yes' : 'No' }}</td>
+                <td class="text-left">
+                    {{ include('transaction/actions.html.twig', {
+                        'contents': {
+                            '{index}': null,
+                            '{new}': null,
+                            '{show}': include('action.html.twig', {'url': path('transaction_purchase_return_header_show', {'id': purchaseReturnHeader.id}), 'button': 'btn btn-info btn-sm', 'icon': 'glyphicon glyphicon-info-sign'}),
+                            '{edit}': include('action.html.twig', {'url': path('transaction_purchase_return_header_edit', {'id': purchaseReturnHeader.id}), 'button': 'btn btn-warning btn-sm', 'icon': 'glyphicon glyphicon-edit'}),
+                            '{delete}': include('action.html.twig', {'url': path('transaction_purchase_return_header_delete', {'id': purchaseReturnHeader.id}), 'button': 'btn btn-danger btn-sm', 'icon': 'glyphicon glyphicon-remove'}),
+                        }
+                    }) }}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="8" class="alert alert-warning">
+                    <strong>There are no items to display.</strong>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{{ grid_bottom(grid) }}

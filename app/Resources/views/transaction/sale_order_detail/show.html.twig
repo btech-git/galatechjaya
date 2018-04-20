@@ -1,0 +1,34 @@
+{% extends 'transaction/layout.html.twig' %}
+
+{% block title 'Show Sale Order Detail' %}
+
+{% block actions %}
+    {{ include('transaction/actions.html.twig') }}
+{% endblock %}
+
+{% block content %}
+    <table class="table table-bordered table-striped">
+        <tbody>
+            <tr>
+                <th>Item Name</th>
+                <td>{{ saleOrderDetail.itemName|default }}</td>
+            </tr>
+            <tr>
+                <th>Quantity</th>
+                <td>{{ saleOrderDetail.quantity|default }}</td>
+            </tr>
+            <tr>
+                <th>Discount</th>
+                <td>{{ saleOrderDetail.discount|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <th>Unit Price</th>
+                <td>{{ saleOrderDetail.unitPrice|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <th>Total</th>
+                <td>{{ saleOrderDetail.total|default|number_format(2) }}</td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends 'transaction/layout.html.twig' %}
+
+{% block title 'Show Adjustment Stock Detail' %}
+
+{% block actions %}
+    {{ include('transaction/actions.html.twig') }}
+{% endblock %}
+
+{% block content %}
+    <table class="table table-bordered table-striped">
+        <tbody>
+            <tr>
+                <th>Quantity Current</th>
+                <td>{{ adjustmentStockDetail.quantityCurrent|default }}</td>
+            </tr>
+            <tr>
+                <th>Quantity Adjustment</th>
+                <td>{{ adjustmentStockDetail.quantityAdjustment|default }}</td>
+            </tr>
+            <tr>
+                <th>Quantity Difference</th>
+                <td>{{ adjustmentStockDetail.quantityDifference|default }}</td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock %}

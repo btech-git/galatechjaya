@@ -1,0 +1,34 @@
+{% extends 'transaction/layout.html.twig' %}
+
+{% block title 'Show Sale Receipt Header' %}
+
+{% block actions %}
+    {{ include('transaction/actions.html.twig') }}
+{% endblock %}
+
+{% block content %}
+    <table class="table table-bordered table-striped">
+        <tbody>
+            <tr>
+                <th>Transaction Date</th>
+                <td>{{ saleReceiptHeader.transactionDate|default ? saleReceiptHeader.transactionDate|date('Y-m-d') }}</td>
+            </tr>
+            <tr>
+                <th>Note</th>
+                <td>{{ saleReceiptHeader.note|default }}</td>
+            </tr>
+            <tr>
+                <th>Grand Total</th>
+                <td>{{ saleReceiptHeader.grandTotal|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <th>Total Payment</th>
+                <td>{{ saleReceiptHeader.totalPayment|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <th>Remaining</th>
+                <td>{{ saleReceiptHeader.remaining|default|number_format(2) }}</td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock %}

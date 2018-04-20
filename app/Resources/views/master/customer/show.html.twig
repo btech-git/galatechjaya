@@ -1,0 +1,74 @@
+{% extends 'master/layout.html.twig' %}
+
+{% block title 'Show Customer' %}
+
+{% block actions %}
+    {{ include('master/actions.html.twig') }}
+{% endblock %}
+
+{% block content %}
+    <table class="table table-bordered table-striped">
+        <tbody>
+            <tr>
+                <th>Name</th>
+                <td>{{ customer.name|default }}</td>
+            </tr>
+            <tr>
+                <th>Office Address</th>
+                <td>{{ customer.officeAddress|default }}</td>
+            </tr>
+            <tr>
+                <th>Office City</th>
+                <td>{{ customer.officeCity|default }}</td>
+            </tr>
+            <tr>
+                <th>Office Province</th>
+                <td>{{ customer.officeProvince|default }}</td>
+            </tr>
+            <tr>
+                <th>Office Zip Code</th>
+                <td>{{ customer.officeZipCode|default }}</td>
+            </tr>
+            <tr>
+                <th>Phone</th>
+                <td>{{ customer.phone|default }}</td>
+            </tr>
+            <tr>
+                <th>Fax</th>
+                <td>{{ customer.fax|default }}</td>
+            </tr>
+            <tr>
+                <th>Mobile Phone</th>
+                <td>{{ customer.mobilePhone|default }}</td>
+            </tr>
+            <tr>
+                <th>Contact Person</th>
+                <td>{{ customer.contactPerson|default }}</td>
+            </tr>
+            <tr>
+                <th>Email</th>
+                <td>{{ customer.email|default }}</td>
+            </tr>
+            <tr>
+                <th>Tax Number</th>
+                <td>{{ customer.taxNumber|default }}</td>
+            </tr>
+            <tr>
+                <th>Web Page</th>
+                <td>{{ customer.webPage|default }}</td>
+            </tr>
+            <tr>
+                <th>Credit Payment Term</th>
+                <td>{{ customer.creditPaymentTerm|default }}</td>
+            </tr>
+            <tr>
+                <th>Note</th>
+                <td>{{ customer.note|default }}</td>
+            </tr>
+            <tr>
+                <th>Is Active</th>
+                <td>{{ customer.isActive|default ? 'Yes' : 'No' }}</td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock %}

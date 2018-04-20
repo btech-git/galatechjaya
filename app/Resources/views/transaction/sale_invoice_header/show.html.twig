@@ -1,0 +1,58 @@
+{% extends 'transaction/layout.html.twig' %}
+
+{% block title 'Show Sale Invoice Header' %}
+
+{% block actions %}
+    {{ include('transaction/actions.html.twig') }}
+{% endblock %}
+
+{% block content %}
+    <table class="table table-bordered table-striped">
+        <tbody>
+            <tr>
+                <th>Transaction Date</th>
+                <td>{{ saleInvoiceHeader.transactionDate|default ? saleInvoiceHeader.transactionDate|date('Y-m-d') }}</td>
+            </tr>
+            <tr>
+                <th>Tax Invoice Code</th>
+                <td>{{ saleInvoiceHeader.taxInvoiceCode|default }}</td>
+            </tr>
+            <tr>
+                <th>Customer Invoice</th>
+                <td>{{ saleInvoiceHeader.customerInvoice|default }}</td>
+            </tr>
+            <tr>
+                <th>Sub Total</th>
+                <td>{{ saleInvoiceHeader.subTotal|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <th>Discount</th>
+                <td>{{ saleInvoiceHeader.discount|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <th>Tax Nominal</th>
+                <td>{{ saleInvoiceHeader.taxNominal|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <th>Shipping Fee</th>
+                <td>{{ saleInvoiceHeader.shippingFee|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <th>Total Return</th>
+                <td>{{ saleInvoiceHeader.totalReturn|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <th>Grand Total</th>
+                <td>{{ saleInvoiceHeader.grandTotal|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <th>Note</th>
+                <td>{{ saleInvoiceHeader.note|default }}</td>
+            </tr>
+            <tr>
+                <th>Is Tax</th>
+                <td>{{ saleInvoiceHeader.isTax|default ? 'Yes' : 'No' }}</td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock %}

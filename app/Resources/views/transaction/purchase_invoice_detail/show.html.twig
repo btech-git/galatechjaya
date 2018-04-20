@@ -1,0 +1,30 @@
+{% extends 'transaction/layout.html.twig' %}
+
+{% block title 'Show Purchase Invoice Detail' %}
+
+{% block actions %}
+    {{ include('transaction/actions.html.twig') }}
+{% endblock %}
+
+{% block content %}
+    <table class="table table-bordered table-striped">
+        <tbody>
+            <tr>
+                <th>Quantity</th>
+                <td>{{ purchaseInvoiceDetail.quantity|default }}</td>
+            </tr>
+            <tr>
+                <th>Unit Price</th>
+                <td>{{ purchaseInvoiceDetail.unitPrice|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <th>Discount</th>
+                <td>{{ purchaseInvoiceDetail.discount|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <th>Total</th>
+                <td>{{ purchaseInvoiceDetail.total|default }}</td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock %}

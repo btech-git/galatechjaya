@@ -1,0 +1,52 @@
+{% set grid_layout = 'datagrid.html.twig' %}
+
+{{ grid_top(grid) }}
+
+<table data-role="table" class="table table-bordered table-striped table-condensed table-hover">
+    <thead>
+        <tr data-action="sort" class="alert alert-info">
+            <th data-group="saleOrderHeader" data-field="transactionDate">Transaction Date</th>
+            <th data-group="saleOrderHeader" data-field="note">Note</th>
+            <th data-group="saleOrderHeader" data-field="subTotal">Sub Total</th>
+            <th data-group="saleOrderHeader" data-field="discount">Discount</th>
+            <th data-group="saleOrderHeader" data-field="taxNominal">Tax Nominal</th>
+            <th data-group="saleOrderHeader" data-field="shippingFee">Shipping Fee</th>
+            <th data-group="saleOrderHeader" data-field="grandTotal">Grand Total</th>
+            <th data-group="saleOrderHeader" data-field="isTax">Is Tax</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for saleOrderHeader in grid.data %}
+            <tr data-field-id="{{ saleOrderHeader.id }}">
+                <td class="text-left">{{ saleOrderHeader.transactionDate|default ? saleOrderHeader.transactionDate|date('Y-m-d') }}</td>
+                <td class="text-left">{{ saleOrderHeader.note|default }}</td>
+                <td class="text-right">{{ saleOrderHeader.subTotal|default|number_format(2) }}</td>
+                <td class="text-right">{{ saleOrderHeader.discount|default|number_format(2) }}</td>
+                <td class="text-right">{{ saleOrderHeader.taxNominal|default|number_format(2) }}</td>
+                <td class="text-right">{{ saleOrderHeader.shippingFee|default|number_format(2) }}</td>
+                <td class="text-right">{{ saleOrderHeader.grandTotal|default|number_format(2) }}</td>
+                <td class="text-left">{{ saleOrderHeader.isTax|default ? 'Yes' : 'No' }}</td>
+                <td class="text-left">
+                    {{ include('transaction/actions.html.twig', {
+                        'contents': {
+                            '{index}': null,
+                            '{new}': null,
+                            '{show}': include('action.html.twig', {'url': path('transaction_sale_order_header_show', {'id': saleOrderHeader.id}), 'button': 'btn btn-info btn-sm', 'icon': 'glyphicon glyphicon-info-sign'}),
+                            '{edit}': include('action.html.twig', {'url': path('transaction_sale_order_header_edit', {'id': saleOrderHeader.id}), 'button': 'btn btn-warning btn-sm', 'icon': 'glyphicon glyphicon-edit'}),
+                            '{delete}': include('action.html.twig', {'url': path('transaction_sale_order_header_delete', {'id': saleOrderHeader.id}), 'button': 'btn btn-danger btn-sm', 'icon': 'glyphicon glyphicon-remove'}),
+                        }
+                    }) }}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="9" class="alert alert-warning">
+                    <strong>There are no items to display.</strong>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{{ grid_bottom(grid) }}

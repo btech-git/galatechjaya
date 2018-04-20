@@ -1,0 +1,48 @@
+{% set grid_layout = 'datagrid.html.twig' %}
+
+{{ grid_top(grid) }}
+
+<table data-role="table" class="table table-bordered table-striped table-condensed table-hover">
+    <thead>
+        <tr data-action="sort" class="alert alert-info">
+            <th data-group="saleCheque" data-field="transactionDate">Transaction Date</th>
+            <th data-group="saleCheque" data-field="dateDue">Date Due</th>
+            <th data-group="saleCheque" data-field="chequeNumber">Cheque Number</th>
+            <th data-group="saleCheque" data-field="amount">Amount</th>
+            <th data-group="saleCheque" data-field="bankName">Bank Name</th>
+            <th data-group="saleCheque" data-field="note">Note</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for saleCheque in grid.data %}
+            <tr data-field-id="{{ saleCheque.id }}">
+                <td class="text-left">{{ saleCheque.transactionDate|default ? saleCheque.transactionDate|date('Y-m-d') }}</td>
+                <td class="text-left">{{ saleCheque.dateDue|default ? saleCheque.dateDue|date('Y-m-d') }}</td>
+                <td class="text-left">{{ saleCheque.chequeNumber|default }}</td>
+                <td class="text-right">{{ saleCheque.amount|default|number_format(2) }}</td>
+                <td class="text-left">{{ saleCheque.bankName|default }}</td>
+                <td class="text-left">{{ saleCheque.note|default }}</td>
+                <td class="text-left">
+                    {{ include('transaction/actions.html.twig', {
+                        'contents': {
+                            '{index}': null,
+                            '{new}': null,
+                            '{show}': include('action.html.twig', {'url': path('transaction_sale_cheque_show', {'id': saleCheque.id}), 'button': 'btn btn-info btn-sm', 'icon': 'glyphicon glyphicon-info-sign'}),
+                            '{edit}': include('action.html.twig', {'url': path('transaction_sale_cheque_edit', {'id': saleCheque.id}), 'button': 'btn btn-warning btn-sm', 'icon': 'glyphicon glyphicon-edit'}),
+                            '{delete}': include('action.html.twig', {'url': path('transaction_sale_cheque_delete', {'id': saleCheque.id}), 'button': 'btn btn-danger btn-sm', 'icon': 'glyphicon glyphicon-remove'}),
+                        }
+                    }) }}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="7" class="alert alert-warning">
+                    <strong>There are no items to display.</strong>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{{ grid_bottom(grid) }}
