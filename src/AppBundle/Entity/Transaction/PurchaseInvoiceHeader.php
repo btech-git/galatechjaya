@@ -41,10 +41,15 @@ class PurchaseInvoiceHeader extends CodeNumberEntity
      */
     private $subTotal;
     /**
+     * @ORM\Column(type="decimal", precision=10, scale=2)
+     * @Assert\NotNull() @Assert\GreaterThanOrEqual(0)
+     */
+    private $discountPercentage;
+    /**
      * @ORM\Column(type="decimal", precision=18, scale=2)
      * @Assert\NotNull() @Assert\GreaterThanOrEqual(0)
      */
-    private $discount;
+    private $discountNominal;
     /**
      * @ORM\Column(type="decimal", precision=18, scale=2)
      * @Assert\NotNull() @Assert\GreaterThanOrEqual(0)
@@ -127,8 +132,11 @@ class PurchaseInvoiceHeader extends CodeNumberEntity
     public function getSubTotal() { return $this->subTotal; }
     public function setSubTotal($subTotal) { $this->subTotal = $subTotal; }
 
-    public function getDiscount() { return $this->discount; }
-    public function setDiscount($discount) { $this->discount = $discount; }
+    public function getDiscountPercentage() { return $this->discountPercentage; }
+    public function setDiscountPercentage($discountPercentage) { $this->discountPercentage = $discountPercentage; }
+
+    public function getDiscountNominal() { return $this->discountNominal; }
+    public function setDiscountNominal($discountNominal) { $this->discountNominal = $discountNominal; }
 
     public function getTaxNominal() { return $this->taxNominal; }
     public function setTaxNominal($taxNominal) { $this->taxNominal = $taxNominal; }

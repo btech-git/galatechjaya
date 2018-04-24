@@ -45,27 +45,31 @@ class PurchaseOrderHeaderController extends Controller
     }
 
     /**
-     * @Route("/new", name="transaction_purchase_order_header_new")
+     * @Route("/new.{_format}", name="transaction_purchase_order_header_new")
      * @Method({"GET", "POST"})
      * @Security("has_role('ROLE_TRANSACTION')")
      */
-    public function newAction(Request $request)
+    public function newAction(Request $request, $_format = 'html')
     {
         $purchaseOrderHeader = new PurchaseOrderHeader();
-        $form = $this->createForm(PurchaseOrderHeaderType::class, $purchaseOrderHeader);
+        
+        $purchaseOrderHeaderService = $this->get('app.transaction.purchase_order_header_form');
+        $form = $this->createForm(PurchaseOrderHeaderType::class, $purchaseOrderHeader, array(
+            'service' => $purchaseOrderHeaderService,
+            'init' => array('year' => date('y'), 'month' => date('m'), 'staff' => $this->getUser()),
+        ));
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $repository = $em->getRepository(PurchaseOrderHeader::class);
-            $repository->add($purchaseOrderHeader);
+        if ($_format === 'html' && $form->isSubmitted() && $form->isValid()) {
+            $purchaseOrderHeaderService->save($purchaseOrderHeader);
 
             return $this->redirectToRoute('transaction_purchase_order_header_show', array('id' => $purchaseOrderHeader->getId()));
         }
 
-        return $this->render('transaction/purchase_order_header/new.html.twig', array(
+        return $this->render('transaction/purchase_order_header/new.'.$_format.'.twig', array(
             'purchaseOrderHeader' => $purchaseOrderHeader,
             'form' => $form->createView(),
+            'purchaseOrderDetailsCount' => 0,
         ));
     }
 
@@ -82,26 +86,31 @@ class PurchaseOrderHeaderController extends Controller
     }
 
     /**
-     * @Route("/{id}/edit", name="transaction_purchase_order_header_edit", requirements={"id": "\d+"})
+     * @Route("/{id}/edit.{_format}", name="transaction_purchase_order_header_edit", requirements={"id": "\d+"})
      * @Method({"GET", "POST"})
      * @Security("has_role('ROLE_TRANSACTION')")
      */
-    public function editAction(Request $request, PurchaseOrderHeader $purchaseOrderHeader)
+    public function editAction(Request $request, PurchaseOrderHeader $purchaseOrderHeader, $_format = 'html')
     {
-        $form = $this->createForm(PurchaseOrderHeaderType::class, $purchaseOrderHeader);
+        $purchaseOrderDetailsCount = $purchaseOrderHeader->getPurchaseOrderDetails()->count();
+        
+        $purchaseOrderHeaderService = $this->get('app.transaction.purchase_order_header_form');
+        $form = $this->createForm(PurchaseOrderHeaderType::class, $purchaseOrderHeader, array(
+            'service' => $purchaseOrderHeaderService,
+            'init' => array('year' => date('y'), 'month' => date('m'), 'staff' => $this->getUser()),
+        ));
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $repository = $em->getRepository(PurchaseOrderHeader::class);
-            $repository->update($purchaseOrderHeader);
+        if ($_format === 'html' && $form->isSubmitted() && $form->isValid()) {
+            $purchaseOrderHeaderService->save($purchaseOrderHeader);
 
             return $this->redirectToRoute('transaction_purchase_order_header_show', array('id' => $purchaseOrderHeader->getId()));
         }
 
-        return $this->render('transaction/purchase_order_header/edit.html.twig', array(
+        return $this->render('transaction/purchase_order_header/edit.'.$_format.'.twig', array(
             'purchaseOrderHeader' => $purchaseOrderHeader,
             'form' => $form->createView(),
+            'purchaseOrderDetailsCount' => $purchaseOrderDetailsCount,
         ));
     }
 
@@ -112,14 +121,13 @@ class PurchaseOrderHeaderController extends Controller
      */
     public function deleteAction(Request $request, PurchaseOrderHeader $purchaseOrderHeader)
     {
+        $purchaseOrderHeaderService = $this->get('app.transaction.purchase_order_header_form');
         $form = $this->createFormBuilder()->getForm();
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
             if ($form->isValid()) {
-                $em = $this->getDoctrine()->getManager();
-                $repository = $em->getRepository(PurchaseOrderHeader::class);
-                $repository->remove($purchaseOrderHeader);
+                $purchaseOrderHeaderService->delete($purchaseOrderHeader);
 
                 $this->addFlash('success', array('title' => 'Success!', 'message' => 'The record was deleted successfully.'));
             } else {

@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use AppBundle\Entity\Common\CodeNumberEntity;
 use AppBundle\Entity\Admin\Staff;
+use AppBundle\Entity\Master\Warehouse;
 use AppBundle\Entity\Transaction\PurchaseOrderHeader;
 
 /**
@@ -36,6 +37,11 @@ class ReceiveHeader extends CodeNumberEntity
      * @Assert\NotNull()
      */
     private $note;
+    /**
+     * @ORM\Column(type="smallint")
+     * @Assert\NotNull() @Assert\GreaterThan(0)
+     */
+    private $totalQuantity;
     /**
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Admin\Staff")
      * @Assert\NotNull()
@@ -69,7 +75,7 @@ class ReceiveHeader extends CodeNumberEntity
     public function __construct()
     {
         $this->purchaseOrderDetails = new ArrayCollection();
-        $this->receiveOrders = new ArrayCollection();
+        $this->receiveDetails = new ArrayCollection();
     }
     
     public function getCodeNumberConstant() { return 'PO'; }
@@ -84,6 +90,9 @@ class ReceiveHeader extends CodeNumberEntity
 
     public function getNote() { return $this->note; }
     public function setNote($note) { $this->note = $note; }
+
+    public function getTotalQuantity() { return $this->totalQuantity; }
+    public function setTotalQuantity($totalQuantity) { $this->totalQuantity = $totalQuantity; }
 
     public function getStaffFirst() { return $this->staffFirst; }
     public function setStaffFirst(Staff $staffFirst = null) { $this->staffFirst = $staffFirst; }
@@ -102,4 +111,13 @@ class ReceiveHeader extends CodeNumberEntity
     
     public function getReceiveDetails() { return $this->receiveDetails; }
     public function setReceiveDetails(Collection $receiveDetails) { $this->receiveDetails = $receiveDetails; }
+    
+    public function sync()
+    {
+        $totalQuantity = 0.00;
+        foreach ($this->receiveDetails as $receiveDetail) {
+            $totalQuantity += $receiveDetail->getQuantity();
+        }
+        $this->totalQuantity = $totalQuantity;
+    }
 }

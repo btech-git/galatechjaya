@@ -37,6 +37,11 @@ class DeliveryHeader extends CodeNumberEntity
      */
     private $note;
     /**
+     * @ORM\Column(type="smallint")
+     * @Assert\NotNull() @Assert\GreaterThan(0)
+     */
+    private $totalQuantity;
+    /**
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Admin\Staff")
      * @Assert\NotNull()
      */
@@ -84,6 +89,9 @@ class DeliveryHeader extends CodeNumberEntity
 
     public function getNote() { return $this->note; }
     public function setNote($note) { $this->note = $note; }
+
+    public function getTotalQuantity() { return $this->totalQuantity; }
+    public function setTotalQuantity($totalQuantity) { $this->totalQuantity = $totalQuantity; }
 
     public function getStaffFirst() { return $this->staffFirst; }
     public function setStaffFirst(Staff $staffFirst = null) { $this->staffFirst = $staffFirst; }

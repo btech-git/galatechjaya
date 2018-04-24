@@ -1,0 +1,15 @@
+{
+    "totalQuantity": "{{ receiveHeader.totalQuantity|default|number_format(0) }}",
+    "receiveDetails": {
+        {%- for index, receiveDetail in receiveHeader.receiveDetails -%}
+            "{{ index }}": {
+                "productName": "{{ receiveDetail.purchaseOrderDetail.product.name|default }}",
+                "productSize": "{{ receiveDetail.purchaseOrderDetail.product.size|default }}",
+                "unitName": "{{ receiveDetail.purchaseOrderDetail.product.unit.name|default }}",
+                "purchaseOrderDetailQuantity": "{{ receiveDetail.purchaseOrderDetail.quantity|default|number_format(0) }}",
+                "purchaseOrderDetailQuantityRemaining": "{{ receiveDetail.purchaseOrderDetail.quantityRemaining|default|number_format(0) }}"
+            }
+            {%- if not loop.last -%},{%- endif -%}
+        {%- endfor -%}
+    }
+}

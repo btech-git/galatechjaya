@@ -32,6 +32,11 @@ class SaleOrderHeader extends CodeNumberEntity
      */
     private $note;
     /**
+     * @ORM\Column(type="smallint")
+     * @Assert\NotNull() @Assert\GreaterThan(0)
+     */
+    private $totalQuantity;
+    /**
      * @ORM\Column(type="decimal", precision=18, scale=2)
      * @Assert\NotNull() @Assert\GreaterThan(0)
      */
@@ -40,7 +45,12 @@ class SaleOrderHeader extends CodeNumberEntity
      * @ORM\Column(type="decimal", precision=10, scale=2)
      * @Assert\NotNull() @Assert\GreaterThanOrEqual(0)
      */
-    private $discount;
+    private $discountPercentage;
+    /**
+     * @ORM\Column(type="decimal", precision=18, scale=2)
+     * @Assert\NotNull() @Assert\GreaterThanOrEqual(0)
+     */
+    private $discountNominal;
     /**
      * @ORM\Column(type="decimal", precision=18, scale=2)
      * @Assert\NotNull() @Assert\GreaterThanOrEqual(0)
@@ -102,11 +112,17 @@ class SaleOrderHeader extends CodeNumberEntity
     public function getNote() { return $this->note; }
     public function setNote($note) { $this->note = $note; }
 
+    public function getTotalQuantity() { return $this->totalQuantity; }
+    public function setTotalQuantity($totalQuantity) { $this->totalQuantity = $totalQuantity; }
+
     public function getSubTotal() { return $this->subTotal; }
     public function setSubTotal($subTotal) { $this->subTotal = $subTotal; }
 
-    public function getDiscount() { return $this->discount; }
-    public function setDiscount($discount) { $this->discount = $discount; }
+    public function getDiscountPercentage() { return $this->discountPercentage; }
+    public function setDiscountPercentage($discountPercentage) { $this->discountPercentage = $discountPercentage; }
+
+    public function getDiscountNominal() { return $this->discountNominal; }
+    public function setDiscountNominal($discountNominal) { $this->discountNominal = $discountNominal; }
 
     public function getTaxNominal() { return $this->taxNominal; }
     public function setTaxNominal($taxNominal) { $this->taxNominal = $taxNominal; }

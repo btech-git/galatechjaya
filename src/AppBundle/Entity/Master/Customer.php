@@ -70,7 +70,7 @@ class Customer
     private $email;
     /**
      * @ORM\Column(type="string", length=20, unique=true)
-     * @Assert\NotNull() @Assert\Regex("/^\d{2}.\d{3}.\d{3}.\d-\d{3}.\d{3}$/")
+     * @Assert\NotBlank() @Assert\Regex("/^\d{2}.\d{3}.\d{3}.\d-\d{3}.\d{3}$/")
      */
     private $taxNumber;
     /**

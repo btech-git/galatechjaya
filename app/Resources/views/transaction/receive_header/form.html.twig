@@ -4,9 +4,160 @@
     {{ include('transaction/actions.html.twig') }}
 {% endblock %}
 
+{% import _self as self %}
+
+{% macro details_row(object) %}
+    <tr data-index="{{ object.vars.name }}">
+        <td class="hide">
+            {{ form_row(object.purchaseOrderDetail, {'label': false}) }}
+        </td>
+        <td>
+            <span data-name="product-name-{{ object.vars.name }}">{{ object.vars.value.purchaseOrderDetail.product.name|default }}</span>
+        </td>
+        <td>
+            <span data-name="product-size-{{ object.vars.name }}">{{ object.vars.value.purchaseOrderDetail.product.size|default }}</span>
+        </td>
+        <td>
+            <span data-name="unit-name-{{ object.vars.name }}">{{ object.vars.value.purchaseOrderDetail.product.unit.name|default }}</span>
+        </td>
+        <td>
+            <span data-name="purchase-order-detail-quantity-{{ object.vars.name }}">{{ object.vars.value.purchaseOrderDetail.quantity|default|number_format(0) }}</span>
+        </td>
+        <td>
+            <span data-name="purchase-order-detail-quantity-remaining-{{ object.vars.name }}">{{ object.vars.value.purchaseOrderDetail.quantityRemaining|default|number_format(0) }}</span>
+        </td>
+        <td>
+            {{ form_row(object.quantity, {'label': false, 'attr': {'data-group-name': 'quantity'} }) }}
+        </td>
+    </tr>
+{% endmacro %}
+
 {% block content %}
     {{ form_start(form) }}
-        {{ form_widget(form) }}
+        <div>{{ form_errors(form) }}</div>
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label>Penerimaan #</label>
+                    <div>{{ receiveHeader.codeNumber }}</div>
+                </div>
+                {{ form_row(form.transactionDate, {'label': 'Tanggal'}) }}
+                {{ form_row(form.reference, {'label': 'SJ #'}) }}
+                {{ form_row(form.warehouse, {'label': 'Gudang'}) }}
+            </div>
+            <div class="col-sm-6">
+                {{ form_row(form.purchaseOrderHeader, {'attr': {'readonly': true, 'data-toggle': 'modal', 'data-target': '#purchase-order-header-dialog'} }) }}
+                <div class="form-group" id="purchase-order-header-info">
+                    <div>
+                        <label>PO #:</label>
+                        <span data-name="code-number">{{ receiveHeader.purchaseOrderHeader.codeNumber|default }}</span>
+                    </div>
+                    <div>
+                        <label>Tanggal:</label>
+                        <span data-name="transaction-date">{{ receiveHeader.purchaseOrderHeader.transactionDate|default ? receiveHeader.purchaseOrderHeader.transactionDate|date('j M Y') }}</span>
+                    </div>
+                    <div>
+                        <label>Supplier:</label>
+                        <span data-name="supplier-name">{{ receiveHeader.purchaseOrderHeader.supplier.name|default }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div>{{ form_row(form.note) }}</div>
+            
+        <hr />
+        
+        <table class="table table-bordered" id="receive-detail-list">
+            <thead>
+                <tr class="bg-info">
+                    <th class="hide">Purchase Order Detail</th>
+                    <th>Nama Barang</th>
+                    <th>Ukuran</th>
+                    <th>Satuan</th>
+                    <th>Qty Order</th>
+                    <th>Qty Remaining</th>
+                    <th>Qty Diterima</th>
+                </tr>
+            </thead>
+            <tbody data-prototype="{{ self.details_row(form.receiveDetails.vars.prototype)|e }}">
+                {% for receiveDetail in form.receiveDetails %}
+                    {{ self.details_row(receiveDetail) }}
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td class="text-right" colspan="5"></td>
+                    <td class="text-right"><span data-name="total-quantity">{{ receiveHeader.totalQuantity|default|number_format(0) }}</span></td>
+                </tr>
+            </tfoot>
+        </table>
+        
         <input class="btn btn-primary navbar-inverse" type="submit" value="Save" data-confirm="Do you want to proceed?" />
+               
+        <div id="purchase-order-header-dialog" class="modal fade" role="dialog">
+            <div class="modal-dialog modal-lg" style="width: 90%">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Purchase Order Header List</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div id="purchase-order-header-grid" data-grid="{{ path('common_purchase_order_header_grid', {'form': form.vars.id}) }}"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
     {{ form_end(form) }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        jQuery(function($) {
+            function bind() {
+                $.ajax({
+                    method: "POST",
+                    url: "{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')|merge({'_format': 'json'})) }}",
+                    data: $("form").serialize(),
+                    dataType: "JSON",
+                    success: function(data) {
+                        var table = $("#receive-detail-list");
+                        var tableBody = $("tbody", table);
+                        var tableFoot = $("tfoot", table);
+                        $.each(data.receiveDetails, function(index, receiveDetail) {
+                            $("[data-name=product-name-" + index + "]", tableBody).text(receiveDetail.productName);
+                            $("[data-name=product-size-" + index + "]", tableBody).text(receiveDetail.productSize);
+                            $("[data-name=unit-name-" + index + "]", tableBody).text(receiveDetail.unitName);
+                            $("[data-name=purchase-order-detail-quantity-" + index + "]", tableBody).text(receiveDetail.purchaseOrderDetailQuantity);
+                            $("[data-name=purchase-order-detail-quantity-remaining-" + index + "]", tableBody).text(receiveDetail.purchaseOrderDetailQuantityRemaining);
+                        });
+                        $("[data-name=total-quantity]", tableFoot).text(data.totalQuantity);
+                    }
+                });
+            }
+            
+            var table = $("#receive-detail-list");
+            var tableBody = $("tbody", table);
+            
+            tableBody.on("change", "[data-group-name=quantity]", function() {
+                bind();
+            });
+            
+            $("#purchase-order-header-grid").on("click", "table[data-role=table] tbody tr", function() {
+                $("#purchase-order-header-dialog").modal("hide");
+                $("#{{ form.purchaseOrderHeader.vars.id }}").val($(this).attr("data-field-id"));
+                $("[data-name=code-number]", "#purchase-order-header-info").text($(this).attr("data-field-code-number"));
+                $("[data-name=transaction-date]", "#purchase-order-header-info").text($(this).attr("data-field-transaction-date"));
+                $("[data-name=supplier-name]", "#purchase-order-header-info").text($(this).attr("data-field-supplier-name"));
+                tableBody.empty();
+                var name = "{{ form.receiveDetails.vars.prototype.vars.name }}";
+                var purchaseOrderDetailsCount = parseInt($(this).attr("data-field-purchase-order-details-count"));
+                for (var i = 0; i < purchaseOrderDetailsCount; i++) {
+                    tableBody.appendByPrototype(tableBody.attr("data-prototype"), name, i);
+                }
+                bind();
+            });
+        });
+    </script>
 {% endblock %}

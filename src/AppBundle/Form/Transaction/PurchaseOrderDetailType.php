@@ -6,6 +6,8 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use AppBundle\Entity\Transaction\PurchaseOrderDetail;
+use LibBundle\Form\Type\EntityHiddenType;
+use AppBundle\Entity\Master\Product;
 
 class PurchaseOrderDetailType extends AbstractType
 {
@@ -15,9 +17,7 @@ class PurchaseOrderDetailType extends AbstractType
             ->add('quantity')
             ->add('discount')
             ->add('unitPrice')
-            ->add('total')
-            ->add('purchaseOrderHeader')
-            ->add('product')
+            ->add('product', EntityHiddenType::class, array('class' => Product::class))
         ;
     }
 

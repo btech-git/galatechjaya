@@ -12,3 +12,23 @@ services:
         arguments: ["@security.context"]
         tags:
             - { name: kernel.event_listener, event: security.interactive_login }
+
+    app.transaction.purchase_order_header_repository:
+        class: AppBundle\Repository\Transaction\PurchaseOrderHeaderRepository
+        factory: ["@doctrine.orm.entity_manager", getRepository]
+        arguments:
+            - AppBundle\Entity\Transaction\PurchaseOrderHeader
+
+    app.transaction.purchase_order_header_form:
+        class: AppBundle\Service\Transaction\PurchaseOrderHeaderForm
+        arguments: ["@app.transaction.purchase_order_header_repository"]
+
+    app.transaction.receive_header_repository:
+        class: AppBundle\Repository\Transaction\ReceiveHeaderRepository
+        factory: ["@doctrine.orm.entity_manager", getRepository]
+        arguments:
+            - AppBundle\Entity\Transaction\ReceiveHeader
+
+    app.transaction.receive_header_form:
+        class: AppBundle\Service\Transaction\ReceiveHeaderForm
+        arguments: ["@app.transaction.receive_header_repository"]

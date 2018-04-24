@@ -47,6 +47,11 @@ class SaleOrderDetail
      */
     private $total;
     /**
+     * @ORM\Column(type="smallint")
+     * @Assert\NotNull() @Assert\GreaterThanOrEqual(0)
+     */
+    private $quantityRemaining;
+    /**
      * @ORM\OneToMany(targetEntity="DeliveryDetail", mappedBy="saleOrderDetail")
      */
     private $deliveryDetails;
@@ -82,6 +87,9 @@ class SaleOrderDetail
 
     public function getTotal() { return $this->total; }
     public function setTotal($total) { $this->total = $total; }
+
+    public function getQuantityRemaining() { return $this->quantityRemaining; }
+    public function setQuantityRemaining($quantityRemaining) { $this->quantityRemaining = $quantityRemaining; }
 
     public function getDeliveryDetails() { return $this->deliveryDetails; }
     public function setDeliveryDetails(Collection $deliveryDetails) { $this->deliveryDetails = $deliveryDetails; }

@@ -6,6 +6,8 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use AppBundle\Entity\Transaction\ReceiveDetail;
+use LibBundle\Form\Type\EntityHiddenType;
+use AppBundle\Entity\Transaction\PurchaseOrderDetail;
 
 class ReceiveDetailType extends AbstractType
 {
@@ -13,9 +15,7 @@ class ReceiveDetailType extends AbstractType
     {
         $builder
             ->add('quantity')
-            ->add('receiveHeader')
-            ->add('purchaseOrderDetail')
-            ->add('purchaseInvoiceDetail')
+            ->add('purchaseOrderDetail', EntityHiddenType::class, array('class' => PurchaseOrderDetail::class))
         ;
     }
 

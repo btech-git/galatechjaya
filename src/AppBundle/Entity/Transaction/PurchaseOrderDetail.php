@@ -42,6 +42,11 @@ class PurchaseOrderDetail
      */
     private $total;
     /**
+     * @ORM\Column(type="smallint")
+     * @Assert\NotNull() @Assert\GreaterThanOrEqual(0)
+     */
+    private $quantityRemaining;
+    /**
      * @ORM\OneToMany(targetEntity="ReceiveDetail", mappedBy="purchaseOrderDetail")
      */
     private $receiveDetails;
@@ -75,6 +80,9 @@ class PurchaseOrderDetail
     public function getTotal() { return $this->total; }
     public function setTotal($total) { $this->total = $total; }
 
+    public function getQuantityRemaining() { return $this->quantityRemaining; }
+    public function setQuantityRemaining($quantityRemaining) { $this->quantityRemaining = $quantityRemaining; }
+
     public function getReceiveDetails() { return $this->receiveDetails; }
     public function setReceiveDetails(Collection $receiveDetails) { $this->receiveDetails = $receiveDetails; }
 
@@ -83,4 +91,9 @@ class PurchaseOrderDetail
 
     public function getProduct() { return $this->product; }
     public function setProduct(Product $product = null) { $this->product = $product; }
+    
+    public function sync()
+    {
+        $this->total = $this->quantity * $this->unitPrice * (1 - $this->discount / 100);
+    }
 }

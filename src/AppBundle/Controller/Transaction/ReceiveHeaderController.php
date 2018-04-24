@@ -45,27 +45,31 @@ class ReceiveHeaderController extends Controller
     }
 
     /**
-     * @Route("/new", name="transaction_receive_header_new")
+     * @Route("/new.{_format}", name="transaction_receive_header_new")
      * @Method({"GET", "POST"})
      * @Security("has_role('ROLE_TRANSACTION')")
      */
-    public function newAction(Request $request)
+    public function newAction(Request $request, $_format = 'html')
     {
         $receiveHeader = new ReceiveHeader();
-        $form = $this->createForm(ReceiveHeaderType::class, $receiveHeader);
+        
+        $receiveHeaderService = $this->get('app.transaction.receive_header_form');
+        $form = $this->createForm(ReceiveHeaderType::class, $receiveHeader, array(
+            'service' => $receiveHeaderService,
+            'init' => array('year' => date('y'), 'month' => date('m'), 'staff' => $this->getUser()),
+        ));
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $repository = $em->getRepository(ReceiveHeader::class);
-            $repository->add($receiveHeader);
+        if ($_format === 'html' && $form->isSubmitted() && $form->isValid()) {
+            $receiveHeaderService->save($receiveHeader);
 
             return $this->redirectToRoute('transaction_receive_header_show', array('id' => $receiveHeader->getId()));
         }
 
-        return $this->render('transaction/receive_header/new.html.twig', array(
+        return $this->render('transaction/receive_header/new.'.$_format.'.twig', array(
             'receiveHeader' => $receiveHeader,
             'form' => $form->createView(),
+            'receiveDetailsCount' => 0,
         ));
     }
 
@@ -82,26 +86,31 @@ class ReceiveHeaderController extends Controller
     }
 
     /**
-     * @Route("/{id}/edit", name="transaction_receive_header_edit", requirements={"id": "\d+"})
+     * @Route("/{id}/edit.{_format}", name="transaction_receive_header_edit", requirements={"id": "\d+"})
      * @Method({"GET", "POST"})
      * @Security("has_role('ROLE_TRANSACTION')")
      */
-    public function editAction(Request $request, ReceiveHeader $receiveHeader)
+    public function editAction(Request $request, ReceiveHeader $receiveHeader, $_format = 'html')
     {
-        $form = $this->createForm(ReceiveHeaderType::class, $receiveHeader);
+        $receiveDetailsCount = $receiveHeader->getReceiveDetails()->count();
+        
+        $receiveHeaderService = $this->get('app.transaction.receive_header_form');
+        $form = $this->createForm(ReceiveHeaderType::class, $receiveHeader, array(
+            'service' => $receiveHeaderService,
+            'init' => array('year' => date('y'), 'month' => date('m'), 'staff' => $this->getUser()),
+        ));
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $repository = $em->getRepository(ReceiveHeader::class);
-            $repository->update($receiveHeader);
+        if ($_format === 'html' && $form->isSubmitted() && $form->isValid()) {
+            $receiveHeaderService->save($receiveHeader);
 
             return $this->redirectToRoute('transaction_receive_header_show', array('id' => $receiveHeader->getId()));
         }
 
-        return $this->render('transaction/receive_header/edit.html.twig', array(
+        return $this->render('transaction/receive_header/edit.'.$_format.'.twig', array(
             'receiveHeader' => $receiveHeader,
             'form' => $form->createView(),
+            'receiveDetailsCount' => $receiveDetailsCount,
         ));
     }
 
@@ -112,14 +121,13 @@ class ReceiveHeaderController extends Controller
      */
     public function deleteAction(Request $request, ReceiveHeader $receiveHeader)
     {
+        $receiveHeaderService = $this->get('app.transaction.receive_header_form');
         $form = $this->createFormBuilder()->getForm();
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
             if ($form->isValid()) {
-                $em = $this->getDoctrine()->getManager();
-                $repository = $em->getRepository(ReceiveHeader::class);
-                $repository->remove($receiveHeader);
+                $receiveHeaderService->delete($receiveHeader);
 
                 $this->addFlash('success', array('title' => 'Success!', 'message' => 'The record was deleted successfully.'));
             } else {

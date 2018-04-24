@@ -32,6 +32,11 @@ class PurchaseOrderHeader extends CodeNumberEntity
      */
     private $note;
     /**
+     * @ORM\Column(type="smallint")
+     * @Assert\NotNull() @Assert\GreaterThan(0)
+     */
+    private $totalQuantity;
+    /**
      * @ORM\Column(type="decimal", precision=18, scale=2)
      * @Assert\NotNull() @Assert\GreaterThan(0)
      */
@@ -40,7 +45,12 @@ class PurchaseOrderHeader extends CodeNumberEntity
      * @ORM\Column(type="decimal", precision=10, scale=2)
      * @Assert\NotNull() @Assert\GreaterThanOrEqual(0)
      */
-    private $discount;
+    private $discountPercentage;
+    /**
+     * @ORM\Column(type="decimal", precision=18, scale=2)
+     * @Assert\NotNull() @Assert\GreaterThanOrEqual(0)
+     */
+    private $discountNominal;
     /**
      * @ORM\Column(type="decimal", precision=18, scale=2)
      * @Assert\NotNull() @Assert\GreaterThanOrEqual(0)
@@ -102,11 +112,17 @@ class PurchaseOrderHeader extends CodeNumberEntity
     public function getNote() { return $this->note; }
     public function setNote($note) { $this->note = $note; }
 
+    public function getTotalQuantity() { return $this->totalQuantity; }
+    public function setTotalQuantity($totalQuantity) { $this->totalQuantity = $totalQuantity; }
+
     public function getSubTotal() { return $this->subTotal; }
     public function setSubTotal($subTotal) { $this->subTotal = $subTotal; }
 
-    public function getDiscount() { return $this->discount; }
-    public function setDiscount($discount) { $this->discount = $discount; }
+    public function getDiscountPercentage() { return $this->discountPercentage; }
+    public function setDiscountPercentage($discountPercentage) { $this->discountPercentage = $discountPercentage; }
+
+    public function getDiscountNominal() { return $this->discountNominal; }
+    public function setDiscountNominal($discountNominal) { $this->discountNominal = $discountNominal; }
 
     public function getTaxNominal() { return $this->taxNominal; }
     public function setTaxNominal($taxNominal) { $this->taxNominal = $taxNominal; }
@@ -134,4 +150,20 @@ class PurchaseOrderHeader extends CodeNumberEntity
 
     public function getPurchaseOrderDetails() { return $this->purchaseOrderDetails; }
     public function setPurchaseOrderDetails(Collection $purchaseOrderDetails) { $this->purchaseOrderDetails = $purchaseOrderDetails; }
+    
+    public function sync()
+    {
+        $totalQuantity = 0.00;
+        $subTotal = 0.00;
+        foreach ($this->purchaseOrderDetails as $purchaseOrderDetail) {
+            $purchaseOrderDetail->sync();
+            $totalQuantity += $purchaseOrderDetail->getQuantity();
+            $subTotal += $purchaseOrderDetail->getTotal();
+        }
+        $this->totalQuantity = $totalQuantity;
+        $this->subTotal = $subTotal;
+        $this->discountNominal = $this->subTotal * $this->discountPercentage / 100;
+        $this->taxNominal = ($this->isTax ? ($this->subTotal - $this->discountNominal) * 10 / 100 : 0);
+        $this->grandTotal = $this->subTotal - $this->discountNominal + $this->taxNominal + $this->shippingFee;
+    }
 }

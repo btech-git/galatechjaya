@@ -30,6 +30,11 @@ class PurchaseReturnHeader extends CodeNumberEntity
      */
     private $note;
     /**
+     * @ORM\Column(type="smallint")
+     * @Assert\NotNull() @Assert\GreaterThan(0)
+     */
+    private $totalQuantity;
+    /**
      * @ORM\Column(type="decimal", precision=18, scale=2)
      * @Assert\NotNull() @Assert\GreaterThan(0)
      */
@@ -89,6 +94,9 @@ class PurchaseReturnHeader extends CodeNumberEntity
     
     public function getNote() { return $this->note; }
     public function setNote($note) { $this->note = $note; }
+
+    public function getTotalQuantity() { return $this->totalQuantity; }
+    public function setTotalQuantity($totalQuantity) { $this->totalQuantity = $totalQuantity; }
 
     public function getSubTotal() { return $this->subTotal; }
     public function setSubTotal($subTotal) { $this->subTotal = $subTotal; }

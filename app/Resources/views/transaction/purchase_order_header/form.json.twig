@@ -1,0 +1,15 @@
+{
+    "totalQuantity": "{{ purchaseOrderHeader.totalQuantity|default|number_format(0) }}",
+    "discountNominal": "{{ purchaseOrderHeader.discountNominal|default|number_format(2) }}",
+    "taxNominal": "{{ purchaseOrderHeader.taxNominal|default|number_format(2) }}",
+    "subTotal": "{{ purchaseOrderHeader.subTotal|default|number_format(2) }}",
+    "grandTotal": "{{ purchaseOrderHeader.grandTotal|default|number_format(2) }}",
+    "purchaseOrderDetails": {
+        {%- for index, purchaseOrderDetail in purchaseOrderHeader.purchaseOrderDetails -%}
+            "{{ index }}": {
+                "total": "{{ purchaseOrderDetail.total|default|number_format(2) }}"
+            }
+            {%- if not loop.last -%},{%- endif -%}
+        {%- endfor -%}
+    }
+}

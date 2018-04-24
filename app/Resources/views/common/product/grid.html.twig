@@ -1,0 +1,47 @@
+{% set grid_layout = 'datagrid.html.twig' %}
+
+{{ grid_top(grid) }}
+
+<table data-role="table" class="table table-bordered table-striped table-condensed table-hover" style="margin-bottom: 10px">
+    <thead>
+        <tr data-action="sort" class="alert alert-info">
+            <th data-group="product" data-field="name">Nama Barang</th>
+            <th data-group="product" data-field="size">Ukuran</th>
+            <th data-group="product" data-field="unit">Satuan</th>
+            <th data-group="product" data-field="productCategory">Kategori</th>
+        </tr>
+        <tr data-action="search">
+            <th data-group="product" data-field="name"></th>
+            <th data-group="product" data-field="size"></th>
+            <th data-group="product" data-field="unit"></th>
+            <th data-group="product" data-field="productCategory"></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for product in grid.data %}
+            <tr data-field-id="{{ product.id }}"
+                data-field-name="{{ product.name|default }}"
+                data-field-size="{{ product.size|default }}"
+                data-field-unit-name="{{ product.unit.name|default }}">
+                <td class="text-left">{{ product.name|default }}</td>
+                <td class="text-left">{{ product.size|default }}</td>
+                <td class="text-left">{{ product.unit.name|default }}</td>
+                <td class="text-left">{{ product.productCategory.name|default }}</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4" class="alert alert-warning">
+                    <strong>There are no items to display.</strong>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{{ grid_bottom(grid) }}
+
+<script>
+    jQuery(function($) {
+        $("#{{ grid.id }}-top").css("display", "none");
+    });
+</script>
