@@ -110,6 +110,24 @@ class SearchWidgetValue extends WidgetValue
         return $this;
     }
     
+    public function setOption()
+    {
+        if ($this->group === null || $this->field === null) {
+            return $this;
+        }
+        
+        $options = func_get_args();
+        foreach ($options as $option) {
+            if ($option !== null && !is_array($option)) {
+                return $this;
+            }
+        } 
+        
+        $this->dataGridReference->setOptions($this->group, $this->field, $options);
+        
+        return $this;
+    }
+    
     public function addOperator($name, $label = null)
     {
         if (!parent::addOperator($name, $label)) {

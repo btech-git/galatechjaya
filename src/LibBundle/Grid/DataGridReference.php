@@ -26,6 +26,23 @@ class DataGridReference
         }
     }
     
+    public function setOptions($group, $field, array $options)
+    {
+        $this->searchReferences[$group][$field]['options'] = $options;
+        
+        return $this->searchReferences[$group][$field]['options'];
+    }
+    
+    public function getOptions($group, $field)
+    {
+        if (isset($this->searchReferences[$group][$field]['options'])) {
+            return $this->searchReferences[$group][$field]['options'];
+        }
+        else {
+            return false;
+        }
+    }
+    
     public function setSearchDefaultValues($group, $field, array $values)
     {
         $this->searchReferences[$group][$field]['defaults'] = $values;

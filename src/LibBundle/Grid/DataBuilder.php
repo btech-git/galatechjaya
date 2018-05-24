@@ -21,16 +21,21 @@ class DataBuilder
                 $values = array_slice($list, 1);
                 
                 $searchFieldReferences = $this->dataGridReference->getSearchFieldReferences($group, $field);
+                $dataTransformers = $this->dataGridReference->getDataTransformers($group, $field);
+                $options = $this->dataGridReference->getOptions($group, $field);
                 if ($searchFieldReferences) {
                     $num = $operator::getNumberOfInput();
                     foreach ($searchFieldReferences as $i => $reference) {
                         $vals = array_slice($values, $i * $num, $num);
-                        if (($dataTransformers = $this->dataGridReference->getDataTransformers($group, $field))) {
+                        if ($dataTransformers) {
                             if (isset($dataTransformers[$i])) {
                                 array_walk($vals, array($this->dataGridReference, 'toModel'), $dataTransformers[$i]);
                             }
                         }
-                        $call($vals, $operator, $reference, $group);
+                        if (!isset($options[$i])) {
+                            $options[$i] = array();
+                        }
+                        $call($vals, $operator, $reference, $group, $options[$i]);
                     }
                 }
             }
