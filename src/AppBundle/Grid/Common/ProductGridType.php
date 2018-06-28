@@ -71,8 +71,18 @@ class ProductGridType extends DataGridType
     {
         $criteria = Criteria::create();
 
-        $builder->processSearch(function($values, $operator, $field) use ($criteria) {
-            $operator::search($criteria, $field, $values);
+        $builder->processSearch(function($values, $operator, $field, $group) use ($criteria) {
+            if ($group === 'product' && $field === 'name' && $operator === ContainNonEmptyType::class) {
+                if ($values[0] !== null && $values[0] !== '') {
+                    $parts = explode(' ', $values[0]);
+                    foreach ($parts as $part) {
+                        $expr = Criteria::expr();
+                        $criteria->andWhere($expr->contains($field, $part));
+                    }
+                }
+            } else {
+                $operator::search($criteria, $field, $values);
+            }
         });
 
         $builder->processSort(function($operator, $field) use ($criteria) {

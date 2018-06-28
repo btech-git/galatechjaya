@@ -55,7 +55,7 @@ class PurchaseOrderDetail
      */
     private $purchaseOrderHeader;
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Master\Product")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Master\Product", inversedBy="purchaseOrderDetails")
      * @Assert\NotNull()
      */
     private $product;

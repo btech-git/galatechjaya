@@ -96,7 +96,7 @@ class SaleInvoiceHeader extends CodeNumberEntity
      */
     private $staffLast;
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Master\Customer")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Master\Customer", inversedBy="saleInvoiceHeaders")
      * @Assert\NotNull()
      */
     private $customer;

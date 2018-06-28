@@ -46,7 +46,7 @@ class PurchaseReceiptHeader extends CodeNumberEntity
      */
     private $remaining;
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Master\Supplier")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Master\Supplier", inversedBy="purchaseReceiptHeaders")
      * @Assert\NotNull()
      */
     private $supplier;
