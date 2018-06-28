@@ -45,27 +45,31 @@ class ExpenseHeaderController extends Controller
     }
 
     /**
-     * @Route("/new", name="transaction_expense_header_new")
+     * @Route("/new.{_format}", name="transaction_expense_header_new")
      * @Method({"GET", "POST"})
      * @Security("has_role('ROLE_TRANSACTION')")
      */
-    public function newAction(Request $request)
+    public function newAction(Request $request, $_format = 'html')
     {
         $expenseHeader = new ExpenseHeader();
-        $form = $this->createForm(ExpenseHeaderType::class, $expenseHeader);
+        
+        $expenseHeaderService = $this->get('app.transaction.expense_header_form');
+        $form = $this->createForm(ExpenseHeaderType::class, $expenseHeader, array(
+            'service' => $expenseHeaderService,
+            'init' => array('year' => date('y'), 'month' => date('m'), 'staff' => $this->getUser()),
+        ));
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $repository = $em->getRepository(ExpenseHeader::class);
-            $repository->add($expenseHeader);
+        if ($_format === 'html' && $form->isSubmitted() && $form->isValid()) {
+            $expenseHeaderService->save($expenseHeader);
 
             return $this->redirectToRoute('transaction_expense_header_show', array('id' => $expenseHeader->getId()));
         }
 
-        return $this->render('transaction/expense_header/new.html.twig', array(
+        return $this->render('transaction/expense_header/new.'.$_format.'.twig', array(
             'expenseHeader' => $expenseHeader,
             'form' => $form->createView(),
+            'expenseDetailsCount' => 0,
         ));
     }
 
@@ -82,26 +86,31 @@ class ExpenseHeaderController extends Controller
     }
 
     /**
-     * @Route("/{id}/edit", name="transaction_expense_header_edit", requirements={"id": "\d+"})
+     * @Route("/{id}/edit.{_format}", name="transaction_expense_header_edit", requirements={"id": "\d+"})
      * @Method({"GET", "POST"})
      * @Security("has_role('ROLE_TRANSACTION')")
      */
-    public function editAction(Request $request, ExpenseHeader $expenseHeader)
+    public function editAction(Request $request, ExpenseHeader $expenseHeader, $_format = 'html')
     {
-        $form = $this->createForm(ExpenseHeaderType::class, $expenseHeader);
+        $expenseDetailsCount = $expenseHeader->getExpenseDetails()->count();
+        
+        $expenseHeaderService = $this->get('app.transaction.expense_header_form');
+        $form = $this->createForm(ExpenseHeaderType::class, $expenseHeader, array(
+            'service' => $expenseHeaderService,
+            'init' => array('year' => date('y'), 'month' => date('m'), 'staff' => $this->getUser()),
+        ));
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $repository = $em->getRepository(ExpenseHeader::class);
-            $repository->update($expenseHeader);
+        if ($_format === 'html' && $form->isSubmitted() && $form->isValid()) {
+            $expenseHeaderService->save($expenseHeader);
 
             return $this->redirectToRoute('transaction_expense_header_show', array('id' => $expenseHeader->getId()));
         }
 
-        return $this->render('transaction/expense_header/edit.html.twig', array(
+        return $this->render('transaction/expense_header/edit.'.$_format.'.twig', array(
             'expenseHeader' => $expenseHeader,
             'form' => $form->createView(),
+            'expenseDetailsCount' => $expenseDetailsCount,
         ));
     }
 
@@ -112,14 +121,13 @@ class ExpenseHeaderController extends Controller
      */
     public function deleteAction(Request $request, ExpenseHeader $expenseHeader)
     {
+        $expenseHeaderService = $this->get('app.transaction.expense_header_form');
         $form = $this->createFormBuilder()->getForm();
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
             if ($form->isValid()) {
-                $em = $this->getDoctrine()->getManager();
-                $repository = $em->getRepository(ExpenseHeader::class);
-                $repository->remove($expenseHeader);
+                $expenseHeaderService->delete($expenseHeader);
 
                 $this->addFlash('success', array('title' => 'Success!', 'message' => 'The record was deleted successfully.'));
             } else {

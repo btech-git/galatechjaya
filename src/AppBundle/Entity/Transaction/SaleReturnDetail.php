@@ -57,4 +57,8 @@ class SaleReturnDetail
     public function getSaleReturnHeader() { return $this->saleReturnHeader; }
     public function setSaleReturnHeader(SaleReturnHeader $saleReturnHeader = null) { $this->saleReturnHeader = $saleReturnHeader; }
     
+    public function sync()
+    {
+        $this->total = $this->quantity * $this->unitPrice;
+    }
 }

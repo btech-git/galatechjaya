@@ -7,6 +7,7 @@
         <tr data-action="sort" class="alert alert-info">
             <th data-group="account" data-field="code">Code</th>
             <th data-group="account" data-field="name">Name</th>
+            <th data-group="account" data-field="isCashOrBank">Is Cash Or Bank</th>
             <th data-group="account" data-field="isActive">Is Active</th>
             <th></th>
         </tr>
@@ -16,6 +17,7 @@
             <tr data-field-id="{{ account.id }}">
                 <td class="text-left">{{ account.code|default }}</td>
                 <td class="text-left">{{ account.name|default }}</td>
+                <td class="text-left">{{ account.isCashOrBank|default ? 'Yes' : 'No' }}</td>
                 <td class="text-left">{{ account.isActive|default ? 'Yes' : 'No' }}</td>
                 <td class="text-left">
                     {{ include('master/actions.html.twig', {
@@ -31,7 +33,7 @@
             </tr>
         {% else %}
             <tr>
-                <td colspan="4" class="alert alert-warning">
+                <td colspan="5" class="alert alert-warning">
                     <strong>There are no items to display.</strong>
                 </td>
             </tr>

@@ -10,37 +10,90 @@
     <table class="table table-bordered table-striped">
         <tbody>
             <tr>
-                <th>Transaction Date</th>
-                <td>{{ purchaseOrderHeader.transactionDate|default ? purchaseOrderHeader.transactionDate|date('Y-m-d') }}</td>
+                <th>PO #</th>
+                <td>{{ purchaseOrderHeader.codeNumber|default }}</td>
+            </tr>
+            <tr>
+                <th>Tanggal</th>
+                <td>{{ purchaseOrderHeader.transactionDate|default ? purchaseOrderHeader.transactionDate|date('j F Y') }}</td>
+            </tr>
+            <tr>
+                <th>Supplier</th>
+                <td>{{ purchaseOrderHeader.supplier.name|default }}</td>
             </tr>
             <tr>
                 <th>Note</th>
                 <td>{{ purchaseOrderHeader.note|default }}</td>
             </tr>
-            <tr>
-                <th>Sub Total</th>
-                <td>{{ purchaseOrderHeader.subTotal|default|number_format(2) }}</td>
-            </tr>
-            <tr>
-                <th>Discount</th>
-                <td>{{ purchaseOrderHeader.discount|default|number_format(2) }}</td>
-            </tr>
-            <tr>
-                <th>Tax Nominal</th>
-                <td>{{ purchaseOrderHeader.taxNominal|default|number_format(2) }}</td>
-            </tr>
-            <tr>
-                <th>Shipping Fee</th>
-                <td>{{ purchaseOrderHeader.shippingFee|default|number_format(2) }}</td>
-            </tr>
-            <tr>
-                <th>Grand Total</th>
-                <td>{{ purchaseOrderHeader.grandTotal|default|number_format(2) }}</td>
-            </tr>
-            <tr>
-                <th>Is Tax</th>
-                <td>{{ purchaseOrderHeader.isTax|default ? 'Yes' : 'No' }}</td>
-            </tr>
         </tbody>
     </table>
+                              
+    <hr />
+           
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr class="bg-info">
+                <th>Nama Barang</th>
+                <th style="width: 10%">Ukuran</th>
+                <th style="width: 5%">Satuan</th>
+                <th style="width: 10%">Qty</th>
+                <th style="width: 10%">Harga</th>
+                <th style="width: 8%">Disc (%)</th>
+                <th style="width: 15%">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for purchaseOrderDetail in purchaseOrderHeader.purchaseOrderDetails %}
+                <tr>
+                    <td class="text-left">{{ purchaseOrderDetail.product.name|default }}</td>
+                    <td class="text-left">{{ purchaseOrderDetail.product.size|default }}</td>
+                    <td class="text-left">{{ purchaseOrderDetail.product.unit.name|default }}</td>
+                    <td class="text-right">{{ purchaseOrderDetail.quantity|default|number_format(0) }}</td>
+                    <td class="text-right">{{ purchaseOrderDetail.unitPrice|default|number_format(2) }}</td>
+                    <td class="text-right">{{ purchaseOrderDetail.discount|default|number_format(2) }}</td>
+                    <td class="text-right">{{ purchaseOrderDetail.total|default|number_format(2) }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td class="text-right" colspan="3">Sub Total</td>
+                <td class="text-right">{{ purchaseOrderHeader.totalQuantity|default|number_format(0) }}</td>
+                <td class="text-right" colspan="2">&nbsp;</td>
+                <td class="text-right">{{ purchaseOrderHeader.subTotal|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <td class="text-right" colspan="6">
+                    <span style="display: inline-block">Discount</span>
+                    <span style="display: inline-block">
+                        {{ purchaseOrderHeader.discountPercentage }}
+                    </span>
+                    <span style="display: inline-block">%</span>
+                </td>
+                <td class="text-right">{{ purchaseOrderHeader.discountNominal|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <td class="text-right" colspan="6">
+                    <span style="display: inline-block">PPn</span>
+                    <span style="display: inline-block">
+                        {{ purchaseOrderHeader.isTax|default ? '10' : '0'  }}
+                    </span>
+                    <span style="display: inline-block">%</span>
+                </td>
+                <td class="text-right">{{ purchaseOrderHeader.taxNominal|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <td class="text-right" colspan="6">Ongkos Kirim</td>
+                <td class="text-right">{{ purchaseOrderHeader.shippingFee|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <td class="text-right" colspan="6">Grand Total</td>
+                <td class="text-right">{{ purchaseOrderHeader.grandTotal|default|number_format(2) }}</td>
+            </tr>
+        </tfoot>
+    </table>
+                
+    <a target="_blank" class="btn btn-info" href="{{ path('transaction_purchase_order_header_memo', {'id': purchaseOrderHeader.id}) }}">
+        <span class="glyphicon glyphicon-print"></span> Print PO
+    </a>
 {% endblock %}

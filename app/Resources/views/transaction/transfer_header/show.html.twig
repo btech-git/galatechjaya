@@ -1,0 +1,63 @@
+{% extends 'transaction/layout.html.twig' %}
+
+{% block title 'Show Transfer Header' %}
+
+{% block actions %}
+    {{ include('transaction/actions.html.twig') }}
+{% endblock %}
+
+{% block content %}
+    <table class="table table-bordered table-striped">
+        <tbody>
+            <tr>
+                <th>Transfer #</th>
+                <td>{{ transferHeader.codeNumber|default }}</td>
+            </tr>
+            <tr>
+                <th>Tanggal</th>
+                <td>{{ transferHeader.transactionDate|default ? transferHeader.transactionDate|date('j F Y') }}</td>
+            </tr>
+            <tr>
+                <th>Gudang Asal</th>
+                <td>{{ transferHeader.warehouseFrom.name|default }}</td>
+            </tr>
+            <tr>
+                <th>Gudang Tujuan</th>
+                <td>{{ transferHeader.warehouseTo.name|default }}</td>
+            </tr>
+            <tr>
+                <th>Note</th>
+                <td>{{ transferHeader.note|default }}</td>
+            </tr>
+        </tbody>
+    </table>
+                              
+    <hr />
+           
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr class="bg-info">
+                <th>Nama Barang</th>
+                <th style="width: 15%">Ukuran</th>
+                <th style="width: 10%">Satuan</th>
+                <th style="width: 10%">Quantity</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for transferDetail in transferHeader.transferDetails %}
+                <tr>
+                    <td class="text-left">{{ transferDetail.product.name|default }}</td>
+                    <td class="text-left">{{ transferDetail.product.size|default }}</td>
+                    <td class="text-left">{{ transferDetail.product.unit.name|default }}</td>
+                    <td class="text-center">{{ transferDetail.quantity|default|number_format(0) }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td class="text-right" colspan="3">Total</td>
+                <td class="text-center">{{ transferHeader.totalQuantity|default }}</td>
+            </tr>
+        </tfoot>
+    </table>
+{% endblock %}

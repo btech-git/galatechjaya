@@ -32,3 +32,144 @@ services:
     app.transaction.receive_header_form:
         class: AppBundle\Service\Transaction\ReceiveHeaderForm
         arguments: ["@app.transaction.receive_header_repository"]
+
+    app.transaction.purchase_invoice_header_repository:
+        class: AppBundle\Repository\Transaction\PurchaseInvoiceHeaderRepository
+        factory: ["@doctrine.orm.entity_manager", getRepository]
+        arguments:
+            - AppBundle\Entity\Transaction\PurchaseInvoiceHeader
+
+    app.transaction.purchase_invoice_header_form:
+        class: AppBundle\Service\Transaction\PurchaseInvoiceHeaderForm
+        arguments: ["@app.transaction.purchase_invoice_header_repository"]
+
+    app.transaction.purchase_return_header_repository:
+        class: AppBundle\Repository\Transaction\PurchaseReturnHeaderRepository
+        factory: ["@doctrine.orm.entity_manager", getRepository]
+        arguments:
+            - AppBundle\Entity\Transaction\PurchaseReturnHeader
+
+    app.transaction.purchase_return_header_form:
+        class: AppBundle\Service\Transaction\PurchaseReturnHeaderForm
+        arguments: ["@app.transaction.purchase_return_header_repository"]
+
+    app.transaction.purchase_receipt_header_repository:
+        class: AppBundle\Repository\Transaction\PurchaseReceiptHeaderRepository
+        factory: ["@doctrine.orm.entity_manager", getRepository]
+        arguments:
+            - AppBundle\Entity\Transaction\PurchaseReceiptHeader
+
+    app.transaction.purchase_receipt_header_form:
+        class: AppBundle\Service\Transaction\PurchaseReceiptHeaderForm
+        arguments: ["@app.transaction.purchase_receipt_header_repository"]
+
+    app.transaction.purchase_payment_header_repository:
+        class: AppBundle\Repository\Transaction\PurchasePaymentHeaderRepository
+        factory: ["@doctrine.orm.entity_manager", getRepository]
+        arguments:
+            - AppBundle\Entity\Transaction\PurchasePaymentHeader
+
+    app.transaction.purchase_payment_header_form:
+        class: AppBundle\Service\Transaction\PurchasePaymentHeaderForm
+        arguments: ["@app.transaction.purchase_payment_header_repository"]
+
+    app.transaction.sale_invoice_header_repository:
+        class: AppBundle\Repository\Transaction\SaleInvoiceHeaderRepository
+        factory: ["@doctrine.orm.entity_manager", getRepository]
+        arguments:
+            - AppBundle\Entity\Transaction\SaleInvoiceHeader
+
+    app.transaction.sale_invoice_header_form:
+        class: AppBundle\Service\Transaction\SaleInvoiceHeaderForm
+        arguments: ["@app.transaction.sale_invoice_header_repository"]
+
+    app.transaction.sale_return_header_repository:
+        class: AppBundle\Repository\Transaction\SaleReturnHeaderRepository
+        factory: ["@doctrine.orm.entity_manager", getRepository]
+        arguments:
+            - AppBundle\Entity\Transaction\SaleReturnHeader
+
+    app.transaction.sale_return_header_form:
+        class: AppBundle\Service\Transaction\SaleReturnHeaderForm
+        arguments: ["@app.transaction.sale_return_header_repository"]
+
+    app.transaction.sale_receipt_header_repository:
+        class: AppBundle\Repository\Transaction\SaleReceiptHeaderRepository
+        factory: ["@doctrine.orm.entity_manager", getRepository]
+        arguments:
+            - AppBundle\Entity\Transaction\SaleReceiptHeader
+
+    app.transaction.sale_receipt_header_form:
+        class: AppBundle\Service\Transaction\SaleReceiptHeaderForm
+        arguments: ["@app.transaction.sale_receipt_header_repository"]
+
+    app.transaction.sale_cheque_repository:
+        class: AppBundle\Repository\Transaction\SaleChequeRepository
+        factory: ["@doctrine.orm.entity_manager", getRepository]
+        arguments:
+            - AppBundle\Entity\Transaction\SaleCheque
+
+    app.transaction.sale_cheque_form:
+        class: AppBundle\Service\Transaction\SaleChequeForm
+        arguments: ["@app.transaction.sale_cheque_repository"]
+
+    app.transaction.sale_payment_header_repository:
+        class: AppBundle\Repository\Transaction\SalePaymentHeaderRepository
+        factory: ["@doctrine.orm.entity_manager", getRepository]
+        arguments:
+            - AppBundle\Entity\Transaction\SalePaymentHeader
+
+    app.transaction.sale_payment_header_form:
+        class: AppBundle\Service\Transaction\SalePaymentHeaderForm
+        arguments: ["@app.transaction.sale_payment_header_repository"]
+
+    app.transaction.adjustment_stock_header_repository:
+        class: AppBundle\Repository\Transaction\AdjustmentStockHeaderRepository
+        factory: ["@doctrine.orm.entity_manager", getRepository]
+        arguments:
+            - AppBundle\Entity\Transaction\AdjustmentStockHeader
+
+    app.transaction.adjustment_stock_header_form:
+        class: AppBundle\Service\Transaction\AdjustmentStockHeaderForm
+        arguments: ["@app.transaction.adjustment_stock_header_repository"]
+        
+    app.transaction.deposit_header_repository:
+        class: AppBundle\Repository\Transaction\DepositHeaderRepository
+        factory: ["@doctrine.orm.entity_manager", getRepository]
+        arguments:
+            - AppBundle\Entity\Transaction\DepositHeader
+
+    app.transaction.deposit_header_form:
+        class: AppBundle\Service\Transaction\DepositHeaderForm
+        arguments: ["@app.transaction.deposit_header_repository"]
+        
+    app.transaction.expense_header_repository:
+        class: AppBundle\Repository\Transaction\ExpenseHeaderRepository
+        factory: ["@doctrine.orm.entity_manager", getRepository]
+        arguments:
+            - AppBundle\Entity\Transaction\ExpenseHeader
+
+    app.transaction.expense_header_form:
+        class: AppBundle\Service\Transaction\ExpenseHeaderForm
+        arguments: ["@app.transaction.expense_header_repository"]
+        
+    app.transaction.journal_voucher_header_repository:
+        class: AppBundle\Repository\Transaction\JournalVoucherHeaderRepository
+        factory: ["@doctrine.orm.entity_manager", getRepository]
+        arguments:
+            - AppBundle\Entity\Transaction\JournalVoucherHeader
+
+    app.transaction.journal_voucher_header_form:
+        class: AppBundle\Service\Transaction\JournalVoucherHeaderForm
+        arguments: ["@app.transaction.journal_voucher_header_repository"]
+        
+    app.transaction.transfer_header_repository:
+        class: AppBundle\Repository\Transaction\TransferHeaderRepository
+        factory: ["@doctrine.orm.entity_manager", getRepository]
+        arguments:
+            - AppBundle\Entity\Transaction\TransferHeader
+
+    app.transaction.transfer_header_form:
+        class: AppBundle\Service\Transaction\TransferHeaderForm
+        arguments: ["@app.transaction.transfer_header_repository"]
+        

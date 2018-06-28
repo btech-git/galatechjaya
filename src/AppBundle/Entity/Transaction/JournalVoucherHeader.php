@@ -76,4 +76,16 @@ class JournalVoucherHeader extends CodeNumberEntity
     
     public function getJournalVoucherDetails() { return $this->journalVoucherDetails; }
     public function setJournalVoucherDetails(Collection $journalVoucherDetails) { $this->journalVoucherDetails = $journalVoucherDetails; }
+    
+    public function sync()
+    {
+        $totalDebit = 0.00;
+        $totalCredit = 0.00;
+        foreach ($this->journalVoucherDetails as $journalVoucherDetail) {
+            $totalDebit += $journalVoucherDetail->getDebit();
+            $totalCredit += $journalVoucherDetail->getCredit();
+        }
+        $this->totalDebit = $totalDebit;
+        $this->totalCredit = $totalCredit;
+    }
 }

@@ -1,13 +1,13 @@
 {
-    "totalQuantity": "{{ receiveHeader.totalQuantity|default|number_format(0) }}",
+    "totalQuantity": {{ receiveHeader.totalQuantity|default|number_format(0)|json_encode|raw }},
     "receiveDetails": {
         {%- for index, receiveDetail in receiveHeader.receiveDetails -%}
             "{{ index }}": {
-                "productName": "{{ receiveDetail.purchaseOrderDetail.product.name|default }}",
-                "productSize": "{{ receiveDetail.purchaseOrderDetail.product.size|default }}",
-                "unitName": "{{ receiveDetail.purchaseOrderDetail.product.unit.name|default }}",
-                "purchaseOrderDetailQuantity": "{{ receiveDetail.purchaseOrderDetail.quantity|default|number_format(0) }}",
-                "purchaseOrderDetailQuantityRemaining": "{{ receiveDetail.purchaseOrderDetail.quantityRemaining|default|number_format(0) }}"
+                "productName": {{ receiveDetail.purchaseOrderDetail.product.name|default|json_encode|raw }},
+                "productSize": {{ receiveDetail.purchaseOrderDetail.product.size|default|json_encode|raw }},
+                "unitName": {{ receiveDetail.purchaseOrderDetail.product.unit.name|default|json_encode|raw }},
+                "purchaseOrderDetailQuantity": {{ receiveDetail.purchaseOrderDetail.quantity|default|number_format(0)|json_encode|raw }},
+                "purchaseOrderDetailQuantityRemaining": {{ receiveDetail.purchaseOrderDetail.quantityRemaining|default|number_format(0)|json_encode|raw }}
             }
             {%- if not loop.last -%},{%- endif -%}
         {%- endfor -%}

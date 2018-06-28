@@ -1,0 +1,15 @@
+{
+    "totalQuantity": {{ saleInvoiceHeader.totalQuantity|default|number_format(0)|json_encode|raw }},
+    "subTotal": {{ saleInvoiceHeader.subTotal|default|number_format(2)|json_encode|raw }},
+    "discountNominal": {{ saleInvoiceHeader.discountNominal|default|number_format(2)|json_encode|raw }},
+    "taxNominal": {{ saleInvoiceHeader.taxNominal|default|number_format(2)|json_encode|raw }},
+    "grandTotal": {{ saleInvoiceHeader.grandTotal|default|number_format(2)|json_encode|raw }},
+    "saleInvoiceDetails": {
+        {%- for index, saleInvoiceDetail in saleInvoiceHeader.saleInvoiceDetails -%}
+            "{{ index }}": {
+                "total": {{ saleInvoiceDetail.total|default|number_format(2)|json_encode|raw }}
+            }
+            {%- if not loop.last -%},{%- endif -%}
+        {%- endfor -%}
+    }
+}

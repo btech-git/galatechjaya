@@ -10,7 +10,6 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Table(name="master_customer") @ORM\Entity
- * @UniqueEntity("taxNumber")
  */
 class Customer
 {
@@ -69,7 +68,7 @@ class Customer
      */
     private $email;
     /**
-     * @ORM\Column(type="string", length=20, unique=true)
+     * @ORM\Column(type="string", length=20)
      * @Assert\NotBlank() @Assert\Regex("/^\d{2}.\d{3}.\d{3}.\d-\d{3}.\d{3}$/")
      */
     private $taxNumber;
@@ -103,9 +102,19 @@ class Customer
      * @Assert\NotNull()
      */
     private $accountDownpayment;
+    /**
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Transaction\SaleInvoiceHeader", mappedBy="customer")
+     */
+    private $saleInvoiceHeaders;
+    /**
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Transaction\SaleReceiptHeader", mappedBy="customer")
+     */
+    private $saleReceiptHeaders;
     
     public function __construct()
     {
+        $this->saleInvoiceHeaders = new ArrayCollection();
+        $this->saleReceiptHeaders = new ArrayCollection();
     }
     
     public function __toString()
@@ -165,4 +174,10 @@ class Customer
 
     public function getAccountDownpayment() { return $this->accountDownpayment; }
     public function setAccountDownpayment(Account $accountDownpayment = null) { $this->accountDownpayment = $accountDownpayment; }
+    
+    public function getSaleInvoiceHeaders() { return $this->saleInvoiceHeaders; }
+    public function setSaleInvoiceHeaders(Collection $saleInvoiceHeaders) { $this->saleInvoiceHeaders = $saleInvoiceHeaders; }
+    
+    public function getSaleReceiptHeaders() { return $this->saleReceiptHeaders; }
+    public function setSaleReceiptHeaders(Collection $saleReceiptHeaders) { $this->saleReceiptHeaders = $saleReceiptHeaders; }
 }

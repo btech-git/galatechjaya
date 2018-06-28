@@ -41,11 +41,6 @@ class SaleCheque extends CodeNumberEntity
      */
     private $amount;
     /**
-     * @ORM\Column(type="string", length=100)
-     * @Assert\NotBlank()
-     */
-    private $bankName;
-    /**
      * @ORM\Column(type="text")
      * @Assert\NotNull()
      */
@@ -60,6 +55,11 @@ class SaleCheque extends CodeNumberEntity
      * @Assert\NotNull()
      */
     private $staffLast;
+    /**
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Master\Bank")
+     * @Assert\NotNull()
+     */
+    private $bank;
     /**
      * @ORM\ManyToOne(targetEntity="SaleReceiptHeader", inversedBy="saleCheques")
      * @Assert\NotNull()
@@ -98,6 +98,14 @@ class SaleCheque extends CodeNumberEntity
     public function getStaffLast() { return $this->staffLast; }
     public function setStaffLast(Staff $staffLast = null) { $this->staffLast = $staffLast; }
 
+    public function getBank() { return $this->bank; }
+    public function setBank(Bank $bank = null) { $this->bank = $bank; }
+
     public function getSaleReceiptHeader() { return $this->saleReceiptHeader; }
     public function setSaleReceiptHeader(SaleReceiptHeader $saleReceiptHeader = null) { $this->saleReceiptHeader = $saleReceiptHeader; }
+    
+    public function sync()
+    {
+        
+    }
 }

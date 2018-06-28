@@ -81,7 +81,7 @@ class SaleReceiptHeader extends CodeNumberEntity
         $this->saleCheques = new ArrayCollection();
     }
     
-    public function getCodeNumberConstant() { return 'PRC'; }
+    public function getCodeNumberConstant() { return 'STT'; }
     
     public function getId() { return $this->id; }
     
@@ -117,4 +117,16 @@ class SaleReceiptHeader extends CodeNumberEntity
     
     public function getSaleCheques() { return $this->saleCheques; }
     public function setSaleCheques(Collection $saleCheques) { $this->saleCheques = $saleCheques; }
+    
+    public function sync()
+    {
+        $grandTotal = 0.00;
+        foreach ($this->saleReceiptDetails as $saleReceiptDetail) {
+            $saleReceiptDetail->sync();
+            $grandTotal += $saleReceiptDetail->getAmount();
+        }
+        $this->grandTotal = $grandTotal;
+        $this->totalPayment = 0.00;
+        $this->remaining = $grandTotal;
+    }
 }

@@ -77,4 +77,13 @@ class ExpenseHeader extends CodeNumberEntity
     
     public function getExpenseDetails() { return $this->expenseDetails; }
     public function setExpenseDetails(Collection $expenseDetails) { $this->expenseDetails = $expenseDetails; }
+    
+    public function sync()
+    {
+        $totalAmount = 0.00;
+        foreach ($this->expenseDetails as $expenseDetail) {
+            $totalAmount += $expenseDetail->getAmount();
+        }
+        $this->totalAmount = $totalAmount;
+    }
 }

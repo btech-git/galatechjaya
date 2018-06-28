@@ -10,21 +10,49 @@
     <table class="table table-bordered table-striped">
         <tbody>
             <tr>
-                <th>Transaction Date</th>
-                <td>{{ journalVoucherHeader.transactionDate|default ? journalVoucherHeader.transactionDate|date('Y-m-d') }}</td>
+                <th>Voucher #</th>
+                <td>{{ journalVoucherHeader.codeNumber|default }}</td>
+            </tr>
+            <tr>
+                <th>Tanggal</th>
+                <td>{{ journalVoucherHeader.transactionDate|default ? journalVoucherHeader.transactionDate|date('j F Y') }}</td>
             </tr>
             <tr>
                 <th>Note</th>
                 <td>{{ journalVoucherHeader.note|default }}</td>
             </tr>
-            <tr>
-                <th>Total Debit</th>
-                <td>{{ journalVoucherHeader.totalDebit|default|number_format(2) }}</td>
-            </tr>
-            <tr>
-                <th>Total Credit</th>
-                <td>{{ journalVoucherHeader.totalCredit|default|number_format(2) }}</td>
-            </tr>
         </tbody>
+    </table>
+                              
+    <hr />
+           
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr class="bg-info">
+                <th style="width: 15%">Kode</th>
+                <th style="width: 20%">Nama Akun</th>
+                <th>Memo</th>
+                <th style="width: 15%">Debit</th>
+                <th style="width: 15%">Credit</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for journalVoucherDetail in journalVoucherHeader.journalVoucherDetails %}
+                <tr>
+                    <td class="text-left">{{ journalVoucherDetail.account.code|default }}</td>
+                    <td class="text-left">{{ journalVoucherDetail.account.name|default }}</td>
+                    <td class="text-left">{{ journalVoucherDetail.memo|default }}</td>
+                    <td class="text-right">{{ journalVoucherDetail.debit|default|number_format(2) }}</td>
+                    <td class="text-right">{{ journalVoucherDetail.credit|default|number_format(2) }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td class="text-right" colspan="3">Total</td>
+                <td class="text-right">{{ journalVoucherHeader.totalDebit|default|number_format(2) }}</td>
+                <td class="text-right">{{ journalVoucherHeader.totalCredit|default|number_format(2) }}</td>
+            </tr>
+        </tfoot>
     </table>
 {% endblock %}

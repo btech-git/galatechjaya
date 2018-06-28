@@ -94,4 +94,14 @@ class PurchasePaymentHeader extends CodeNumberEntity
 
     public function getPurchasePaymentDetails() { return $this->purchasePaymentDetails; }
     public function setPurchasePaymentDetails(Collection $purchasePaymentDetails) { $this->purchasePaymentDetails = $purchasePaymentDetails; }
+    
+    public function sync()
+    {
+        $totalAmount = 0.00;
+        foreach ($this->purchasePaymentDetails as $purchasePaymentDetail) {
+            $purchasePaymentDetail->sync();
+            $totalAmount += $purchasePaymentDetail->getAmount();
+        }
+        $this->totalAmount = $totalAmount;
+    }
 }

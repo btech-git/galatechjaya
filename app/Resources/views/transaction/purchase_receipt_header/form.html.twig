@@ -4,9 +4,174 @@
     {{ include('transaction/actions.html.twig') }}
 {% endblock %}
 
+{% import _self as self %}
+
+{% macro details_row(object) %}
+    <tr data-index="{{ object.vars.name }}">
+        <td class="hide">
+            {{ form_row(object.purchaseInvoiceHeader, {'label': false}) }}
+        </td>
+        <td>
+            <span data-name="purchase-invoice-header-code-number-{{ object.vars.name }}">{{ object.vars.value.purchaseInvoiceHeader.codeNumber|default }}</span>
+        </td>
+        <td>
+            <span data-name="purchase-invoice-header-transaction-date-{{ object.vars.name }}">{{ object.vars.value.purchaseInvoiceHeader.transactionDate|default ? object.vars.value.purchaseInvoiceHeader.transactionDate|date('j F Y') }}</span>
+        </td>
+        <td>
+            {{ form_row(object.memo, {'label': false, 'attr': {'data-group-name': 'memo'} }) }}
+        </td>
+        <td class="text-right">
+            <span data-name="purchase-invoice-header-grand-total-{{ object.vars.name }}">{{ object.vars.value.amount|default|number_format(2) }}</span>
+        </td>
+        <td>
+            <button type="button" class="btn btn-info remove-purchase-receipt-detail-prototype">Delete</button>
+        </td>
+    </tr>
+{% endmacro %}
+
 {% block content %}
     {{ form_start(form) }}
-        {{ form_widget(form) }}
+        <div>{{ form_errors(form) }}</div>
+        <div class="row">
+            <div class="col-sm-6">
+                {{ form_row(form.transactionDate, {'label': 'Tanggal'}) }}
+            </div>
+            <div class="col-sm-6">
+                {{ form_row(form.supplier, {'attr': {'readonly': true, 'data-toggle': 'modal', 'data-target': '#supplier-dialog'} }) }}
+                <div class="form-group" id="supplier-info">
+                    <div>
+                        <label>Company:</label>
+                        <span data-name="supplier-name">{{ purchaseReceiptHeader.supplier.name|default }}</span>
+                    </div>
+                    <div>
+                        <label>Contact Person:</label>
+                        <span data-name="supplier-contact-person">{{ purchaseReceiptHeader.supplier.contactPerson|default }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div>{{ form_row(form.note) }}</div>
+            
+        <hr />
+        
+        <div>
+            <button type="button" class="btn btn-default" id="add-purchase-receipt-detail-prototype" data-toggle="modal" data-target="#purchase-invoice-header-dialog">Add Invoice</button>
+        </div>
+        
+        <br />
+        
+        <table class="table table-bordered" id="purchase-receipt-detail-list">
+            <thead>
+                <tr class="bg-info">
+                    <th class="hide">Purchase Invoice</th>
+                    <th style="width: 15%">Invoice #</th>
+                    <th style="width: 15%">Tanggal</th>
+                    <th>Memo</th>
+                    <th style="width: 15%">Amount</th>
+                    <th style="width: 0"></th>
+                </tr>
+            </thead>
+            <tbody data-prototype="{{ self.details_row(form.purchaseReceiptDetails.vars.prototype)|e }}">
+                {% for purchaseReceiptDetail in form.purchaseReceiptDetails %}
+                    {{ self.details_row(purchaseReceiptDetail) }}
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td class="text-right" colspan="3">Total</td>
+                    <td class="text-right"><span data-name="grand-total">{{ purchaseReceiptHeader.grandTotal|default|number_format(2) }}</span></td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+        
         <input class="btn btn-primary navbar-inverse" type="submit" value="Save" data-confirm="Do you want to proceed?" />
+               
+        <div id="supplier-dialog" class="modal fade" role="dialog">
+            <div class="modal-dialog modal-lg" style="width: 90%">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Supplier List</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div id="supplier-grid" data-grid="{{ path('common_supplier_grid', {'form': form.vars.id}) }}"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <div id="purchase-invoice-header-dialog" class="modal fade" role="dialog">
+            <div class="modal-dialog modal-lg" style="width: 90%">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Invoice List</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div id="purchase-invoice-header-grid" data-grid="{{ path('common_purchase_invoice_header_grid', {'form': form.vars.id}) }}"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
     {{ form_end(form) }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        jQuery(function($) {
+            function bind() {
+                $.ajax({
+                    method: "POST",
+                    url: "{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')|merge({'_format': 'json'})) }}",
+                    data: $("form").serialize(),
+                    dataType: "JSON",
+                    success: function(data) {
+                        var table = $("#purchase-receipt-detail-list");
+                        var tableFoot = $("tfoot", table);
+                        $("[data-name=grand-total]", tableFoot).text(data.grandTotal);
+                    }
+                });
+            }
+            
+            var table = $("#purchase-receipt-detail-list");
+            var tableBody = $("tbody", table);
+            
+            tableBody.on("change", "[data-group-name=amount]", function() {
+                bind();
+            });
+            tableBody.on("click", ".remove-purchase-receipt-detail-prototype", function() {
+                $(this).closest("tr").remove();
+                bind();
+            });
+            
+            $("#supplier-grid").on("click", "table[data-role=table] tbody tr", function() {
+                $("#supplier-dialog").modal("hide");
+                $("#{{ form.supplier.vars.id }}").val($(this).attr("data-field-id"));
+                $("[data-name=supplier-name]", "#supplier-info").text($(this).attr("data-field-name"));
+                $("[data-name=supplier-contact-person]", "#supplier-info").text($(this).attr("data-field-contact-person"));
+            });
+            
+            $("#purchase-invoice-header-grid").on("click", "table[data-role=table] tbody tr", function() {
+                $("#purchase-invoice-header-dialog").modal("hide");
+                var context = $(this);
+                var name = "{{ form.purchaseReceiptDetails.vars.prototype.vars.name }}";
+                var rows = tableBody.children("tr");
+                var index = Math.max({{ purchaseReceiptDetailsCount }}, (rows.length > 0) ? parseInt(rows.last().attr("data-index")) + 1 : 0);
+                tableBody.appendByPrototype(tableBody.attr("data-prototype"), name, index, function(prototype) {
+                    var productPrototype = prototype.find("#{{ form.purchaseReceiptDetails.vars.prototype.purchaseInvoiceHeader.vars.id }}");
+                    productPrototype.val(context.attr("data-field-id"));
+                    var purchaseInvoiceHeaderCodeNumberPrototype = prototype.find("[data-name=purchase-invoice-header-code-number-" + name + "]");
+                    purchaseInvoiceHeaderCodeNumberPrototype.text(context.attr("data-field-code-number"));
+                    var purchaseInvoiceHeaderDatePrototype = prototype.find("[data-name=purchase-invoice-header-transaction-date-" + name + "]");
+                    purchaseInvoiceHeaderDatePrototype.text(context.attr("data-field-transaction-date"));
+                    var purchaseInvoiceHeaderGrandTotalPrototype = prototype.find("[data-name=purchase-invoice-header-grand-total-" + name + "]");
+                    purchaseInvoiceHeaderGrandTotalPrototype.text(context.attr("data-field-grand-total"));
+                });
+                bind();
+            });
+        });
+    </script>
 {% endblock %}

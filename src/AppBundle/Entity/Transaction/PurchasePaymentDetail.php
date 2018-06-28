@@ -65,4 +65,9 @@ class PurchasePaymentDetail
 
     public function getPurchasePaymentHeader() { return $this->purchasePaymentHeader; }
     public function setPurchasePaymentHeader(PurchasePaymentHeader $purchasePaymentHeader = null) { $this->purchasePaymentHeader = $purchasePaymentHeader; }
+    
+    public function sync()
+    {
+        $this->totalReceipt = $this->purchaseReceiptHeader->getGrandTotal();
+    }
 }

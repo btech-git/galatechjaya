@@ -34,7 +34,17 @@ class SaleInvoiceHeader extends CodeNumberEntity
      * @ORM\Column(type="string", length=60)
      * @Assert\NotNull()
      */
-    private $customerInvoice;
+    private $customerOrderNumber;
+    /**
+     * @ORM\Column(type="text")
+     * @Assert\NotNull()
+     */
+    private $note;
+    /**
+     * @ORM\Column(type="smallint")
+     * @Assert\NotNull() @Assert\GreaterThan(0)
+     */
+    private $totalQuantity;
     /**
      * @ORM\Column(type="decimal", precision=18, scale=2)
      * @Assert\NotNull() @Assert\GreaterThan(0)
@@ -71,11 +81,6 @@ class SaleInvoiceHeader extends CodeNumberEntity
      */
     private $grandTotal;
     /**
-     * @ORM\Column(type="text")
-     * @Assert\NotNull()
-     */
-    private $note;
-    /**
      * @ORM\Column(type="boolean")
      * @Assert\NotNull()
      */
@@ -91,10 +96,10 @@ class SaleInvoiceHeader extends CodeNumberEntity
      */
     private $staffLast;
     /**
-     * @ORM\OneToOne(targetEntity="DeliveryHeader", inversedBy="saleInvoiceHeader")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Master\Customer")
      * @Assert\NotNull()
      */
-    private $deliveryHeader;
+    private $customer;
     /**
      * @ORM\OneToMany(targetEntity="SaleInvoiceDetail", mappedBy="saleInvoiceHeader")
      * @Assert\Valid() @Assert\Count(min=1)
@@ -106,7 +111,6 @@ class SaleInvoiceHeader extends CodeNumberEntity
     private $saleReceiptDetails;
     /**
      * @ORM\OneToMany(targetEntity="SaleReturnHeader", mappedBy="saleInvoiceHeader")
-     * @Assert\Valid() @Assert\Count(min=1)
      */
     private $saleReturnHeaders;
     
@@ -114,9 +118,10 @@ class SaleInvoiceHeader extends CodeNumberEntity
     {
         $this->saleInvoiceDetails = new ArrayCollection();
         $this->saleReceiptDetails = new ArrayCollection();
+        $this->saleReturnHeaders = new ArrayCollection();
     }
     
-    public function getCodeNumberConstant() { return 'PIN'; }
+    public function getCodeNumberConstant() { return 'SIN'; }
     
     public function getId() { return $this->id; }
     
@@ -126,8 +131,14 @@ class SaleInvoiceHeader extends CodeNumberEntity
     public function getTaxInvoiceCode() { return $this->taxInvoiceCode; }
     public function setTaxInvoiceCode($taxInvoiceCode) { $this->taxInvoiceCode = $taxInvoiceCode; }
 
-    public function getCustomerInvoice() { return $this->customerInvoice; }
-    public function setCustomerInvoice($customerInvoice) { $this->customerInvoice = $customerInvoice; }
+    public function getCustomerOrderNumber() { return $this->customerOrderNumber; }
+    public function setCustomerOrderNumber($customerOrderNumber) { $this->customerOrderNumber = $customerOrderNumber; }
+
+    public function getNote() { return $this->note; }
+    public function setNote($note) { $this->note = $note; }
+
+    public function getTotalQuantity() { return $this->totalQuantity; }
+    public function setTotalQuantity($totalQuantity) { $this->totalQuantity = $totalQuantity; }
 
     public function getSubTotal() { return $this->subTotal; }
     public function setSubTotal($subTotal) { $this->subTotal = $subTotal; }
@@ -150,9 +161,6 @@ class SaleInvoiceHeader extends CodeNumberEntity
     public function getGrandTotal() { return $this->grandTotal; }
     public function setGrandTotal($grandTotal) { $this->grandTotal = $grandTotal; }
 
-    public function getNote() { return $this->note; }
-    public function setNote($note) { $this->note = $note; }
-
     public function getIsTax() { return $this->isTax; }
     public function setIsTax($isTax) { $this->isTax = $isTax; }
 
@@ -162,8 +170,8 @@ class SaleInvoiceHeader extends CodeNumberEntity
     public function getStaffLast() { return $this->staffLast; }
     public function setStaffLast(Staff $staffLast = null) { $this->staffLast = $staffLast; }
 
-    public function getDeliveryHeader() { return $this->deliveryHeader; }
-    public function setDeliveryHeader(DeliveryHeader $deliveryHeader = null) { $this->deliveryHeader = $deliveryHeader; }
+    public function getCustomer() { return $this->customer; }
+    public function setCustomer(Customer $customer = null) { $this->customer = $customer; }
 
     public function getSaleInvoiceDetails() { return $this->saleInvoiceDetails; }
     public function setSaleInvoiceDetails(Collection $saleInvoiceDetails) { $this->saleInvoiceDetails = $saleInvoiceDetails; }
@@ -173,4 +181,37 @@ class SaleInvoiceHeader extends CodeNumberEntity
 
     public function getSaleReturnHeaders() { return $this->saleReturnHeaders; }
     public function setSaleReturnHeaders(Collection $saleReturnHeaders) { $this->saleReturnHeaders = $saleReturnHeaders; }
+    
+    public function sync()
+    {
+        $totalQuantity = 0.00;
+        $subTotal = 0.00;
+        foreach ($this->saleInvoiceDetails as $saleInvoiceDetail) {
+            $saleInvoiceDetail->sync();
+            $totalQuantity += $saleInvoiceDetail->getQuantity();
+            $subTotal += $saleInvoiceDetail->getTotal();
+        }
+        $this->totalQuantity = $totalQuantity;
+        $this->subTotal = $subTotal;
+        $this->discountNominal = $this->subTotal * $this->discountPercentage / 100;
+        $this->taxNominal = ($this->isTax ? ($this->subTotal - $this->discountNominal) * 10 / 100 : 0);
+        $this->grandTotal = $this->subTotal - $this->discountNominal + $this->taxNominal + $this->shippingFee;
+        $this->totalReturn = 0.00;
+    }
+    
+    public function getAveragePurchaseGrandTotal()
+    {
+        $total = 0.00;
+        foreach ($this->saleInvoiceDetails as $saleInvoiceDetail) {
+            $total += $saleInvoiceDetail->getAveragePurchaseTotal();
+        }
+        
+        return $total;
+    }
+    
+    public function getProfitLoss()
+    {
+        return $this->grandTotal - $this->getAveragePurchaseGrandTotal();
+    }
+    
 }

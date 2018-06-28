@@ -6,16 +6,16 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use AppBundle\Entity\Transaction\SaleReceiptDetail;
+use AppBundle\Entity\Transaction\SaleInvoiceHeader;
+use LibBundle\Form\Type\EntityHiddenType;
 
 class SaleReceiptDetailType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('amount')
             ->add('memo')
-            ->add('saleInvoiceHeader')
-            ->add('saleReceiptHeader')
+            ->add('saleInvoiceHeader', EntityHiddenType::class, array('class' => SaleInvoiceHeader::class))
         ;
     }
 

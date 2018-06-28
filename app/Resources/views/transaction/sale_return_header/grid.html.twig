@@ -5,26 +5,24 @@
 <table data-role="table" class="table table-bordered table-striped table-condensed table-hover">
     <thead>
         <tr data-action="sort" class="alert alert-info">
-            <th data-group="saleReturnHeader" data-field="transactionDate">Transaction Date</th>
+            <th data-group="saleReturnHeader" data-field="codeNumber">Retur #</th>
+            <th data-group="saleReturnHeader" data-field="transactionDate">Tanggal</th>
+            <th data-group="customer" data-field="name">Customer</th>
+            <th data-group="saleReturnHeader" data-field="codeNumber">Invoice #</th>
             <th data-group="saleReturnHeader" data-field="note">Note</th>
-            <th data-group="saleReturnHeader" data-field="subTotal">Sub Total</th>
-            <th data-group="saleReturnHeader" data-field="taxNominal">Tax Nominal</th>
-            <th data-group="saleReturnHeader" data-field="shippingFee">Shipping Fee</th>
             <th data-group="saleReturnHeader" data-field="grandTotal">Grand Total</th>
-            <th data-group="saleReturnHeader" data-field="isTax">Is Tax</th>
             <th></th>
         </tr>
     </thead>
     <tbody>
         {% for saleReturnHeader in grid.data %}
             <tr data-field-id="{{ saleReturnHeader.id }}">
-                <td class="text-left">{{ saleReturnHeader.transactionDate|default ? saleReturnHeader.transactionDate|date('Y-m-d') }}</td>
+                <td class="text-left">{{ saleReturnHeader.codeNumber|default }}</td>
+                <td class="text-left">{{ saleReturnHeader.transactionDate|default ? saleReturnHeader.transactionDate|date('j F Y') }}</td>
+                <td class="text-left">{{ saleReturnHeader.saleInvoiceHeader.customer.name|default }}</td>
+                <td class="text-left">{{ saleReturnHeader.saleInvoiceHeader.codeNumber|default }}</td>
                 <td class="text-left">{{ saleReturnHeader.note|default }}</td>
-                <td class="text-right">{{ saleReturnHeader.subTotal|default|number_format(2) }}</td>
-                <td class="text-right">{{ saleReturnHeader.taxNominal|default|number_format(2) }}</td>
-                <td class="text-right">{{ saleReturnHeader.shippingFee|default|number_format(2) }}</td>
                 <td class="text-right">{{ saleReturnHeader.grandTotal|default|number_format(2) }}</td>
-                <td class="text-left">{{ saleReturnHeader.isTax|default ? 'Yes' : 'No' }}</td>
                 <td class="text-left">
                     {{ include('transaction/actions.html.twig', {
                         'contents': {
@@ -39,7 +37,7 @@
             </tr>
         {% else %}
             <tr>
-                <td colspan="8" class="alert alert-warning">
+                <td colspan="7" class="alert alert-warning">
                     <strong>There are no items to display.</strong>
                 </td>
             </tr>

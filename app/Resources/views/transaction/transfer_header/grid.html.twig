@@ -1,0 +1,48 @@
+{% set grid_layout = 'datagrid.html.twig' %}
+
+{{ grid_top(grid) }}
+
+<table data-role="table" class="table table-bordered table-striped table-condensed table-hover">
+    <thead>
+        <tr data-action="sort" class="alert alert-info">
+            <th data-group="transferHeader" data-field="codeNumber">Transfer #</th>
+            <th data-group="transferHeader" data-field="transactionDate">Tanggal</th>
+            <th data-group="warehouseFrom" data-field="name">Gudang Asal</th>
+            <th data-group="warehouseTo" data-field="name">Gudang Tujuan</th>
+            <th data-group="transferHeader" data-field="note">Note</th>
+            <th data-group="transferHeader" data-field="totalQuantity">Quantity</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for transferHeader in grid.data %}
+            <tr data-field-id="{{ transferHeader.id }}">
+                <td class="text-left">{{ transferHeader.codeNumber|default }}</td>
+                <td class="text-left">{{ transferHeader.transactionDate|default ? transferHeader.transactionDate|date('j F Y') }}</td>
+                <td class="text-left">{{ transferHeader.warehouseFrom.name|default }}</td>
+                <td class="text-left">{{ transferHeader.warehouseTo.name|default }}</td>
+                <td class="text-left">{{ transferHeader.note|default }}</td>
+                <td class="text-center">{{ transferHeader.totalQuantity|default }}</td>
+                <td class="text-left">
+                    {{ include('transaction/actions.html.twig', {
+                        'contents': {
+                            '{index}': null,
+                            '{new}': null,
+                            '{show}': include('action.html.twig', {'url': path('transaction_transfer_header_show', {'id': transferHeader.id}), 'button': 'btn btn-info btn-sm', 'icon': 'glyphicon glyphicon-info-sign'}),
+                            '{edit}': include('action.html.twig', {'url': path('transaction_transfer_header_edit', {'id': transferHeader.id}), 'button': 'btn btn-warning btn-sm', 'icon': 'glyphicon glyphicon-edit'}),
+                            '{delete}': include('action.html.twig', {'url': path('transaction_transfer_header_delete', {'id': transferHeader.id}), 'button': 'btn btn-danger btn-sm', 'icon': 'glyphicon glyphicon-remove'}),
+                        }
+                    }) }}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="7" class="alert alert-warning">
+                    <strong>There are no items to display.</strong>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{{ grid_bottom(grid) }}

@@ -5,7 +5,8 @@
 <table data-role="table" class="table table-bordered table-striped table-condensed table-hover">
     <thead>
         <tr data-action="sort" class="alert alert-info">
-            <th data-group="journalVoucherHeader" data-field="transactionDate">Transaction Date</th>
+            <th data-group="journalVoucherHeader" data-field="codeNumber">Voucher #</th>
+            <th data-group="journalVoucherHeader" data-field="transactionDate">Tanggal</th>
             <th data-group="journalVoucherHeader" data-field="note">Note</th>
             <th data-group="journalVoucherHeader" data-field="totalDebit">Total Debit</th>
             <th data-group="journalVoucherHeader" data-field="totalCredit">Total Credit</th>
@@ -15,7 +16,8 @@
     <tbody>
         {% for journalVoucherHeader in grid.data %}
             <tr data-field-id="{{ journalVoucherHeader.id }}">
-                <td class="text-left">{{ journalVoucherHeader.transactionDate|default ? journalVoucherHeader.transactionDate|date('Y-m-d') }}</td>
+                <td class="text-left">{{ journalVoucherHeader.codeNumber|default }}</td>
+                <td class="text-left">{{ journalVoucherHeader.transactionDate|default ? journalVoucherHeader.transactionDate|date('j F Y') }}</td>
                 <td class="text-left">{{ journalVoucherHeader.note|default }}</td>
                 <td class="text-right">{{ journalVoucherHeader.totalDebit|default|number_format(2) }}</td>
                 <td class="text-right">{{ journalVoucherHeader.totalCredit|default|number_format(2) }}</td>

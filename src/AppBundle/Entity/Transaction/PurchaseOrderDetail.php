@@ -9,7 +9,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use AppBundle\Entity\Common\CodeNumberEntity;
 use AppBundle\Entity\Master\Product;
-use AppBundle\Entity\Admin\Staff;
 
 /**
  * @ORM\Table(name="transaction_purchase_order_detail")

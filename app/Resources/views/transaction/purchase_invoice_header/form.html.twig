@@ -4,9 +4,193 @@
     {{ include('transaction/actions.html.twig') }}
 {% endblock %}
 
+{% import _self as self %}
+
+{% macro details_row(object) %}
+    <tr data-index="{{ object.vars.name }}">
+        <td class="hide">
+            {{ form_row(object.receiveDetail, {'label': false}) }}
+        </td>
+        <td>
+            <span data-name="product-name-{{ object.vars.name }}">{{ object.vars.value.receiveDetail.purchaseOrderDetail.product.name|default }}</span>
+        </td>
+        <td>
+            <span data-name="product-size-{{ object.vars.name }}">{{ object.vars.value.receiveDetail.purchaseOrderDetail.product.size|default }}</span>
+        </td>
+        <td>
+            <span data-name="unit-name-{{ object.vars.name }}">{{ object.vars.value.receiveDetail.purchaseOrderDetail.product.unit.name|default }}</span>
+        </td>
+        <td class="text-center">
+            <span data-name="quantity-{{ object.vars.name }}">{{ object.vars.value.quantity|default|number_format(0) }}</span>
+        </td>
+        <td class="text-right">
+            <span data-name="unit-price-{{ object.vars.name }}">{{ object.vars.value.unitPrice|default|number_format(2) }}</span>
+        </td>
+        <td class="text-center">
+            <span data-name="discount-{{ object.vars.name }}">{{ object.vars.value.discount|default }}</span>
+        </td>
+        <td class="text-right">
+            <span data-name="total-{{ object.vars.name }}">{{ object.vars.value.total|default|number_format(2) }}</span>
+        </td>
+    </tr>
+{% endmacro %}
+
 {% block content %}
     {{ form_start(form) }}
-        {{ form_widget(form) }}
+        <div>{{ form_errors(form) }}</div>
+        <div class="row">
+            <div class="col-sm-6">
+                {{ form_row(form.transactionDate, {'label': 'Tanggal'}) }}
+                {{ form_row(form.supplierInvoice, {'label': 'Supplier Invoice #'}) }}
+            </div>
+            <div class="col-sm-6">
+                {{ form_row(form.receiveHeader, {'attr': {'readonly': true, 'data-toggle': 'modal', 'data-target': '#receive-header-dialog'} }) }}
+                <div class="form-group" id="receive-header-info">
+                    <div>
+                        <label>Penerimaan #:</label>
+                        <span data-name="code-number">{{ purchaseInvoiceHeader.receiveHeader.codeNumber|default }}</span>
+                    </div>
+                    <div>
+                        <label>Tanggal:</label>
+                        <span data-name="transaction-date">{{ purchaseInvoiceHeader.receiveHeader.transactionDate|default ? purchaseInvoiceHeader.receiveHeader.transactionDate|date('j M Y') }}</span>
+                    </div>
+                    <div>
+                        <label>Supplier:</label>
+                        <span data-name="supplier-name">{{ purchaseInvoiceHeader.receiveHeader.purchaseOrderHeader.supplier.name|default }}</span>
+                    </div>
+                </div>
+                {{ form_row(form.taxInvoiceCode, {'label': 'Faktur Pajak Supplier #'}) }}
+            </div>
+        </div>
+        
+        <div>{{ form_row(form.note) }}</div>
+            
+        <hr />
+        
+        <table class="table table-bordered" id="purchase-invoice-detail-list">
+            <thead>
+                <tr class="bg-info">
+                    <th class="hide">Product</th>
+                    <th>Nama Barang</th>
+                    <th style="width: 10%">Ukuran</th>
+                    <th style="width: 5%">Satuan</th>
+                    <th style="width: 10%">Qty</th>
+                    <th style="width: 10%">Harga</th>
+                    <th style="width: 8%">Disc (%)</th>
+                    <th style="width: 15%">Total</th>
+                </tr>
+            </thead>
+            <tbody data-prototype="{{ self.details_row(form.purchaseInvoiceDetails.vars.prototype)|e }}">
+                {% for purchaseInvoiceDetail in form.purchaseInvoiceDetails %}
+                    {{ self.details_row(purchaseInvoiceDetail) }}
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td class="text-right" colspan="3"></td>
+                    <td class="text-center"><span data-name="total-quantity">{{ purchaseInvoiceHeader.totalQuantity|default|number_format(0) }}</span></td>
+                    <td class="text-right" colspan="2">Sub Total</td>
+                    <td class="text-right"><span data-name="sub-total">{{ purchaseInvoiceHeader.subTotal|default|number_format(2) }}</span></td>
+                </tr>
+                <tr>
+                    <td class="text-right" colspan="6">
+                        <span style="display: inline-block">Discount</span>
+                        <span data-name="discount-percentage">{{ purchaseInvoiceHeader.discountPercentage|default|number_format(2) }}</span>
+                        <span style="display: inline-block">%</span>
+                    </td>
+                    <td class="text-right"><span data-name="discount-nominal">{{ purchaseInvoiceHeader.discountNominal|default|number_format(2) }}</span></td>
+                </tr>
+                <tr>
+                    <td class="text-right" colspan="6">
+                        <span style="display: inline-block">PPn</span>
+                        <span style="display: inline-block" data-name="tax-percentage">0</span>
+                        <span style="display: inline-block">%</span>
+                    </td>
+                    <td class="text-right"><span data-name="tax-nominal">{{ purchaseInvoiceHeader.taxNominal|default|number_format(2) }}</span></td>
+                </tr>
+                <tr>
+                    <td class="text-right" colspan="6">
+                        <span style="display: inline-block">Ongkos Kirim</span>
+                    </td>
+                    <td class="text-right"><span data-name="shipping-fee">{{ purchaseInvoiceHeader.shippingFee|default|number_format(2) }}</span></td>
+                </tr>
+                <tr>
+                    <td class="text-right" colspan="6">Grand Total</td>
+                    <td class="text-right"><span data-name="grand-total">{{ purchaseInvoiceHeader.grandTotal|default|number_format(2) }}</span></td>
+                </tr>
+            </tfoot>
+        </table>
+        
         <input class="btn btn-primary navbar-inverse" type="submit" value="Save" data-confirm="Do you want to proceed?" />
+               
+        <div id="receive-header-dialog" class="modal fade" role="dialog">
+            <div class="modal-dialog modal-lg" style="width: 90%">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Receive Header List</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div id="receive-header-grid" data-grid="{{ path('common_receive_header_grid', {'form': form.vars.id}) }}"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
     {{ form_end(form) }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        jQuery(function($) {
+            function bind() {
+                $.ajax({
+                    method: "POST",
+                    url: "{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')|merge({'_format': 'json'})) }}",
+                    data: $("form").serialize(),
+                    dataType: "JSON",
+                    success: function(data) {
+                        var table = $("#purchase-invoice-detail-list");
+                        var tableBody = $("tbody", table);
+                        var tableFoot = $("tfoot", table);
+                        $.each(data.purchaseInvoiceDetails, function(index, purchaseInvoiceDetail) {
+                            $("[data-name=product-name-" + index + "]", tableBody).text(purchaseInvoiceDetail.productName);
+                            $("[data-name=product-size-" + index + "]", tableBody).text(purchaseInvoiceDetail.productSize);
+                            $("[data-name=unit-name-" + index + "]", tableBody).text(purchaseInvoiceDetail.unitName);
+                            $("[data-name=quantity-" + index + "]", tableBody).text(purchaseInvoiceDetail.receiveDetailQuantity);
+                            $("[data-name=unit-price-" + index + "]", tableBody).text(purchaseInvoiceDetail.purchaseOrderDetailUnitPrice);
+                            $("[data-name=discount-" + index + "]", tableBody).text(purchaseInvoiceDetail.purchaseOrderDetailDiscount);
+                            $("[data-name=total-" + index + "]", tableBody).text(purchaseInvoiceDetail.total);
+                        });
+                        $("[data-name=total-quantity]", tableFoot).text(data.totalQuantity);
+                        $("[data-name=sub-total]", tableFoot).text(data.subTotal);
+                        $("[data-name=discount-percentage]", tableFoot).text(data.discountPercentage);
+                        $("[data-name=discount-nominal]", tableFoot).text(data.discountNominal);
+                        $("[data-name=tax-percentage]", tableFoot).text(data.taxPercentage);
+                        $("[data-name=tax-nominal]", tableFoot).text(data.taxNominal);
+                        $("[data-name=shipping-fee]", tableFoot).text(data.shippingFee);
+                        $("[data-name=grand-total]", tableFoot).text(data.grandTotal);
+                    }
+                });
+            }
+            
+            var table = $("#purchase-invoice-detail-list");
+            var tableBody = $("tbody", table);
+            
+            $("#receive-header-grid").on("click", "table[data-role=table] tbody tr", function() {
+                $("#receive-header-dialog").modal("hide");
+                $("#{{ form.receiveHeader.vars.id }}").val($(this).attr("data-field-id"));
+                $("[data-name=code-number]", "#receive-header-info").text($(this).attr("data-field-code-number"));
+                $("[data-name=transaction-date]", "#receive-header-info").text($(this).attr("data-field-transaction-date"));
+                $("[data-name=supplier-name]", "#receive-header-info").text($(this).attr("data-field-supplier-name"));
+                tableBody.empty();
+                var name = "{{ form.purchaseInvoiceDetails.vars.prototype.vars.name }}";
+                var receiveDetailsCount = parseInt($(this).attr("data-field-receive-details-count"));
+                for (var i = 0; i < receiveDetailsCount; i++) {
+                    tableBody.appendByPrototype(tableBody.attr("data-prototype"), name, i);
+                }
+                bind();
+            });
+        });
+    </script>
 {% endblock %}

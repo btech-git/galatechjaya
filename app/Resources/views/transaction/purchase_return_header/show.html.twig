@@ -10,33 +10,82 @@
     <table class="table table-bordered table-striped">
         <tbody>
             <tr>
-                <th>Transaction Date</th>
-                <td>{{ purchaseReturnHeader.transactionDate|default ? purchaseReturnHeader.transactionDate|date('Y-m-d') }}</td>
+                <th>Retur #</th>
+                <td>{{ purchaseReturnHeader.codeNumber|default }}</td>
+            </tr>
+            <tr>
+                <th>Tanggal</th>
+                <td>{{ purchaseReturnHeader.transactionDate|default ? purchaseReturnHeader.transactionDate|date('j F Y') }}</td>
+            </tr>
+            <tr>
+                <th>Invoice #</th>
+                <td>{{ purchaseReturnHeader.purchaseInvoiceHeader.codeNumber|default }}</td>
+            </tr>
+            <tr>
+                <th>Tanggal Invoice</th>
+                <td>{{ purchaseReturnHeader.purchaseInvoiceHeader.transactionDate|default ? purchaseReturnHeader.purchaseInvoiceHeader.transactionDate|date('j F Y') }}</td>
+            </tr>
+            <tr>
+                <th>Supplier</th>
+                <td>{{ purchaseReturnHeader.purchaseInvoiceHeader.receiveHeader.purchaseOrderHeader.supplier.name|default }}</td>
             </tr>
             <tr>
                 <th>Note</th>
                 <td>{{ purchaseReturnHeader.note|default }}</td>
             </tr>
-            <tr>
-                <th>Sub Total</th>
-                <td>{{ purchaseReturnHeader.subTotal|default|number_format(2) }}</td>
-            </tr>
-            <tr>
-                <th>Tax Nominal</th>
-                <td>{{ purchaseReturnHeader.taxNominal|default|number_format(2) }}</td>
-            </tr>
-            <tr>
-                <th>Shipping Fee</th>
-                <td>{{ purchaseReturnHeader.shippingFee|default|number_format(2) }}</td>
-            </tr>
-            <tr>
-                <th>Grand Total</th>
-                <td>{{ purchaseReturnHeader.grandTotal|default|number_format(2) }}</td>
-            </tr>
-            <tr>
-                <th>Is Tax</th>
-                <td>{{ purchaseReturnHeader.isTax|default ? 'Yes' : 'No' }}</td>
-            </tr>
         </tbody>
+    </table>
+                              
+    <hr />
+           
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr class="bg-info">
+                <th>Nama Barang</th>
+                <th style="width: 10%">Ukuran</th>
+                <th style="width: 5%">Satuan</th>
+                <th style="width: 10%">Qty</th>
+                <th style="width: 10%">Harga</th>
+                <th style="width: 15%">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for purchaseReturnDetail in purchaseReturnHeader.purchaseReturnDetails %}
+                <tr>
+                    <td class="text-left">{{ purchaseReturnDetail.purchaseInvoiceDetail.receiveDetail.purchaseOrderDetail.product.name|default }}</td>
+                    <td class="text-left">{{ purchaseReturnDetail.purchaseInvoiceDetail.receiveDetail.purchaseOrderDetail.product.size|default }}</td>
+                    <td class="text-left">{{ purchaseReturnDetail.purchaseInvoiceDetail.receiveDetail.purchaseOrderDetail.product.unit.name|default }}</td>
+                    <td class="text-center">{{ purchaseReturnDetail.quantity|default|number_format(0) }}</td>
+                    <td class="text-right">{{ purchaseReturnDetail.unitPrice|default|number_format(2) }}</td>
+                    <td class="text-right">{{ purchaseReturnDetail.total|default|number_format(2) }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td class="text-right" colspan="3">Sub Total</td>
+                <td class="text-center">{{ purchaseReturnHeader.totalQuantity|default|number_format(0) }}</td>
+                <td class="text-right">&nbsp;</td>
+                <td class="text-right">{{ purchaseReturnHeader.subTotal|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <td class="text-right" colspan="5">
+                    <span style="display: inline-block">PPn</span>
+                    <span style="display: inline-block">
+                        {{ purchaseReturnHeader.isTax|default ? '10' : '0'  }}
+                    </span>
+                    <span style="display: inline-block">%</span>
+                </td>
+                <td class="text-right">{{ purchaseReturnHeader.taxNominal|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <td class="text-right" colspan="5">Ongkos Kirim</td>
+                <td class="text-right">{{ purchaseReturnHeader.shippingFee|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <td class="text-right" colspan="5">Grand Total</td>
+                <td class="text-right">{{ purchaseReturnHeader.grandTotal|default|number_format(2) }}</td>
+            </tr>
+        </tfoot>
     </table>
 {% endblock %}

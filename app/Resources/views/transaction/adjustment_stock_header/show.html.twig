@@ -10,13 +10,48 @@
     <table class="table table-bordered table-striped">
         <tbody>
             <tr>
-                <th>Transaction Date</th>
-                <td>{{ adjustmentStockHeader.transactionDate|default ? adjustmentStockHeader.transactionDate|date('Y-m-d') }}</td>
+                <th>Penyesuaian #</th>
+                <td>{{ adjustmentStockHeader.codeNumber|default }}</td>
+            </tr>
+            <tr>
+                <th>Tanggal</th>
+                <td>{{ adjustmentStockHeader.transactionDate|default ? adjustmentStockHeader.transactionDate|date('j F Y') }}</td>
+            </tr>
+            <tr>
+                <th>Gudang</th>
+                <td>{{ adjustmentStockHeader.warehouse.name|default }}</td>
             </tr>
             <tr>
                 <th>Note</th>
                 <td>{{ adjustmentStockHeader.note|default }}</td>
             </tr>
+        </tbody>
+    </table>
+                              
+    <hr />
+           
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr class="bg-info">
+                <th>Nama Barang</th>
+                <th style="width: 15%">Ukuran</th>
+                <th style="width: 10%">Satuan</th>
+                <th style="width: 10%">Stok</th>
+                <th style="width: 10%">Penyesuaian</th>
+                <th style="width: 10%">Selisih</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for adjustmentStockDetail in adjustmentStockHeader.adjustmentStockDetails %}
+                <tr>
+                    <td class="text-left">{{ adjustmentStockDetail.product.name|default }}</td>
+                    <td class="text-left">{{ adjustmentStockDetail.product.size|default }}</td>
+                    <td class="text-left">{{ adjustmentStockDetail.product.unit.name|default }}</td>
+                    <td class="text-center">{{ adjustmentStockDetail.quantityCurrent|default|number_format(0) }}</td>
+                    <td class="text-center">{{ adjustmentStockDetail.quantityAdjustment|default|number_format(0) }}</td>
+                    <td class="text-center">{{ adjustmentStockDetail.quantityDifference|default|number_format(0) }}</td>
+                </tr>
+            {% endfor %}
         </tbody>
     </table>
 {% endblock %}

@@ -77,4 +77,13 @@ class DepositHeader extends CodeNumberEntity
 
     public function getDepositDetails() { return $this->depositDetails; }
     public function setDepositDetails(Collection $depositDetails) { $this->depositDetails = $depositDetails; }
+    
+    public function sync()
+    {
+        $totalAmount = 0.00;
+        foreach ($this->depositDetails as $depositDetail) {
+            $totalAmount += $depositDetail->getAmount();
+        }
+        $this->totalAmount = $totalAmount;
+    }
 }

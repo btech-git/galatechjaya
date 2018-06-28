@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use AppBundle\Entity\Master\Product;
 
 /**
  * @ORM\Table(name="transaction_sale_invoice_detail")
@@ -17,6 +18,11 @@ class SaleInvoiceDetail
      * @ORM\Column(type="integer") @ORM\Id @ORM\GeneratedValue
      */
     private $id;
+    /**
+     * @ORM\Column(type="string", length=100)
+     * @Assert\NotBlank()
+     */
+    private $itemName;
     /**
      * @ORM\Column(type="smallint")
      * @Assert\NotNull() @Assert\GreaterThan(0)
@@ -38,20 +44,24 @@ class SaleInvoiceDetail
      */
     private $total;
     /**
+     * @ORM\Column(name="average_purchase_price", type="decimal", precision=18, scale=2)
+     * @Assert\NotNull() @Assert\GreaterThanOrEqual(0)
+     */
+    private $averagePurchasePrice;
+    /**
+     * @ORM\OneToMany(targetEntity="SaleReturnDetail", mappedBy="saleInvoiceDetail")
+     */
+    private $saleReturnDetails;
+    /**
      * @ORM\ManyToOne(targetEntity="SaleInvoiceHeader", inversedBy="saleInvoiceDetails")
      * @Assert\NotNull()
      */
     private $saleInvoiceHeader;
     /**
-     * @ORM\OneToOne(targetEntity="DeliveryDetail", inversedBy="saleInvoiceDetail")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Master\Product")
      * @Assert\NotNull()
      */
-    private $deliveryDetail;
-    /**
-     * @ORM\OneToMany(targetEntity="SaleReturnDetail", mappedBy="saleInvoiceDetail")
-     * @Assert\Valid() @Assert\Count(min=1)
-     */
-    private $saleReturnDetails;
+    private $product;
     
     public function __construct()
     {
@@ -59,6 +69,9 @@ class SaleInvoiceDetail
     }
     
     public function getId() { return $this->id; }
+
+    public function getItemName() { return $this->itemName; }
+    public function setItemName($itemName) { $this->itemName = $itemName; }
 
     public function getQuantity() { return $this->quantity; }
     public function setQuantity($quantity) { $this->quantity = $quantity; }
@@ -72,12 +85,25 @@ class SaleInvoiceDetail
     public function getTotal() { return $this->total; }
     public function setTotal($total) { $this->total = $total; }
 
+    public function getAveragePurchasePrice() { return $this->averagePurchasePrice; }
+    public function setAveragePurchasePrice($averagePurchasePrice) { $this->averagePurchasePrice = $averagePurchasePrice; }
+    
+    public function getSaleReturnDetails() { return $this->saleReturnDetails; }
+    public function setSaleReturnDetails(Collection $saleReturnDetails) { $this->saleReturnDetails = $saleReturnDetails; }
+    
     public function getSaleInvoiceHeader() { return $this->saleInvoiceHeader; }
     public function setSaleInvoiceHeader(SaleInvoiceHeader $saleInvoiceHeader = null) { $this->saleInvoiceHeader = $saleInvoiceHeader; }
 
-    public function getDeliveryDetail() { return $this->deliveryDetail; }
-    public function setDeliveryDetail(DeliveryDetail $deliveryDetail = null) { $this->deliveryDetail = $deliveryDetail; }
-
-    public function getSaleReturnDetails() { return $this->saleReturnDetails; }
-    public function setSaleReturnDetails(Collection $saleReturnDetails) { $this->saleReturnDetails = $saleReturnDetails; }
+    public function getProduct() { return $this->product; }
+    public function setProduct(Product $product = null) { $this->product = $product; }
+    
+    public function sync()
+    {
+        $this->total = $this->quantity * $this->unitPrice * (1 - $this->discount / 100);
+    }
+    
+    public function getAveragePurchaseTotal()
+    {
+        return $this->averagePurchasePrice * $this->quantity;
+    }
 }

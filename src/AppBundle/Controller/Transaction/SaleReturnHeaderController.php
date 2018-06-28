@@ -45,27 +45,31 @@ class SaleReturnHeaderController extends Controller
     }
 
     /**
-     * @Route("/new", name="transaction_sale_return_header_new")
+     * @Route("/new.{_format}", name="transaction_sale_return_header_new")
      * @Method({"GET", "POST"})
      * @Security("has_role('ROLE_TRANSACTION')")
      */
-    public function newAction(Request $request)
+    public function newAction(Request $request, $_format = 'html')
     {
         $saleReturnHeader = new SaleReturnHeader();
-        $form = $this->createForm(SaleReturnHeaderType::class, $saleReturnHeader);
+        
+        $saleReturnHeaderService = $this->get('app.transaction.sale_return_header_form');
+        $form = $this->createForm(SaleReturnHeaderType::class, $saleReturnHeader, array(
+            'service' => $saleReturnHeaderService,
+            'init' => array('year' => date('y'), 'month' => date('m'), 'staff' => $this->getUser()),
+        ));
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $repository = $em->getRepository(SaleReturnHeader::class);
-            $repository->add($saleReturnHeader);
+        if ($_format === 'html' && $form->isSubmitted() && $form->isValid()) {
+            $saleReturnHeaderService->save($saleReturnHeader);
 
             return $this->redirectToRoute('transaction_sale_return_header_show', array('id' => $saleReturnHeader->getId()));
         }
 
-        return $this->render('transaction/sale_return_header/new.html.twig', array(
+        return $this->render('transaction/sale_return_header/new.'.$_format.'.twig', array(
             'saleReturnHeader' => $saleReturnHeader,
             'form' => $form->createView(),
+            'saleReturnDetailsCount' => 0,
         ));
     }
 
@@ -82,26 +86,31 @@ class SaleReturnHeaderController extends Controller
     }
 
     /**
-     * @Route("/{id}/edit", name="transaction_sale_return_header_edit", requirements={"id": "\d+"})
+     * @Route("/{id}/edit.{_format}", name="transaction_sale_return_header_edit", requirements={"id": "\d+"})
      * @Method({"GET", "POST"})
      * @Security("has_role('ROLE_TRANSACTION')")
      */
-    public function editAction(Request $request, SaleReturnHeader $saleReturnHeader)
+    public function editAction(Request $request, SaleReturnHeader $saleReturnHeader, $_format = 'html')
     {
-        $form = $this->createForm(SaleReturnHeaderType::class, $saleReturnHeader);
+        $saleReturnDetailsCount = $saleReturnHeader->getSaleReturnDetails()->count();
+        
+        $saleReturnHeaderService = $this->get('app.transaction.sale_return_header_form');
+        $form = $this->createForm(SaleReturnHeaderType::class, $saleReturnHeader, array(
+            'service' => $saleReturnHeaderService,
+            'init' => array('year' => date('y'), 'month' => date('m'), 'staff' => $this->getUser()),
+        ));
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $repository = $em->getRepository(SaleReturnHeader::class);
-            $repository->update($saleReturnHeader);
+        if ($_format === 'html' && $form->isSubmitted() && $form->isValid()) {
+            $saleReturnHeaderService->save($saleReturnHeader);
 
             return $this->redirectToRoute('transaction_sale_return_header_show', array('id' => $saleReturnHeader->getId()));
         }
 
-        return $this->render('transaction/sale_return_header/edit.html.twig', array(
+        return $this->render('transaction/sale_return_header/edit.'.$_format.'.twig', array(
             'saleReturnHeader' => $saleReturnHeader,
             'form' => $form->createView(),
+            'saleReturnDetailsCount' => $saleReturnDetailsCount,
         ));
     }
 
@@ -112,14 +121,13 @@ class SaleReturnHeaderController extends Controller
      */
     public function deleteAction(Request $request, SaleReturnHeader $saleReturnHeader)
     {
+        $saleReturnHeaderService = $this->get('app.transaction.sale_return_header_form');
         $form = $this->createFormBuilder()->getForm();
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
             if ($form->isValid()) {
-                $em = $this->getDoctrine()->getManager();
-                $repository = $em->getRepository(SaleReturnHeader::class);
-                $repository->remove($saleReturnHeader);
+                $saleReturnHeaderService->delete($saleReturnHeader);
 
                 $this->addFlash('success', array('title' => 'Success!', 'message' => 'The record was deleted successfully.'));
             } else {

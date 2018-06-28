@@ -45,27 +45,31 @@ class PurchaseReceiptHeaderController extends Controller
     }
 
     /**
-     * @Route("/new", name="transaction_purchase_receipt_header_new")
+     * @Route("/new.{_format}", name="transaction_purchase_receipt_header_new")
      * @Method({"GET", "POST"})
      * @Security("has_role('ROLE_TRANSACTION')")
      */
-    public function newAction(Request $request)
+    public function newAction(Request $request, $_format = 'html')
     {
         $purchaseReceiptHeader = new PurchaseReceiptHeader();
-        $form = $this->createForm(PurchaseReceiptHeaderType::class, $purchaseReceiptHeader);
+        
+        $purchaseReceiptHeaderService = $this->get('app.transaction.purchase_receipt_header_form');
+        $form = $this->createForm(PurchaseReceiptHeaderType::class, $purchaseReceiptHeader, array(
+            'service' => $purchaseReceiptHeaderService,
+            'init' => array('year' => date('y'), 'month' => date('m'), 'staff' => $this->getUser()),
+        ));
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $repository = $em->getRepository(PurchaseReceiptHeader::class);
-            $repository->add($purchaseReceiptHeader);
+        if ($_format === 'html' && $form->isSubmitted() && $form->isValid()) {
+            $purchaseReceiptHeaderService->save($purchaseReceiptHeader);
 
             return $this->redirectToRoute('transaction_purchase_receipt_header_show', array('id' => $purchaseReceiptHeader->getId()));
         }
 
-        return $this->render('transaction/purchase_receipt_header/new.html.twig', array(
+        return $this->render('transaction/purchase_receipt_header/new.'.$_format.'.twig', array(
             'purchaseReceiptHeader' => $purchaseReceiptHeader,
             'form' => $form->createView(),
+            'purchaseReceiptDetailsCount' => 0,
         ));
     }
 
@@ -82,26 +86,31 @@ class PurchaseReceiptHeaderController extends Controller
     }
 
     /**
-     * @Route("/{id}/edit", name="transaction_purchase_receipt_header_edit", requirements={"id": "\d+"})
+     * @Route("/{id}/edit.{_format}", name="transaction_purchase_receipt_header_edit", requirements={"id": "\d+"})
      * @Method({"GET", "POST"})
      * @Security("has_role('ROLE_TRANSACTION')")
      */
-    public function editAction(Request $request, PurchaseReceiptHeader $purchaseReceiptHeader)
+    public function editAction(Request $request, PurchaseReceiptHeader $purchaseReceiptHeader, $_format = 'html')
     {
-        $form = $this->createForm(PurchaseReceiptHeaderType::class, $purchaseReceiptHeader);
+        $purchaseReceiptDetailsCount = $purchaseReceiptHeader->getPurchaseReceiptDetails()->count();
+        
+        $purchaseReceiptHeaderService = $this->get('app.transaction.purchase_receipt_header_form');
+        $form = $this->createForm(PurchaseReceiptHeaderType::class, $purchaseReceiptHeader, array(
+            'service' => $purchaseReceiptHeaderService,
+            'init' => array('year' => date('y'), 'month' => date('m'), 'staff' => $this->getUser()),
+        ));
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $repository = $em->getRepository(PurchaseReceiptHeader::class);
-            $repository->update($purchaseReceiptHeader);
+        if ($_format === 'html' && $form->isSubmitted() && $form->isValid()) {
+            $purchaseReceiptHeaderService->save($purchaseReceiptHeader);
 
             return $this->redirectToRoute('transaction_purchase_receipt_header_show', array('id' => $purchaseReceiptHeader->getId()));
         }
 
-        return $this->render('transaction/purchase_receipt_header/edit.html.twig', array(
+        return $this->render('transaction/purchase_receipt_header/edit.'.$_format.'.twig', array(
             'purchaseReceiptHeader' => $purchaseReceiptHeader,
             'form' => $form->createView(),
+            'purchaseReceiptDetailsCount' => $purchaseReceiptDetailsCount,
         ));
     }
 
@@ -117,9 +126,7 @@ class PurchaseReceiptHeaderController extends Controller
 
         if ($form->isSubmitted()) {
             if ($form->isValid()) {
-                $em = $this->getDoctrine()->getManager();
-                $repository = $em->getRepository(PurchaseReceiptHeader::class);
-                $repository->remove($purchaseReceiptHeader);
+                $purchaseReceiptHeaderService->delete($purchaseReceiptHeader);
 
                 $this->addFlash('success', array('title' => 'Success!', 'message' => 'The record was deleted successfully.'));
             } else {

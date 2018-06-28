@@ -44,10 +44,6 @@
         <div>{{ form_errors(form) }}</div>
         <div class="row">
             <div class="col-sm-6">
-                <div class="form-group">
-                    <label>PO #</label>
-                    <div>{{ purchaseOrderHeader.codeNumber }}</div>
-                </div>
                 {{ form_row(form.transactionDate, {'label': 'Tanggal'}) }}
             </div>
             <div class="col-sm-6">
@@ -80,12 +76,12 @@
                 <tr class="bg-info">
                     <th class="hide">Product</th>
                     <th>Nama Barang</th>
-                    <th>Ukuran</th>
-                    <th>Satuan</th>
-                    <th>Qty</th>
-                    <th>Harga</th>
-                    <th>Diskon (%)</th>
-                    <th>Total</th>
+                    <th style="width: 10%">Ukuran</th>
+                    <th style="width: 5%">Satuan</th>
+                    <th style="width: 10%">Qty</th>
+                    <th style="width: 10%">Harga</th>
+                    <th style="width: 8%">Disc (%)</th>
+                    <th style="width: 15%">Total</th>
                     <th style="width: 0"></th>
                 </tr>
             </thead>

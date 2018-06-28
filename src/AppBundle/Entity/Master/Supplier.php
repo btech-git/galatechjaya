@@ -10,7 +10,6 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Table(name="master_supplier") @ORM\Entity
- * @UniqueEntity("taxNumber")
  */
 class Supplier
 {
@@ -69,7 +68,7 @@ class Supplier
      */
     private $email;
     /**
-     * @ORM\Column(type="string", length=20, unique=true)
+     * @ORM\Column(type="string", length=20)
      * @Assert\NotBlank() @Assert\Regex("/^\d{2}.\d{3}.\d{3}.\d-\d{3}.\d{3}$/")
      */
     private $taxNumber;
@@ -93,9 +92,19 @@ class Supplier
      * @Assert\NotNull()
      */
     private $accountPayable;
+    /**
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Transaction\PurchaseOrderHeader", mappedBy="supplier")
+     */
+    private $purchaseOrderHeaders;
+    /**
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Transaction\PurchaseReceiptHeader", mappedBy="supplier")
+     */
+    private $purchaseReceiptHeaders;
     
     public function __construct()
     {
+        $this->purchaseOrderHeaders = new ArrayCollection();
+        $this->purchaseReceiptHeaders = new ArrayCollection();
     }
     
     public function __toString()
@@ -149,4 +158,10 @@ class Supplier
 
     public function getAccountPayable() { return $this->accountPayable; }
     public function setAccountPayable(Account $accountPayable = null) { $this->accountPayable = $accountPayable; }
+    
+    public function getPurchaseOrderHeaders() { return $this->purchaseOrderHeaders; }
+    public function setPurchaseOrderHeaders(Collection $purchaseOrderHeaders) { $this->purchaseOrderHeaders = $purchaseOrderHeaders; }
+    
+    public function getPurchaseReceiptHeaders() { return $this->purchaseReceiptHeaders; }
+    public function setPurchaseReceiptHeaders(Collection $purchaseReceiptHeaders) { $this->purchaseReceiptHeaders = $purchaseReceiptHeaders; }
 }

@@ -1,0 +1,49 @@
+{% set grid_layout = 'datagrid.html.twig' %}
+
+{{ grid_top(grid) }}
+
+<table data-role="table" class="table table-bordered table-striped table-condensed table-hover">
+    <thead>
+        <tr data-action="sort" class="alert alert-info">
+            <th data-group="purchasePaymentHeader" data-field="codeNumber">Tanda Terima #</th>
+            <th data-group="purchasePaymentHeader" data-field="transactionDate">Tanggal</th>
+            <th data-group="supplier" data-field="name">Supplier</th>
+            <th data-group="purchasePaymentHeader" data-field="grandTotal">Grand Total</th>
+        </tr>
+        <tr data-action="search">
+            <th data-group="purchasePaymentHeader" data-field="codeNumber"></th>
+            <th data-group="purchasePaymentHeader" data-field="transactionDate"></th>
+            <th data-group="supplier" data-field="name"></th>
+            <th data-group="purchasePaymentHeader" data-field="grandTotal"></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for purchasePaymentHeader in grid.data %}
+            <tr data-field-id="{{ purchasePaymentHeader.id }}"
+                data-field-code-number="{{ purchasePaymentHeader.codeNumber|default }}"
+                data-field-transaction-date="{{ purchasePaymentHeader.transactionDate|default ? purchasePaymentHeader.transactionDate|date('j M Y') }}"
+                data-field-supplier-name="{{ purchasePaymentHeader.supplier.name|default }}"
+                data-field-grand-total="{{ purchasePaymentHeader.grandTotal|default }}"
+                data-field-purchase-payment-details-count="{{ purchasePaymentHeader.purchasePaymentDetails.count|default }}">
+                <td class="text-left">{{ purchasePaymentHeader.codeNumber|default }}</td>
+                <td class="text-left">{{ purchasePaymentHeader.transactionDate|default ? purchasePaymentHeader.transactionDate|date('j M Y') }}</td>
+                <td class="text-left">{{ purchasePaymentHeader.supplier.name|default }}</td>
+                <td class="text-right">{{ purchasePaymentHeader.grandTotal|default }}</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4" class="alert alert-warning">
+                    <strong>There are no items to display.</strong>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{{ grid_bottom(grid) }}
+
+<script>
+    jQuery(function($) {
+        $("#{{ grid.id }}-top").css("display", "none");
+    });
+</script>

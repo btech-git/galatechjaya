@@ -45,27 +45,31 @@ class SaleReceiptHeaderController extends Controller
     }
 
     /**
-     * @Route("/new", name="transaction_sale_receipt_header_new")
+     * @Route("/new.{_format}", name="transaction_sale_receipt_header_new")
      * @Method({"GET", "POST"})
      * @Security("has_role('ROLE_TRANSACTION')")
      */
-    public function newAction(Request $request)
+    public function newAction(Request $request, $_format = 'html')
     {
         $saleReceiptHeader = new SaleReceiptHeader();
-        $form = $this->createForm(SaleReceiptHeaderType::class, $saleReceiptHeader);
+        
+        $saleReceiptHeaderService = $this->get('app.transaction.sale_receipt_header_form');
+        $form = $this->createForm(SaleReceiptHeaderType::class, $saleReceiptHeader, array(
+            'service' => $saleReceiptHeaderService,
+            'init' => array('year' => date('y'), 'month' => date('m'), 'staff' => $this->getUser()),
+        ));
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $repository = $em->getRepository(SaleReceiptHeader::class);
-            $repository->add($saleReceiptHeader);
+        if ($_format === 'html' && $form->isSubmitted() && $form->isValid()) {
+            $saleReceiptHeaderService->save($saleReceiptHeader);
 
             return $this->redirectToRoute('transaction_sale_receipt_header_show', array('id' => $saleReceiptHeader->getId()));
         }
 
-        return $this->render('transaction/sale_receipt_header/new.html.twig', array(
+        return $this->render('transaction/sale_receipt_header/new.'.$_format.'.twig', array(
             'saleReceiptHeader' => $saleReceiptHeader,
             'form' => $form->createView(),
+            'saleReceiptDetailsCount' => 0,
         ));
     }
 
@@ -82,26 +86,31 @@ class SaleReceiptHeaderController extends Controller
     }
 
     /**
-     * @Route("/{id}/edit", name="transaction_sale_receipt_header_edit", requirements={"id": "\d+"})
+     * @Route("/{id}/edit.{_format}", name="transaction_sale_receipt_header_edit", requirements={"id": "\d+"})
      * @Method({"GET", "POST"})
      * @Security("has_role('ROLE_TRANSACTION')")
      */
-    public function editAction(Request $request, SaleReceiptHeader $saleReceiptHeader)
+    public function editAction(Request $request, SaleReceiptHeader $saleReceiptHeader, $_format = 'html')
     {
-        $form = $this->createForm(SaleReceiptHeaderType::class, $saleReceiptHeader);
+        $saleReceiptDetailsCount = $saleReceiptHeader->getSaleReceiptDetails()->count();
+        
+        $saleReceiptHeaderService = $this->get('app.transaction.sale_receipt_header_form');
+        $form = $this->createForm(SaleReceiptHeaderType::class, $saleReceiptHeader, array(
+            'service' => $saleReceiptHeaderService,
+            'init' => array('year' => date('y'), 'month' => date('m'), 'staff' => $this->getUser()),
+        ));
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $repository = $em->getRepository(SaleReceiptHeader::class);
-            $repository->update($saleReceiptHeader);
+        if ($_format === 'html' && $form->isSubmitted() && $form->isValid()) {
+            $saleReceiptHeaderService->save($saleReceiptHeader);
 
             return $this->redirectToRoute('transaction_sale_receipt_header_show', array('id' => $saleReceiptHeader->getId()));
         }
 
-        return $this->render('transaction/sale_receipt_header/edit.html.twig', array(
+        return $this->render('transaction/sale_receipt_header/edit.'.$_format.'.twig', array(
             'saleReceiptHeader' => $saleReceiptHeader,
             'form' => $form->createView(),
+            'saleReceiptDetailsCount' => $saleReceiptDetailsCount,
         ));
     }
 
@@ -112,14 +121,13 @@ class SaleReceiptHeaderController extends Controller
      */
     public function deleteAction(Request $request, SaleReceiptHeader $saleReceiptHeader)
     {
+        $saleReceiptHeaderService = $this->get('app.transaction.sale_invoice_header_form');
         $form = $this->createFormBuilder()->getForm();
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
             if ($form->isValid()) {
-                $em = $this->getDoctrine()->getManager();
-                $repository = $em->getRepository(SaleReceiptHeader::class);
-                $repository->remove($saleReceiptHeader);
+                $saleReceiptHeaderService->delete($saleReceiptHeader);
 
                 $this->addFlash('success', array('title' => 'Success!', 'message' => 'The record was deleted successfully.'));
             } else {

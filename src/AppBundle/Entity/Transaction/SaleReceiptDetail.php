@@ -48,4 +48,9 @@ class SaleReceiptDetail
     
     public function getSaleReceiptHeader() { return $this->saleReceiptHeader; }
     public function setSaleReceiptHeader(SaleReceiptHeader $saleReceiptHeader = null) { $this->saleReceiptHeader = $saleReceiptHeader; }
+    
+    public function sync()
+    {
+        $this->amount = $this->saleInvoiceHeader->getGrandTotal();
+    }
 }

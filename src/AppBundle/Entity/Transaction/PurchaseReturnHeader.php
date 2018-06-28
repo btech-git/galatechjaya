@@ -124,4 +124,20 @@ class PurchaseReturnHeader extends CodeNumberEntity
 
     public function getPurchaseReturnDetails() { return $this->purchaseReturnDetails; }
     public function setPurchaseReturnDetails(Collection $purchaseReturnDetails) { $this->purchaseReturnDetails = $purchaseReturnDetails; }
+    
+    public function sync()
+    {
+        $totalQuantity = 0.00;
+        $subTotal = 0.00;
+        foreach ($this->purchaseReturnDetails as $purchaseReturnDetail) {
+            $purchaseReturnDetail->sync();
+            $totalQuantity += $purchaseReturnDetail->getQuantity();
+            $subTotal += $purchaseReturnDetail->getTotal();
+        }
+        $this->totalQuantity = $totalQuantity;
+        $this->subTotal = $subTotal;
+        $this->isTax = 1;
+        $this->taxNominal = ($this->isTax ? $this->subTotal * 10 / 100 : 0);
+        $this->grandTotal = $this->subTotal + $this->taxNominal + $this->shippingFee;
+    }
 }

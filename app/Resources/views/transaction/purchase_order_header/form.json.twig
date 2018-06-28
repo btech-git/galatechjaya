@@ -1,13 +1,13 @@
 {
-    "totalQuantity": "{{ purchaseOrderHeader.totalQuantity|default|number_format(0) }}",
-    "discountNominal": "{{ purchaseOrderHeader.discountNominal|default|number_format(2) }}",
-    "taxNominal": "{{ purchaseOrderHeader.taxNominal|default|number_format(2) }}",
-    "subTotal": "{{ purchaseOrderHeader.subTotal|default|number_format(2) }}",
-    "grandTotal": "{{ purchaseOrderHeader.grandTotal|default|number_format(2) }}",
+    "totalQuantity": {{ purchaseOrderHeader.totalQuantity|default|number_format(0)|json_encode|raw }},
+    "discountNominal": {{ purchaseOrderHeader.discountNominal|default|number_format(2)|json_encode|raw }},
+    "taxNominal": {{ purchaseOrderHeader.taxNominal|default|number_format(2)|json_encode|raw }},
+    "subTotal": {{ purchaseOrderHeader.subTotal|default|number_format(2)|json_encode|raw }},
+    "grandTotal": {{ purchaseOrderHeader.grandTotal|default|number_format(2)|json_encode|raw }},
     "purchaseOrderDetails": {
         {%- for index, purchaseOrderDetail in purchaseOrderHeader.purchaseOrderDetails -%}
             "{{ index }}": {
-                "total": "{{ purchaseOrderDetail.total|default|number_format(2) }}"
+                "total": {{ purchaseOrderDetail.total|default|number_format(2)|json_encode|raw }}
             }
             {%- if not loop.last -%},{%- endif -%}
         {%- endfor -%}

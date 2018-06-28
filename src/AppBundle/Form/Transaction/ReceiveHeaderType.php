@@ -50,7 +50,6 @@ class ReceiveHeaderType extends AbstractType
                 $options['service']->finalize($receiveHeader);
             })
         ;
-        ;
     }
 
     public function configureOptions(OptionsResolver $resolver)

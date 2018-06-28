@@ -59,9 +59,18 @@ class Product
      * @Assert\NotNull()
      */
     private $unit;
+    /**
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Transaction\PurchaseOrderDetail", mappedBy="product")
+     */
+    private $purchaseOrderDetails;
+    /**
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Transaction\SaleInvoiceDetail", mappedBy="product")
+     */
+    private $saleInvoiceDetails;
     
     public function __construct()
     {
+        $this->purchaseOrderDetails = new ArrayCollection();
     }
     
     public function __toString()
@@ -94,4 +103,10 @@ class Product
 
     public function getUnit() { return $this->unit; }
     public function setUnit(Unit $unit = null) { $this->unit = $unit; }
+    
+    public function getPurchaseOrderDetails() { return $this->purchaseOrderDetails; }
+    public function setPurchaseOrderDetails(Collection $purchaseOrderDetails) { $this->purchaseOrderDetails = $purchaseOrderDetails; }
+    
+    public function getSaleInvoiceDetails() { return $this->saleInvoiceDetails; }
+    public function setSaleInvoiceDetails(Collection $saleInvoiceDetails) { $this->saleInvoiceDetails = $saleInvoiceDetails; }
 }

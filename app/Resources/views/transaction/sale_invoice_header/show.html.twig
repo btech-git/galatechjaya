@@ -10,49 +10,94 @@
     <table class="table table-bordered table-striped">
         <tbody>
             <tr>
-                <th>Transaction Date</th>
-                <td>{{ saleInvoiceHeader.transactionDate|default ? saleInvoiceHeader.transactionDate|date('Y-m-d') }}</td>
+                <th>Invoice #</th>
+                <td>{{ saleInvoiceHeader.codeNumber|default }}</td>
             </tr>
             <tr>
-                <th>Tax Invoice Code</th>
+                <th>Tanggal</th>
+                <td>{{ saleInvoiceHeader.transactionDate|default ? saleInvoiceHeader.transactionDate|date('j F Y') }}</td>
+            </tr>
+            <tr>
+                <th>Customer</th>
+                <td>{{ saleInvoiceHeader.customer.name|default }}</td>
+            </tr>
+            <tr>
+                <th>Faktur Pajak</th>
                 <td>{{ saleInvoiceHeader.taxInvoiceCode|default }}</td>
             </tr>
             <tr>
-                <th>Customer Invoice</th>
-                <td>{{ saleInvoiceHeader.customerInvoice|default }}</td>
-            </tr>
-            <tr>
-                <th>Sub Total</th>
-                <td>{{ saleInvoiceHeader.subTotal|default|number_format(2) }}</td>
-            </tr>
-            <tr>
-                <th>Discount</th>
-                <td>{{ saleInvoiceHeader.discount|default|number_format(2) }}</td>
-            </tr>
-            <tr>
-                <th>Tax Nominal</th>
-                <td>{{ saleInvoiceHeader.taxNominal|default|number_format(2) }}</td>
-            </tr>
-            <tr>
-                <th>Shipping Fee</th>
-                <td>{{ saleInvoiceHeader.shippingFee|default|number_format(2) }}</td>
-            </tr>
-            <tr>
-                <th>Total Return</th>
-                <td>{{ saleInvoiceHeader.totalReturn|default|number_format(2) }}</td>
-            </tr>
-            <tr>
-                <th>Grand Total</th>
-                <td>{{ saleInvoiceHeader.grandTotal|default|number_format(2) }}</td>
+                <th>Customer PO #</th>
+                <td>{{ saleInvoiceHeader.customerOrderNumber|default }}</td>
             </tr>
             <tr>
                 <th>Note</th>
                 <td>{{ saleInvoiceHeader.note|default }}</td>
             </tr>
-            <tr>
-                <th>Is Tax</th>
-                <td>{{ saleInvoiceHeader.isTax|default ? 'Yes' : 'No' }}</td>
-            </tr>
         </tbody>
+    </table>
+                              
+    <hr />
+           
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr class="bg-info">
+                <th>Nama Barang</th>
+                <th style="width: 10%">Ukuran</th>
+                <th style="width: 5%">Satuan</th>
+                <th style="width: 10%">Qty</th>
+                <th style="width: 10%">Harga</th>
+                <th style="width: 8%">Disc (%)</th>
+                <th style="width: 15%">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for saleInvoiceDetail in saleInvoiceHeader.saleInvoiceDetails %}
+                <tr>
+                    <td class="text-left">{{ saleInvoiceDetail.itemName|default }}</td>
+                    <td class="text-left">{{ saleInvoiceDetail.product.size|default }}</td>
+                    <td class="text-left">{{ saleInvoiceDetail.product.unit.name|default }}</td>
+                    <td class="text-center">{{ saleInvoiceDetail.quantity|default|number_format(0) }}</td>
+                    <td class="text-right">{{ saleInvoiceDetail.unitPrice|default|number_format(2) }}</td>
+                    <td class="text-right">{{ saleInvoiceDetail.discount|default|number_format(2) }}</td>
+                    <td class="text-right">{{ saleInvoiceDetail.total|default|number_format(2) }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td class="text-right" colspan="3">&nbsp;</td>
+                <td class="text-center">{{ saleInvoiceHeader.totalQuantity|default|number_format(0) }}</td>
+                <td class="text-right" colspan="2">Sub Total</td>
+                <td class="text-right">{{ saleInvoiceHeader.subTotal|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <td class="text-right" colspan="6">
+                    <span style="display: inline-block">Discount</span>
+                    <span style="display: inline-block">
+                        {{ saleInvoiceHeader.discountPercentage }}
+                    </span>
+                    <span style="display: inline-block">%</span>
+                </td>
+                <td class="text-right">{{ saleInvoiceHeader.discountNominal|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <td class="text-right" colspan="6">
+                    <span style="display: inline-block">PPn</span>
+                    <span style="display: inline-block">
+                        {{ saleInvoiceHeader.isTax|default ? '10' : '0'  }}
+                    </span>
+                    <span style="display: inline-block">%</span>
+                </td>
+                <td class="text-right">{{ saleInvoiceHeader.taxNominal|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <td class="text-right" colspan="6">Ongkos Kirim</td>
+                <td class="text-right">{{ saleInvoiceHeader.shippingFee|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <td class="text-right" colspan="6">Grand Total</td>
+                <td class="text-right">{{ saleInvoiceHeader.grandTotal|default|number_format(2) }}</td>
+            </tr>
+        </tfoot>
     </table>
 {% endblock %}

@@ -14,6 +14,7 @@ class AccountType extends AbstractType
         $builder
             ->add('code')
             ->add('name')
+            ->add('isCashOrBank')
             ->add('isActive')
             ->add('accountCategory')
         ;

@@ -1,0 +1,10 @@
+{
+    "adjustmentStockDetails": {
+        {%- for index, adjustmentStockDetail in adjustmentStockHeader.adjustmentStockDetails -%}
+            "{{ index }}": {
+                "quantityDifference": {{ adjustmentStockDetail.quantityDifference|default|number_format(0)|json_encode|raw }}
+            }
+            {%- if not loop.last -%},{%- endif -%}
+        {%- endfor -%}
+    }
+}

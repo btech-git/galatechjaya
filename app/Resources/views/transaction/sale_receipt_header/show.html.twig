@@ -10,25 +10,58 @@
     <table class="table table-bordered table-striped">
         <tbody>
             <tr>
-                <th>Transaction Date</th>
-                <td>{{ saleReceiptHeader.transactionDate|default ? saleReceiptHeader.transactionDate|date('Y-m-d') }}</td>
+                <th>Tanda Terima #</th>
+                <td>{{ saleReceiptHeader.codeNumber|default }}</td>
+            </tr>
+            <tr>
+                <th>Tanggal</th>
+                <td>{{ saleReceiptHeader.transactionDate|default ? saleReceiptHeader.transactionDate|date('j F Y') }}</td>
+            </tr>
+            <tr>
+                <th>Customer</th>
+                <td>{{ saleReceiptHeader.customer.name|default }}</td>
             </tr>
             <tr>
                 <th>Note</th>
                 <td>{{ saleReceiptHeader.note|default }}</td>
             </tr>
-            <tr>
-                <th>Grand Total</th>
-                <td>{{ saleReceiptHeader.grandTotal|default|number_format(2) }}</td>
-            </tr>
-            <tr>
-                <th>Total Payment</th>
-                <td>{{ saleReceiptHeader.totalPayment|default|number_format(2) }}</td>
-            </tr>
-            <tr>
-                <th>Remaining</th>
-                <td>{{ saleReceiptHeader.remaining|default|number_format(2) }}</td>
-            </tr>
         </tbody>
+    </table>
+                              
+    <hr />
+           
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr class="bg-info">
+                <th style="width: 15%">Invoice #</th>
+                <th style="width: 15%">Tanggal</th>
+                <th>Memo</th>
+                <th style="width: 15%">Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for saleReceiptDetail in saleReceiptHeader.saleReceiptDetails %}
+                <tr>
+                    <td class="text-left">{{ saleReceiptDetail.saleInvoiceHeader.codeNumber|default }}</td>
+                    <td class="text-left">{{ saleReceiptDetail.saleInvoiceHeader.transactionDate|default ? saleReceiptDetail.saleInvoiceHeader.transactionDate|date('j F Y') }}</td>
+                    <td class="text-left">{{ saleReceiptDetail.memo|default }}</td>
+                    <td class="text-right">{{ saleReceiptDetail.amount|default|number_format(2) }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td class="text-right" colspan="3">Grand Total</td>
+                <td class="text-right">{{ saleReceiptHeader.grandTotal|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <td class="text-right" colspan="3">Total Payment</td>
+                <td class="text-right">{{ saleReceiptHeader.totalPayment|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <td class="text-right" colspan="3">Remaining</td>
+                <td class="text-right">{{ saleReceiptHeader.remaining|default|number_format(2) }}</td>
+            </tr>
+        </tfoot>
     </table>
 {% endblock %}

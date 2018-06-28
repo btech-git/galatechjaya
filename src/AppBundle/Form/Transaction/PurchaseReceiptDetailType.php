@@ -6,16 +6,16 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use AppBundle\Entity\Transaction\PurchaseReceiptDetail;
+use AppBundle\Entity\Transaction\PurchaseInvoiceHeader;
+use LibBundle\Form\Type\EntityHiddenType;
 
 class PurchaseReceiptDetailType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('amount')
             ->add('memo')
-            ->add('purchaseInvoiceHeader')
-            ->add('purchaseReceiptHeader')
+            ->add('purchaseInvoiceHeader', EntityHiddenType::class, array('class' => PurchaseInvoiceHeader::class))
         ;
     }
 

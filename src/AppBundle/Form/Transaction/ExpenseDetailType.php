@@ -6,6 +6,8 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use AppBundle\Entity\Transaction\ExpenseDetail;
+use LibBundle\Form\Type\EntityHiddenType;
+use AppBundle\Entity\Master\Account;
 
 class ExpenseDetailType extends AbstractType
 {
@@ -14,8 +16,7 @@ class ExpenseDetailType extends AbstractType
         $builder
             ->add('description')
             ->add('amount')
-            ->add('account')
-            ->add('expenseHeader')
+            ->add('account', EntityHiddenType::class, array('class' => Account::class))
         ;
     }
 

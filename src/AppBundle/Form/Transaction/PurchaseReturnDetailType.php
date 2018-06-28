@@ -6,6 +6,8 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use AppBundle\Entity\Transaction\PurchaseReturnDetail;
+use AppBundle\Entity\Transaction\PurchaseInvoiceDetail;
+use LibBundle\Form\Type\EntityHiddenType;
 
 class PurchaseReturnDetailType extends AbstractType
 {
@@ -13,10 +15,7 @@ class PurchaseReturnDetailType extends AbstractType
     {
         $builder
             ->add('quantity')
-            ->add('unitPrice')
-            ->add('total')
-            ->add('purchaseInvoiceDetail')
-            ->add('purchaseReturnHeader')
+            ->add('purchaseInvoiceDetail', EntityHiddenType::class, array('class' => PurchaseInvoiceDetail::class))
         ;
     }
 

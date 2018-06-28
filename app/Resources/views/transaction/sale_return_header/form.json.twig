@@ -1,0 +1,19 @@
+{
+    "totalQuantity": {{ saleReturnHeader.totalQuantity|default|number_format(0)|json_encode|raw }},
+    "subTotal": {{ saleReturnHeader.subTotal|default|number_format(2)|json_encode|raw }},
+    "taxPercentage": {{ (saleReturnHeader.isTax ? 10 : 0)|default|number_format(0)|json_encode|raw }},
+    "taxNominal": {{ saleReturnHeader.taxNominal|default|number_format(2)|json_encode|raw }},
+    "grandTotal": {{ saleReturnHeader.grandTotal|default|number_format(2)|json_encode|raw }},
+    "saleReturnDetails": {
+        {%- for index, saleReturnDetail in saleReturnHeader.saleReturnDetails -%}
+            "{{ index }}": {
+                "productName": {{ saleReturnDetail.saleInvoiceDetail.itemName|default|json_encode|raw }},
+                "productSize": {{ saleReturnDetail.saleInvoiceDetail.product.size|default|json_encode|raw }},
+                "unitName": {{ saleReturnDetail.saleInvoiceDetail.product.unit.name|default|json_encode|raw }},
+                "saleInvoiceDetailUnitPrice": {{ saleReturnDetail.saleInvoiceDetail.unitPrice|default|number_format(2)|json_encode|raw }},
+                "total": {{ saleReturnDetail.total|default|number_format(2)|json_encode|raw }}
+            }
+            {%- if not loop.last -%},{%- endif -%}
+        {%- endfor -%}
+    }
+}

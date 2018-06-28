@@ -45,27 +45,31 @@ class AdjustmentStockHeaderController extends Controller
     }
 
     /**
-     * @Route("/new", name="transaction_adjustment_stock_header_new")
+     * @Route("/new.{_format}", name="transaction_adjustment_stock_header_new")
      * @Method({"GET", "POST"})
      * @Security("has_role('ROLE_TRANSACTION')")
      */
-    public function newAction(Request $request)
+    public function newAction(Request $request, $_format = 'html')
     {
         $adjustmentStockHeader = new AdjustmentStockHeader();
-        $form = $this->createForm(AdjustmentStockHeaderType::class, $adjustmentStockHeader);
+        
+        $adjustmentStockHeaderService = $this->get('app.transaction.adjustment_stock_header_form');
+        $form = $this->createForm(AdjustmentStockHeaderType::class, $adjustmentStockHeader, array(
+            'service' => $adjustmentStockHeaderService,
+            'init' => array('year' => date('y'), 'month' => date('m'), 'staff' => $this->getUser()),
+        ));
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $repository = $em->getRepository(AdjustmentStockHeader::class);
-            $repository->add($adjustmentStockHeader);
+        if ($_format === 'html' && $form->isSubmitted() && $form->isValid()) {
+            $adjustmentStockHeaderService->save($adjustmentStockHeader);
 
             return $this->redirectToRoute('transaction_adjustment_stock_header_show', array('id' => $adjustmentStockHeader->getId()));
         }
 
-        return $this->render('transaction/adjustment_stock_header/new.html.twig', array(
+        return $this->render('transaction/adjustment_stock_header/new.'.$_format.'.twig', array(
             'adjustmentStockHeader' => $adjustmentStockHeader,
             'form' => $form->createView(),
+            'adjustmentStockDetailsCount' => 0,
         ));
     }
 
@@ -82,26 +86,31 @@ class AdjustmentStockHeaderController extends Controller
     }
 
     /**
-     * @Route("/{id}/edit", name="transaction_adjustment_stock_header_edit", requirements={"id": "\d+"})
+     * @Route("/{id}/edit.{_format}", name="transaction_adjustment_stock_header_edit", requirements={"id": "\d+"})
      * @Method({"GET", "POST"})
      * @Security("has_role('ROLE_TRANSACTION')")
      */
-    public function editAction(Request $request, AdjustmentStockHeader $adjustmentStockHeader)
+    public function editAction(Request $request, AdjustmentStockHeader $adjustmentStockHeader, $_format = 'html')
     {
-        $form = $this->createForm(AdjustmentStockHeaderType::class, $adjustmentStockHeader);
+        $adjustmentStockDetailsCount = $adjustmentStockHeader->getAdjustmentStockDetails()->count();
+        
+        $adjustmentStockHeaderService = $this->get('app.transaction.adjustment_stock_header_form');
+        $form = $this->createForm(AdjustmentStockHeaderType::class, $adjustmentStockHeader, array(
+            'service' => $adjustmentStockHeaderService,
+            'init' => array('year' => date('y'), 'month' => date('m'), 'staff' => $this->getUser()),
+        ));
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $repository = $em->getRepository(AdjustmentStockHeader::class);
-            $repository->update($adjustmentStockHeader);
+        if ($_format === 'html' && $form->isSubmitted() && $form->isValid()) {
+            $adjustmentStockHeaderService->save($adjustmentStockHeader);
 
             return $this->redirectToRoute('transaction_adjustment_stock_header_show', array('id' => $adjustmentStockHeader->getId()));
         }
 
-        return $this->render('transaction/adjustment_stock_header/edit.html.twig', array(
+        return $this->render('transaction/adjustment_stock_header/edit.'.$_format.'.twig', array(
             'adjustmentStockHeader' => $adjustmentStockHeader,
             'form' => $form->createView(),
+            'adjustmentStockDetailsCount' => $adjustmentStockDetailsCount,
         ));
     }
 
@@ -112,14 +121,13 @@ class AdjustmentStockHeaderController extends Controller
      */
     public function deleteAction(Request $request, AdjustmentStockHeader $adjustmentStockHeader)
     {
+        $adjustmentStockHeaderService = $this->get('app.transaction.adjustment_stock_header_form');
         $form = $this->createFormBuilder()->getForm();
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
             if ($form->isValid()) {
-                $em = $this->getDoctrine()->getManager();
-                $repository = $em->getRepository(AdjustmentStockHeader::class);
-                $repository->remove($adjustmentStockHeader);
+                $adjustmentStockHeaderService->delete($adjustmentStockHeader);
 
                 $this->addFlash('success', array('title' => 'Success!', 'message' => 'The record was deleted successfully.'));
             } else {

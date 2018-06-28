@@ -1,0 +1,49 @@
+{% set grid_layout = 'datagrid.html.twig' %}
+
+{{ grid_top(grid) }}
+
+<table data-role="table" class="table table-bordered table-striped table-condensed table-hover">
+    <thead>
+        <tr data-action="sort" class="alert alert-info">
+            <th data-group="saleInvoiceHeader" data-field="codeNumber">Invoice #</th>
+            <th data-group="saleInvoiceHeader" data-field="transactionDate">Tanggal</th>
+            <th data-group="customer" data-field="name">Customer</th>
+            <th data-group="saleInvoiceHeader" data-field="grandTotal">Grand Total</th>
+        </tr>
+        <tr data-action="search">
+            <th data-group="saleInvoiceHeader" data-field="codeNumber"></th>
+            <th data-group="saleInvoiceHeader" data-field="transactionDate"></th>
+            <th data-group="supplier" data-field="name"></th>
+            <th data-group="saleInvoiceHeader" data-field="grandTotal"></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for saleInvoiceHeader in grid.data %}
+            <tr data-field-id="{{ saleInvoiceHeader.id }}"
+                data-field-code-number="{{ saleInvoiceHeader.codeNumber|default }}"
+                data-field-transaction-date="{{ saleInvoiceHeader.transactionDate|default ? saleInvoiceHeader.transactionDate|date('j M Y') }}"
+                data-field-supplier-name="{{ saleInvoiceHeader.customer.name|default }}"
+                data-field-grand-total="{{ saleInvoiceHeader.grandTotal|default|number_format(2) }}"
+                data-field-sale-invoice-details-count="{{ saleInvoiceHeader.saleInvoiceDetails.count|default }}">
+                <td class="text-left">{{ saleInvoiceHeader.codeNumber|default }}</td>
+                <td class="text-left">{{ saleInvoiceHeader.transactionDate|default ? saleInvoiceHeader.transactionDate|date('j M Y') }}</td>
+                <td class="text-left">{{ saleInvoiceHeader.customer.name|default }}</td>
+                <td class="text-right">{{ saleInvoiceHeader.grandTotal|default|number_format(2) }}</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4" class="alert alert-warning">
+                    <strong>There are no items to display.</strong>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{{ grid_bottom(grid) }}
+
+<script>
+    jQuery(function($) {
+        $("#{{ grid.id }}-top").css("display", "none");
+    });
+</script>

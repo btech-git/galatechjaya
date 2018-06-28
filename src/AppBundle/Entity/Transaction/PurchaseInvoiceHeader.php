@@ -7,7 +7,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use AppBundle\Entity\Common\CodeNumberEntity;
-use AppBundle\Entity\Master\Supplier;
 use AppBundle\Entity\Admin\Staff;
 
 /**
@@ -173,4 +172,21 @@ class PurchaseInvoiceHeader extends CodeNumberEntity
 
     public function getPurchaseReturnHeaders() { return $this->purchaseReturnHeaders; }
     public function setPurchaseReturnHeaders(Collection $purchaseReturnHeaders) { $this->purchaseReturnHeaders = $purchaseReturnHeaders; }
+    
+    public function sync()
+    {
+        $totalQuantity = 0.00;
+        $subTotal = 0.00;
+        foreach ($this->purchaseInvoiceDetails as $purchaseInvoiceDetail) {
+            $purchaseInvoiceDetail->sync();
+            $totalQuantity += $purchaseInvoiceDetail->getQuantity();
+            $subTotal += $purchaseInvoiceDetail->getTotal();
+        }
+        $this->totalQuantity = $totalQuantity;
+        $this->subTotal = $subTotal;
+        $this->discountNominal = $this->subTotal * $this->discountPercentage / 100;
+        $this->taxNominal = ($this->isTax ? ($this->subTotal - $this->discountNominal) * 10 / 100 : 0);
+        $this->totalReturn = 0.00;
+        $this->grandTotal = $this->subTotal - $this->discountNominal + $this->taxNominal + $this->shippingFee;
+    }
 }

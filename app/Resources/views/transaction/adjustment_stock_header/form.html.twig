@@ -4,9 +4,145 @@
     {{ include('transaction/actions.html.twig') }}
 {% endblock %}
 
+{% import _self as self %}
+
+{% macro details_row(object) %}
+    <tr data-index="{{ object.vars.name }}">
+        <td class="hide">
+            {{ form_row(object.product, {'label': false}) }}
+        </td>
+        <td>
+            <span data-name="product-name-{{ object.vars.name }}">{{ object.vars.value.product.name|default }}</span>
+        </td>
+        <td>
+            <span data-name="product-size-{{ object.vars.name }}">{{ object.vars.value.product.size|default }}</span>
+        </td>
+        <td>
+            <span data-name="unit-name-{{ object.vars.name }}">{{ object.vars.value.product.unit.name|default }}</span>
+        </td>
+        <td class="text-right">
+            <span data-name="quantity-current-{{ object.vars.name }}">{{ object.vars.value.quantityCurrent|default|number_format(0) }}</span>
+        </td>
+        <td>
+            {{ form_row(object.quantityAdjustment, {'label': false, 'attr': {'data-group-name': 'quantityAdjustment'} }) }}
+        </td>
+        <td class="text-right">
+            <span data-name="quantity-difference-{{ object.vars.name }}">{{ object.vars.value.quantityDifference|default|number_format(0) }}</span>
+        </td>
+        <td>
+            <button type="button" class="btn btn-info remove-purchase-order-detail-prototype">Delete</button>
+        </td>
+    </tr>
+{% endmacro %}
+
 {% block content %}
     {{ form_start(form) }}
-        {{ form_widget(form) }}
+        <div>{{ form_errors(form) }}</div>
+        <div class="row">
+            <div class="col-sm-6">
+                {{ form_row(form.transactionDate, {'label': 'Tanggal'}) }}
+            </div>
+            <div class="col-sm-6">{{ form_row(form.warehouse) }}</div>
+        </div>
+        
+        <div>{{ form_row(form.note) }}</div>
+            
+        <hr />
+        
+        <div>
+            <button type="button" class="btn btn-default" id="add-adjustment-stock-detail-prototype" data-toggle="modal" data-target="#product-dialog">Add Product</button>
+        </div>
+        
+        <br />
+        
+        <table class="table table-bordered" id="adjustment-stock-detail-list">
+            <thead>
+                <tr class="bg-info">
+                    <th class="hide">Product</th>
+                    <th>Nama Barang</th>
+                    <th style="width: 10%">Ukuran</th>
+                    <th style="width: 10%">Satuan</th>
+                    <th style="width: 10%">Stok</th>
+                    <th style="width: 15%">Qty Penyesuaian</th>
+                    <th style="width: 10%">Selisih</th>
+                    <th style="width: 0"></th>
+                </tr>
+            </thead>
+            <tbody data-prototype="{{ self.details_row(form.adjustmentStockDetails.vars.prototype)|e }}">
+                {% for adjustmentStockDetail in form.adjustmentStockDetails %}
+                    {{ self.details_row(adjustmentStockDetail) }}
+                {% endfor %}
+            </tbody>
+            <tfoot></tfoot>
+        </table>
+        
         <input class="btn btn-primary navbar-inverse" type="submit" value="Save" data-confirm="Do you want to proceed?" />
+           
+        <div id="product-dialog" class="modal fade" role="dialog">
+            <div class="modal-dialog modal-lg" style="width: 90%">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Product List</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div id="product-grid" data-grid="{{ path('common_product_grid', {'form': form.vars.id}) }}"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
     {{ form_end(form) }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        jQuery(function($) {
+            function bind() {
+                $.ajax({
+                    method: "POST",
+                    url: "{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')|merge({'_format': 'json'})) }}",
+                    data: $("form").serialize(),
+                    dataType: "JSON",
+                    success: function(data) {
+                        var table = $("#adjustment-stock-detail-list");
+                        var tableBody = $("tbody", table);
+                        $.each(data.adjustmentStockDetails, function(index, adjustmentStockDetail) {
+                            $("[data-name=total-" + index + "]", tableBody).text(adjustmentStockDetail.quantityDifference);
+                        });
+                    }
+                });
+            }
+            
+            var table = $("#adjustment-stock-detail-list");
+            var tableBody = $("tbody", table);
+            
+            tableBody.on("change", "[data-group-name=quantity-difference]", function() {
+                bind();
+            });
+            tableBody.on("click", ".remove-adjustment-stock-detail-prototype", function() {
+                $(this).closest("tr").remove();
+                bind();
+            });
+            
+            $("#product-grid").on("click", "table[data-role=table] tbody tr", function() {
+                $("#product-dialog").modal("hide");
+                var context = $(this);
+                var name = "{{ form.adjustmentStockDetails.vars.prototype.vars.name }}";
+                var rows = tableBody.children("tr");
+                var index = Math.max({{ adjustmentStockDetailsCount }}, (rows.length > 0) ? parseInt(rows.last().attr("data-index")) + 1 : 0);
+                tableBody.appendByPrototype(tableBody.attr("data-prototype"), name, index, function(prototype) {
+                    var productPrototype = prototype.find("#{{ form.adjustmentStockDetails.vars.prototype.product.vars.id }}");
+                    productPrototype.val(context.attr("data-field-id"));
+                    var productNamePrototype = prototype.find("[data-name=product-name-" + name + "]");
+                    productNamePrototype.text(context.attr("data-field-name"));
+                    var productSizePrototype = prototype.find("[data-name=product-size-" + name + "]");
+                    productSizePrototype.text(context.attr("data-field-size"));
+                    var unitNamePrototype = prototype.find("[data-name=unit-name-" + name + "]");
+                    unitNamePrototype.text(context.attr("data-field-unit-name"));
+                });
+                bind();
+            });
+        });
+    </script>
 {% endblock %}

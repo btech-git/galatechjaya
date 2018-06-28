@@ -6,6 +6,8 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use AppBundle\Entity\Transaction\JournalVoucherDetail;
+use LibBundle\Form\Type\EntityHiddenType;
+use AppBundle\Entity\Master\Account;
 
 class JournalVoucherDetailType extends AbstractType
 {
@@ -15,8 +17,7 @@ class JournalVoucherDetailType extends AbstractType
             ->add('debit')
             ->add('credit')
             ->add('memo')
-            ->add('account')
-            ->add('journalVoucherHeader')
+            ->add('account', EntityHiddenType::class, array('class' => Account::class))
         ;
     }
 

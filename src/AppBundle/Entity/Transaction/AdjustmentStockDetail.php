@@ -57,4 +57,10 @@ class AdjustmentStockDetail
 
     public function getAdjustmentStockHeader() { return $this->adjustmentStockHeader; }
     public function setAdjustmentStockHeader(AdjustmentStockHeader $adjustmentStockHeader = null) { $this->adjustmentStockHeader = $adjustmentStockHeader; }
+    
+    public function sync()
+    {
+        $this->quantityCurrent = 0;
+        $this->quantityDifference = $this->quantityAdjustment - $this->quantityCurrent;
+    }
 }

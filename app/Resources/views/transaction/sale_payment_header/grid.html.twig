@@ -5,8 +5,10 @@
 <table data-role="table" class="table table-bordered table-striped table-condensed table-hover">
     <thead>
         <tr data-action="sort" class="alert alert-info">
-            <th data-group="salePaymentHeader" data-field="transactionDate">Transaction Date</th>
-            <th data-group="salePaymentHeader" data-field="note">Note</th>
+            <th data-group="salePaymentHeader" data-field="codeNumber">Pelunasan #</th>
+            <th data-group="salePaymentHeader" data-field="transactionDate">Tanggal</th>
+            <th data-group="customer" data-field="name">Customer</th>
+            <th data-group="paymentType" data-field="name">Jenis Pembayaran</th>
             <th data-group="salePaymentHeader" data-field="totalAmount">Total Amount</th>
             <th></th>
         </tr>
@@ -14,8 +16,10 @@
     <tbody>
         {% for salePaymentHeader in grid.data %}
             <tr data-field-id="{{ salePaymentHeader.id }}">
-                <td class="text-left">{{ salePaymentHeader.transactionDate|default ? salePaymentHeader.transactionDate|date('Y-m-d') }}</td>
-                <td class="text-left">{{ salePaymentHeader.note|default }}</td>
+                <td class="text-left">{{ salePaymentHeader.codeNumber|default }}</td>
+                <td class="text-left">{{ salePaymentHeader.transactionDate|default ? salePaymentHeader.transactionDate|date('j F Y') }}</td>
+                <td class="text-left">{{ salePaymentHeader.customer.name|default }}</td>
+                <td class="text-left">{{ salePaymentHeader.paymentType.name|default }}</td>
                 <td class="text-right">{{ salePaymentHeader.totalAmount|default|number_format(2) }}</td>
                 <td class="text-left">
                     {{ include('transaction/actions.html.twig', {
@@ -31,7 +35,7 @@
             </tr>
         {% else %}
             <tr>
-                <td colspan="4" class="alert alert-warning">
+                <td colspan="6" class="alert alert-warning">
                     <strong>There are no items to display.</strong>
                 </td>
             </tr>

@@ -10,49 +10,102 @@
     <table class="table table-bordered table-striped">
         <tbody>
             <tr>
-                <th>Transaction Date</th>
-                <td>{{ purchaseInvoiceHeader.transactionDate|default ? purchaseInvoiceHeader.transactionDate|date('Y-m-d') }}</td>
+                <th>Invoice #</th>
+                <td>{{ purchaseInvoiceHeader.codeNumber|default }}</td>
             </tr>
             <tr>
-                <th>Tax Invoice Code</th>
+                <th>Tanggal</th>
+                <td>{{ purchaseInvoiceHeader.transactionDate|default ? purchaseInvoiceHeader.transactionDate|date('j F Y') }}</td>
+            </tr>
+            <tr>
+                <th>Supplier</th>
+                <td>{{ purchaseInvoiceHeader.receiveHeader.purchaseOrderHeader.supplier.name|default }}</td>
+            </tr>
+            <tr>
+                <th>Faktur Pajak Supplier #</th>
                 <td>{{ purchaseInvoiceHeader.taxInvoiceCode|default }}</td>
             </tr>
             <tr>
-                <th>Supplier Invoice</th>
+                <th>Supplier Invoice #</th>
                 <td>{{ purchaseInvoiceHeader.supplierInvoice|default }}</td>
             </tr>
             <tr>
-                <th>Sub Total</th>
-                <td>{{ purchaseInvoiceHeader.subTotal|default|number_format(2) }}</td>
+                <th>PO #</th>
+                <td>{{ purchaseInvoiceHeader.receiveHeader.purchaseOrderHeader.codeNumber|default }}</td>
             </tr>
             <tr>
-                <th>Discount</th>
-                <td>{{ purchaseInvoiceHeader.discount|default|number_format(2) }}</td>
-            </tr>
-            <tr>
-                <th>Tax Nominal</th>
-                <td>{{ purchaseInvoiceHeader.taxNominal|default|number_format(2) }}</td>
-            </tr>
-            <tr>
-                <th>Shipping Fee</th>
-                <td>{{ purchaseInvoiceHeader.shippingFee|default|number_format(2) }}</td>
-            </tr>
-            <tr>
-                <th>Total Return</th>
-                <td>{{ purchaseInvoiceHeader.totalReturn|default|number_format(2) }}</td>
-            </tr>
-            <tr>
-                <th>Grand Total</th>
-                <td>{{ purchaseInvoiceHeader.grandTotal|default|number_format(2) }}</td>
+                <th>Penerimaan #</th>
+                <td>{{ purchaseInvoiceHeader.receiveHeader.codeNumber|default }}</td>
             </tr>
             <tr>
                 <th>Note</th>
                 <td>{{ purchaseInvoiceHeader.note|default }}</td>
             </tr>
-            <tr>
-                <th>Is Tax</th>
-                <td>{{ purchaseInvoiceHeader.isTax|default ? 'Yes' : 'No' }}</td>
-            </tr>
         </tbody>
+    </table>
+                              
+    <hr />
+           
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr class="bg-info">
+                <th>Nama Barang</th>
+                <th style="width: 10%">Ukuran</th>
+                <th style="width: 5%">Satuan</th>
+                <th style="width: 10%">Qty</th>
+                <th style="width: 10%">Harga</th>
+                <th style="width: 8%">Disc (%)</th>
+                <th style="width: 15%">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for purchaseInvoiceDetail in purchaseInvoiceHeader.purchaseInvoiceDetails %}
+                <tr>
+                    <td class="text-left">{{ purchaseInvoiceDetail.receiveDetail.purchaseOrderDetail.product.name|default }}</td>
+                    <td class="text-left">{{ purchaseInvoiceDetail.receiveDetail.purchaseOrderDetail.product.size|default }}</td>
+                    <td class="text-left">{{ purchaseInvoiceDetail.receiveDetail.purchaseOrderDetail.product.unit.name|default }}</td>
+                    <td class="text-right">{{ purchaseInvoiceDetail.quantity|default|number_format(0) }}</td>
+                    <td class="text-right">{{ purchaseInvoiceDetail.unitPrice|default|number_format(2) }}</td>
+                    <td class="text-right">{{ purchaseInvoiceDetail.discount|default|number_format(2) }}</td>
+                    <td class="text-right">{{ purchaseInvoiceDetail.total|default|number_format(2) }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td class="text-right" colspan="3">Sub Total</td>
+                <td class="text-right">{{ purchaseInvoiceHeader.totalQuantity|default|number_format(0) }}</td>
+                <td class="text-right" colspan="2">&nbsp;</td>
+                <td class="text-right">{{ purchaseInvoiceHeader.subTotal|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <td class="text-right" colspan="6">
+                    <span style="display: inline-block">Discount</span>
+                    <span style="display: inline-block">
+                        {{ purchaseInvoiceHeader.discountPercentage }}
+                    </span>
+                    <span style="display: inline-block">%</span>
+                </td>
+                <td class="text-right">{{ purchaseInvoiceHeader.discountNominal|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <td class="text-right" colspan="6">
+                    <span style="display: inline-block">PPn</span>
+                    <span style="display: inline-block">
+                        {{ purchaseInvoiceHeader.isTax|default ? '10' : '0'  }}
+                    </span>
+                    <span style="display: inline-block">%</span>
+                </td>
+                <td class="text-right">{{ purchaseInvoiceHeader.taxNominal|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <td class="text-right" colspan="6">Ongkos Kirim</td>
+                <td class="text-right">{{ purchaseInvoiceHeader.shippingFee|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <td class="text-right" colspan="6">Grand Total</td>
+                <td class="text-right">{{ purchaseInvoiceHeader.grandTotal|default|number_format(2) }}</td>
+            </tr>
+        </tfoot>
     </table>
 {% endblock %}

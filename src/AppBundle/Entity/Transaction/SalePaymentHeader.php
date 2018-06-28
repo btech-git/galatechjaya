@@ -67,7 +67,7 @@ class SalePaymentHeader extends CodeNumberEntity
         $this->salePaymentDetails = new ArrayCollection();
     }
     
-    public function getCodeNumberConstant() { return 'PPY'; }
+    public function getCodeNumberConstant() { return 'SPY'; }
     
     public function getId() { return $this->id; }
     
@@ -94,4 +94,14 @@ class SalePaymentHeader extends CodeNumberEntity
 
     public function getSalePaymentDetails() { return $this->salePaymentDetails; }
     public function setSalePaymentDetails(Collection $salePaymentDetails) { $this->salePaymentDetails = $salePaymentDetails; }
+    
+    public function sync()
+    {
+        $totalAmount = 0.00;
+        foreach ($this->salePaymentDetails as $salePaymentDetail) {
+            $salePaymentDetail->sync();
+            $totalAmount += $salePaymentDetail->getAmount();
+        }
+        $this->totalAmount = $totalAmount;
+    }
 }

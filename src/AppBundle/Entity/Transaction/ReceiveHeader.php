@@ -6,11 +6,11 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+//use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use AppBundle\Entity\Common\CodeNumberEntity;
 use AppBundle\Entity\Admin\Staff;
 use AppBundle\Entity\Master\Warehouse;
-use AppBundle\Entity\Transaction\PurchaseOrderHeader;
+//use AppBundle\Entity\Transaction\PurchaseOrderHeader;
 
 /**
  * @ORM\Table(name="transaction_receive_header")
@@ -74,11 +74,11 @@ class ReceiveHeader extends CodeNumberEntity
     
     public function __construct()
     {
-        $this->purchaseOrderDetails = new ArrayCollection();
+//        $this->purchaseOrderDetails = new ArrayCollection();
         $this->receiveDetails = new ArrayCollection();
     }
     
-    public function getCodeNumberConstant() { return 'PO'; }
+    public function getCodeNumberConstant() { return 'RCV'; }
     
     public function getId() { return $this->id; }
     

@@ -8,6 +8,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use AppBundle\Entity\Transaction\PurchasePaymentHeader;
+use AppBundle\Entity\Master\Account;
 use AppBundle\Form\Transaction\PurchasePaymentHeaderType;
 use AppBundle\Grid\Transaction\PurchasePaymentHeaderGridType;
 
@@ -45,27 +46,32 @@ class PurchasePaymentHeaderController extends Controller
     }
 
     /**
-     * @Route("/new", name="transaction_purchase_payment_header_new")
+     * @Route("/new.{_format}", name="transaction_purchase_payment_header_new")
      * @Method({"GET", "POST"})
      * @Security("has_role('ROLE_TRANSACTION')")
      */
-    public function newAction(Request $request)
+    public function newAction(Request $request, $_format = 'html')
     {
         $purchasePaymentHeader = new PurchasePaymentHeader();
-        $form = $this->createForm(PurchasePaymentHeaderType::class, $purchasePaymentHeader);
+        
+        $purchasePaymentHeaderService = $this->get('app.transaction.purchase_payment_header_form');
+        $form = $this->createForm(PurchasePaymentHeaderType::class, $purchasePaymentHeader, array(
+            'service' => $purchasePaymentHeaderService,
+            'init' => array('year' => date('y'), 'month' => date('m'), 'staff' => $this->getUser()),
+            'accountRepository' => $this->getDoctrine()->getManager()->getRepository(Account::class),
+        ));
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $repository = $em->getRepository(PurchasePaymentHeader::class);
-            $repository->add($purchasePaymentHeader);
+        if ($_format === 'html' && $form->isSubmitted() && $form->isValid()) {
+            $purchasePaymentHeaderService->save($purchasePaymentHeader);
 
             return $this->redirectToRoute('transaction_purchase_payment_header_show', array('id' => $purchasePaymentHeader->getId()));
         }
 
-        return $this->render('transaction/purchase_payment_header/new.html.twig', array(
+        return $this->render('transaction/purchase_payment_header/new.'.$_format.'.twig', array(
             'purchasePaymentHeader' => $purchasePaymentHeader,
             'form' => $form->createView(),
+            'purchasePaymentDetailsCount' => 0,
         ));
     }
 
@@ -82,26 +88,32 @@ class PurchasePaymentHeaderController extends Controller
     }
 
     /**
-     * @Route("/{id}/edit", name="transaction_purchase_payment_header_edit", requirements={"id": "\d+"})
+     * @Route("/{id}/edit.{_format}", name="transaction_purchase_payment_header_edit", requirements={"id": "\d+"})
      * @Method({"GET", "POST"})
      * @Security("has_role('ROLE_TRANSACTION')")
      */
-    public function editAction(Request $request, PurchasePaymentHeader $purchasePaymentHeader)
+    public function editAction(Request $request, PurchasePaymentHeader $purchasePaymentHeader, $_format = 'html')
     {
-        $form = $this->createForm(PurchasePaymentHeaderType::class, $purchasePaymentHeader);
+        $purchasePaymentDetailsCount = $purchasePaymentHeader->getPurchasePaymentDetails()->count();
+        
+        $purchasePaymentHeaderService = $this->get('app.transaction.purchase_payment_header_form');
+        $form = $this->createForm(PurchasePaymentHeaderType::class, $purchasePaymentHeader, array(
+            'service' => $purchasePaymentHeaderService,
+            'init' => array('year' => date('y'), 'month' => date('m'), 'staff' => $this->getUser()),
+            'accountRepository' => $this->getDoctrine()->getManager()->getRepository(Account::class),
+        ));
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $repository = $em->getRepository(PurchasePaymentHeader::class);
-            $repository->update($purchasePaymentHeader);
+        if ($_format === 'html' && $form->isSubmitted() && $form->isValid()) {
+            $purchasePaymentHeaderService->save($purchasePaymentHeader);
 
             return $this->redirectToRoute('transaction_purchase_payment_header_show', array('id' => $purchasePaymentHeader->getId()));
         }
 
-        return $this->render('transaction/purchase_payment_header/edit.html.twig', array(
+        return $this->render('transaction/purchase_payment_header/edit.'.$_format.'.twig', array(
             'purchasePaymentHeader' => $purchasePaymentHeader,
             'form' => $form->createView(),
+            'purchasePaymentDetailsCount' => $purchasePaymentDetailsCount,
         ));
     }
 
@@ -112,14 +124,13 @@ class PurchasePaymentHeaderController extends Controller
      */
     public function deleteAction(Request $request, PurchasePaymentHeader $purchasePaymentHeader)
     {
+        $purchasePaymentHeaderService = $this->get('app.transaction.purchase_payment_header_form');
         $form = $this->createFormBuilder()->getForm();
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
             if ($form->isValid()) {
-                $em = $this->getDoctrine()->getManager();
-                $repository = $em->getRepository(PurchasePaymentHeader::class);
-                $repository->remove($purchasePaymentHeader);
+                $purchasePaymentHeaderService->delete($purchasePaymentHeader);
 
                 $this->addFlash('success', array('title' => 'Success!', 'message' => 'The record was deleted successfully.'));
             } else {

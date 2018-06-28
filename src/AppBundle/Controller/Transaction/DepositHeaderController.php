@@ -8,6 +8,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use AppBundle\Entity\Transaction\DepositHeader;
+use AppBundle\Entity\Master\Account;
 use AppBundle\Form\Transaction\DepositHeaderType;
 use AppBundle\Grid\Transaction\DepositHeaderGridType;
 
@@ -45,27 +46,32 @@ class DepositHeaderController extends Controller
     }
 
     /**
-     * @Route("/new", name="transaction_deposit_header_new")
+     * @Route("/new.{_format}", name="transaction_deposit_header_new")
      * @Method({"GET", "POST"})
      * @Security("has_role('ROLE_TRANSACTION')")
      */
-    public function newAction(Request $request)
+    public function newAction(Request $request, $_format = 'html')
     {
         $depositHeader = new DepositHeader();
-        $form = $this->createForm(DepositHeaderType::class, $depositHeader);
+        
+        $depositHeaderService = $this->get('app.transaction.deposit_header_form');
+        $form = $this->createForm(DepositHeaderType::class, $depositHeader, array(
+            'service' => $depositHeaderService,
+            'init' => array('year' => date('y'), 'month' => date('m'), 'staff' => $this->getUser()),
+            'accountRepository' => $this->getDoctrine()->getManager()->getRepository(Account::class),
+        ));
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $repository = $em->getRepository(DepositHeader::class);
-            $repository->add($depositHeader);
+        if ($_format === 'html' && $form->isSubmitted() && $form->isValid()) {
+            $depositHeaderService->save($depositHeader);
 
             return $this->redirectToRoute('transaction_deposit_header_show', array('id' => $depositHeader->getId()));
         }
 
-        return $this->render('transaction/deposit_header/new.html.twig', array(
+        return $this->render('transaction/deposit_header/new.'.$_format.'.twig', array(
             'depositHeader' => $depositHeader,
             'form' => $form->createView(),
+            'depositDetailsCount' => 0,
         ));
     }
 
@@ -82,26 +88,32 @@ class DepositHeaderController extends Controller
     }
 
     /**
-     * @Route("/{id}/edit", name="transaction_deposit_header_edit", requirements={"id": "\d+"})
+     * @Route("/{id}/edit.{_format}", name="transaction_deposit_header_edit", requirements={"id": "\d+"})
      * @Method({"GET", "POST"})
      * @Security("has_role('ROLE_TRANSACTION')")
      */
-    public function editAction(Request $request, DepositHeader $depositHeader)
+    public function editAction(Request $request, DepositHeader $depositHeader, $_format = 'html')
     {
-        $form = $this->createForm(DepositHeaderType::class, $depositHeader);
+        $depositDetailsCount = $depositHeader->getDepositDetails()->count();
+        
+        $depositHeaderService = $this->get('app.transaction.deposit_header_form');
+        $form = $this->createForm(DepositHeaderType::class, $depositHeader, array(
+            'service' => $depositHeaderService,
+            'init' => array('year' => date('y'), 'month' => date('m'), 'staff' => $this->getUser()),
+            'accountRepository' => $this->getDoctrine()->getManager()->getRepository(Account::class),
+        ));
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $repository = $em->getRepository(DepositHeader::class);
-            $repository->update($depositHeader);
+        if ($_format === 'html' && $form->isSubmitted() && $form->isValid()) {
+            $depositHeaderService->save($depositHeader);
 
             return $this->redirectToRoute('transaction_deposit_header_show', array('id' => $depositHeader->getId()));
         }
 
-        return $this->render('transaction/deposit_header/edit.html.twig', array(
+        return $this->render('transaction/deposit_header/edit.'.$_format.'.twig', array(
             'depositHeader' => $depositHeader,
             'form' => $form->createView(),
+            'depositDetailsCount' => $depositDetailsCount,
         ));
     }
 
@@ -112,14 +124,13 @@ class DepositHeaderController extends Controller
      */
     public function deleteAction(Request $request, DepositHeader $depositHeader)
     {
+        $depositHeaderService = $this->get('app.transaction.deposit_header_form');
         $form = $this->createFormBuilder()->getForm();
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
             if ($form->isValid()) {
-                $em = $this->getDoctrine()->getManager();
-                $repository = $em->getRepository(DepositHeader::class);
-                $repository->remove($depositHeader);
+                $depositHeaderService->delete($depositHeader);
 
                 $this->addFlash('success', array('title' => 'Success!', 'message' => 'The record was deleted successfully.'));
             } else {

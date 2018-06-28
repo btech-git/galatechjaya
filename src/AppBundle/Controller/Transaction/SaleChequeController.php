@@ -45,25 +45,28 @@ class SaleChequeController extends Controller
     }
 
     /**
-     * @Route("/new", name="transaction_sale_cheque_new")
+     * @Route("/new.{_format}", name="transaction_sale_cheque_new")
      * @Method({"GET", "POST"})
      * @Security("has_role('ROLE_TRANSACTION')")
      */
-    public function newAction(Request $request)
+    public function newAction(Request $request, $_format = 'html')
     {
         $saleCheque = new SaleCheque();
-        $form = $this->createForm(SaleChequeType::class, $saleCheque);
+        
+        $saleChequeService = $this->get('app.transaction.sale_cheque_form');
+        $form = $this->createForm(SaleChequeType::class, $saleCheque, array(
+            'service' => $saleChequeService,
+            'init' => array('year' => date('y'), 'month' => date('m'), 'staff' => $this->getUser()),
+        ));
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $repository = $em->getRepository(SaleCheque::class);
-            $repository->add($saleCheque);
+        if ($_format === 'html' && $form->isSubmitted() && $form->isValid()) {
+            $saleChequeService->save($saleCheque);
 
             return $this->redirectToRoute('transaction_sale_cheque_show', array('id' => $saleCheque->getId()));
         }
 
-        return $this->render('transaction/sale_cheque/new.html.twig', array(
+        return $this->render('transaction/sale_cheque/new.'.$_format.'.twig', array(
             'saleCheque' => $saleCheque,
             'form' => $form->createView(),
         ));
@@ -82,24 +85,26 @@ class SaleChequeController extends Controller
     }
 
     /**
-     * @Route("/{id}/edit", name="transaction_sale_cheque_edit", requirements={"id": "\d+"})
+     * @Route("/{id}/edit.{_format}", name="transaction_sale_cheque_edit", requirements={"id": "\d+"})
      * @Method({"GET", "POST"})
      * @Security("has_role('ROLE_TRANSACTION')")
      */
-    public function editAction(Request $request, SaleCheque $saleCheque)
+    public function editAction(Request $request, SaleCheque $saleCheque, $_format = 'html')
     {
-        $form = $this->createForm(SaleChequeType::class, $saleCheque);
+        $saleChequeService = $this->get('app.transaction.sale_cheque_form');
+        $form = $this->createForm(SaleChequeType::class, $saleCheque, array(
+            'service' => $saleChequeService,
+            'init' => array('year' => date('y'), 'month' => date('m'), 'staff' => $this->getUser()),
+        ));
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $repository = $em->getRepository(SaleCheque::class);
-            $repository->update($saleCheque);
+        if ($_format === 'html' && $form->isSubmitted() && $form->isValid()) {
+            $saleChequeService->save($saleCheque);
 
             return $this->redirectToRoute('transaction_sale_cheque_show', array('id' => $saleCheque->getId()));
         }
 
-        return $this->render('transaction/sale_cheque/edit.html.twig', array(
+        return $this->render('transaction/sale_cheque/edit.'.$_format.'.twig', array(
             'saleCheque' => $saleCheque,
             'form' => $form->createView(),
         ));
@@ -112,14 +117,13 @@ class SaleChequeController extends Controller
      */
     public function deleteAction(Request $request, SaleCheque $saleCheque)
     {
+        $saleChequeService = $this->get('app.transaction.sale_cheque_form');
         $form = $this->createFormBuilder()->getForm();
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
             if ($form->isValid()) {
-                $em = $this->getDoctrine()->getManager();
-                $repository = $em->getRepository(SaleCheque::class);
-                $repository->remove($saleCheque);
+                $saleChequeService->delete($saleCheque);
 
                 $this->addFlash('success', array('title' => 'Success!', 'message' => 'The record was deleted successfully.'));
             } else {

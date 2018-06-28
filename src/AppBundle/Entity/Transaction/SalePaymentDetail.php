@@ -65,4 +65,9 @@ class SalePaymentDetail
 
     public function getSalePaymentHeader() { return $this->salePaymentHeader; }
     public function setSalePaymentHeader(SalePaymentHeader $salePaymentHeader = null) { $this->salePaymentHeader = $salePaymentHeader; }
+    
+    public function sync()
+    {
+        $this->totalReceipt = $this->saleReceiptHeader->getGrandTotal();
+    }
 }

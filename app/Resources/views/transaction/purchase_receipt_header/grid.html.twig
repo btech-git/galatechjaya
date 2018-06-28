@@ -5,8 +5,9 @@
 <table data-role="table" class="table table-bordered table-striped table-condensed table-hover">
     <thead>
         <tr data-action="sort" class="alert alert-info">
-            <th data-group="purchaseReceiptHeader" data-field="transactionDate">Transaction Date</th>
-            <th data-group="purchaseReceiptHeader" data-field="note">Note</th>
+            <th data-group="purchaseReceiptHeader" data-field="codeNumber">Tanda Terima #</th>
+            <th data-group="purchaseReceiptHeader" data-field="transactionDate">Tanggal</th>
+            <th data-group="supplier" data-field="name">Supplier</th>
             <th data-group="purchaseReceiptHeader" data-field="grandTotal">Grand Total</th>
             <th data-group="purchaseReceiptHeader" data-field="totalPayment">Total Payment</th>
             <th data-group="purchaseReceiptHeader" data-field="remaining">Remaining</th>
@@ -16,8 +17,9 @@
     <tbody>
         {% for purchaseReceiptHeader in grid.data %}
             <tr data-field-id="{{ purchaseReceiptHeader.id }}">
-                <td class="text-left">{{ purchaseReceiptHeader.transactionDate|default ? purchaseReceiptHeader.transactionDate|date('Y-m-d') }}</td>
-                <td class="text-left">{{ purchaseReceiptHeader.note|default }}</td>
+                <td class="text-left">{{ purchaseReceiptHeader.codeNumber|default }}</td>
+                <td class="text-left">{{ purchaseReceiptHeader.transactionDate|default ? purchaseReceiptHeader.transactionDate|date('j F Y') }}</td>
+                <td class="text-left">{{ purchaseReceiptHeader.supplier.name|default }}</td>
                 <td class="text-right">{{ purchaseReceiptHeader.grandTotal|default|number_format(2) }}</td>
                 <td class="text-right">{{ purchaseReceiptHeader.totalPayment|default|number_format(2) }}</td>
                 <td class="text-right">{{ purchaseReceiptHeader.remaining|default|number_format(2) }}</td>

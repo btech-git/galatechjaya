@@ -69,4 +69,11 @@ class AdjustmentStockHeader extends CodeNumberEntity
     
     public function getAdjustmentStockDetails() { return $this->adjustmentStockDetails; }
     public function setAdjustmentStockDetails(Collection $adjustmentStockDetails) { $this->adjustmentStockDetails = $adjustmentStockDetails; }
+    
+    public function sync()
+    {
+        foreach ($this->adjustmentStockDetails as $adjustmentStockDetail) {
+            $adjustmentStockDetail->sync();
+        }
+    }
 }

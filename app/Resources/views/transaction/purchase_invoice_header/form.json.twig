@@ -1,0 +1,24 @@
+{
+    "totalQuantity": {{ purchaseInvoiceHeader.totalQuantity|default|number_format(0)|json_encode|raw }},
+    "subTotal": {{ purchaseInvoiceHeader.subTotal|default|number_format(2)|json_encode|raw }},
+    "discountPercentage": {{ purchaseInvoiceHeader.discountPercentage|default|number_format(2)|json_encode|raw }},
+    "discountNominal": {{ purchaseInvoiceHeader.discountNominal|default|number_format(2)|json_encode|raw }},
+    "taxPercentage": {{ (purchaseInvoiceHeader.isTax ? 10 : 0)|default|number_format(0)|json_encode|raw }},
+    "taxNominal": {{ purchaseInvoiceHeader.taxNominal|default|number_format(2)|json_encode|raw }},
+    "shippingFee": {{ purchaseInvoiceHeader.shippingFee|default|number_format(2)|json_encode|raw }},
+    "grandTotal": {{ purchaseInvoiceHeader.grandTotal|default|number_format(2)|json_encode|raw }},
+    "purchaseInvoiceDetails": {
+        {%- for index, purchaseInvoiceDetail in purchaseInvoiceHeader.purchaseInvoiceDetails -%}
+            "{{ index }}": {
+                "productName": {{ purchaseInvoiceDetail.receiveDetail.purchaseOrderDetail.product.name|default|json_encode|raw }},
+                "productSize": {{ purchaseInvoiceDetail.receiveDetail.purchaseOrderDetail.product.size|default|json_encode|raw }},
+                "unitName": {{ purchaseInvoiceDetail.receiveDetail.purchaseOrderDetail.product.unit.name|default|json_encode|raw }},
+                "receiveDetailQuantity": {{ purchaseInvoiceDetail.receiveDetail.quantity|default|json_encode|raw }},
+                "purchaseOrderDetailUnitPrice": {{ purchaseInvoiceDetail.receiveDetail.purchaseOrderDetail.unitPrice|default|number_format(2)|json_encode|raw }},
+                "purchaseOrderDetailDiscount": {{ purchaseInvoiceDetail.receiveDetail.purchaseOrderDetail.discount|default|number_format(2)|json_encode|raw }},
+                "total": {{ purchaseInvoiceDetail.total|default|number_format(2)|json_encode|raw }}
+            }
+            {%- if not loop.last -%},{%- endif -%}
+        {%- endfor -%}
+    }
+}

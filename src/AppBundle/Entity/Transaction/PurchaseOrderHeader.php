@@ -102,7 +102,7 @@ class PurchaseOrderHeader extends CodeNumberEntity
         $this->receiveOrders = new ArrayCollection();
     }
     
-    public function getCodeNumberConstant() { return 'PO'; }
+    public function getCodeNumberConstant() { return 'PRC'; }
     
     public function getId() { return $this->id; }
     

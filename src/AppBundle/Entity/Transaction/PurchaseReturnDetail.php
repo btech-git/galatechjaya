@@ -57,4 +57,9 @@ class PurchaseReturnDetail
     public function getPurchaseReturnHeader() { return $this->purchaseReturnHeader; }
     public function setPurchaseReturnHeader(PurchaseReturnHeader $purchaseReturnHeader = null) { $this->purchaseReturnHeader = $purchaseReturnHeader; }
     
+    public function sync()
+    {
+        $this->unitPrice = 1000;
+        $this->total = $this->quantity * $this->unitPrice;
+    }
 }

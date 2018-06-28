@@ -10,17 +10,58 @@
     <table class="table table-bordered table-striped">
         <tbody>
             <tr>
-                <th>Transaction Date</th>
-                <td>{{ purchasePaymentHeader.transactionDate|default ? purchasePaymentHeader.transactionDate|date('Y-m-d') }}</td>
+                <th>Pelunasan #</th>
+                <td>{{ purchasePaymentHeader.codeNumber|default }}</td>
+            </tr>
+            <tr>
+                <th>Tanggal</th>
+                <td>{{ purchasePaymentHeader.transactionDate|default ? purchasePaymentHeader.transactionDate|date('j F Y') }}</td>
+            </tr>
+            <tr>
+                <th>Supplier</th>
+                <td>{{ purchasePaymentHeader.supplier.name|default }}</td>
+            </tr>
+            <tr>
+                <th>Jenis Pembayaran</th>
+                <td>{{ purchasePaymentHeader.paymentType.name|default }}</td>
             </tr>
             <tr>
                 <th>Note</th>
                 <td>{{ purchasePaymentHeader.note|default }}</td>
             </tr>
-            <tr>
-                <th>Total Amount</th>
-                <td>{{ purchasePaymentHeader.totalAmount|default|number_format(2) }}</td>
-            </tr>
         </tbody>
+    </table>
+                              
+    <hr />
+           
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr class="bg-info">
+                <th style="width: 15%">TT #</th>
+                <th style="width: 15%">Tanggal</th>
+                <th>Memo</th>
+                <th style="width: 15%">Akun</th>
+                <th style="width: 15%">Hutang</th>
+                <th style="width: 15%">Bayar</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for purchasePaymentDetail in purchasePaymentHeader.purchasePaymentDetails %}
+                <tr>
+                    <td class="text-left">{{ purchasePaymentDetail.purchaseReceiptHeader.codeNumber|default }}</td>
+                    <td class="text-left">{{ purchasePaymentDetail.purchaseReceiptHeader.transactionDate|default ? purchasePaymentDetail.purchaseReceiptHeader.transactionDate|date('j F Y') }}</td>
+                    <td class="text-left">{{ purchasePaymentDetail.memo|default }}</td>
+                    <td class="text-left">{{ purchasePaymentDetail.account.name|default }}</td>
+                    <td class="text-right">{{ purchasePaymentDetail.purchaseReceiptHeader.grandTotal|default|number_format(2) }}</td>
+                    <td class="text-right">{{ purchasePaymentDetail.amount|default|number_format(2) }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td class="text-right" colspan="5">Grand Total</td>
+                <td class="text-right">{{ purchasePaymentHeader.totalAmount|default|number_format(2) }}</td>
+            </tr>
+        </tfoot>
     </table>
 {% endblock %}

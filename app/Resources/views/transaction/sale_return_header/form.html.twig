@@ -4,9 +4,192 @@
     {{ include('transaction/actions.html.twig') }}
 {% endblock %}
 
+{% import _self as self %}
+
+{% macro details_row(object) %}
+    <tr data-index="{{ object.vars.name }}">
+        <td class="hide">
+            {{ form_row(object.saleInvoiceDetail, {'label': false}) }}
+        </td>
+        <td>
+            <span data-name="product-name-{{ object.vars.name }}">{{ object.vars.value.saleInvoiceDetail.itemName|default }}</span>
+        </td>
+        <td>
+            <span data-name="product-size-{{ object.vars.name }}">{{ object.vars.value.saleInvoiceDetail.product.size|default }}</span>
+        </td>
+        <td>
+            <span data-name="unit-name-{{ object.vars.name }}">{{ object.vars.value.saleInvoiceDetail.product.unit.name|default }}</span>
+        </td>
+        <td>
+            {{ form_row(object.quantity, {'label': false, 'attr': {'data-group-name': 'quantity'} }) }}
+        </td>
+        <td>
+            <span data-name="unit-price-{{ object.vars.name }}">{{ object.vars.value.unitPrice|default|number_format(2) }}</span>
+        </td>
+        <td class="text-right">
+            <span data-name="total-{{ object.vars.name }}">{{ object.vars.value.total|default|number_format(2) }}</span>
+        </td>
+    </tr>
+{% endmacro %}
+
 {% block content %}
     {{ form_start(form) }}
-        {{ form_widget(form) }}
+        <div>{{ form_errors(form) }}</div>
+        <div class="row">
+            <div class="col-sm-6">
+                {{ form_row(form.transactionDate, {'label': 'Tanggal'}) }}
+            </div>
+            <div class="col-sm-6">
+                {{ form_row(form.saleInvoiceHeader, {'attr': {'readonly': true, 'data-toggle': 'modal', 'data-target': '#sale-invoice-header-dialog'} }) }}
+                <div class="form-group" id="sale-invoice-header-info">
+                    <div>
+                        <label>Invoice #:</label>
+                        <span data-name="code-number">{{ saleReturnHeader.saleInvoiceHeader.codeNumber|default }}</span>
+                    </div>
+                    <div>
+                        <label>Tanggal:</label>
+                        <span data-name="transaction-date">{{ saleReturnHeader.saleInvoiceHeader.transactionDate|default ? saleReturnHeader.saleInvoiceHeader.transactionDate|date('j M Y') }}</span>
+                    </div>
+                    <div>
+                        <label>Customer:</label>
+                        <span data-name="customer-name">{{ saleReturnHeader.saleInvoiceHeader.customer.name|default }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div>{{ form_row(form.note) }}</div>
+            
+        <hr />
+        
+        <table class="table table-bordered" id="sale-return-detail-list">
+            <thead>
+                <tr class="bg-info">
+                    <th class="hide">Product</th>
+                    <th>Nama Barang</th>
+                    <th style="width: 10%">Ukuran</th>
+                    <th style="width: 10%">Satuan</th>
+                    <th style="width: 10%">Qty</th>
+                    <th style="width: 15%">Harga</th>
+                    <th style="width: 15%">Total</th>
+                </tr>
+            </thead>
+            <tbody data-prototype="{{ self.details_row(form.saleReturnDetails.vars.prototype)|e }}">
+                {% for saleReturnDetail in form.saleReturnDetails %}
+                    {{ self.details_row(saleReturnDetail) }}
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td class="text-right" colspan="3"></td>
+                    <td class="text-right"><span data-name="total-quantity">{{ saleReturnHeader.totalQuantity|default|number_format(0) }}</span></td>
+                    <td class="text-right">Sub Total</td>
+                    <td class="text-right"><span data-name="sub-total">{{ saleReturnHeader.subTotal|default|number_format(2) }}</span></td>
+                </tr>
+                <tr>
+                    <td class="text-right" colspan="5">
+                        <span style="display: inline-block">PPn</span>
+                        <span style="display: inline-block" data-name="tax-percentage">0</span>
+                        <span style="display: inline-block">%</span>
+                    </td>
+                    <td class="text-right"><span data-name="tax-nominal">{{ saleReturnHeader.taxNominal|default|number_format(2) }}</span></td>
+                </tr>
+                <tr>
+                    <td class="text-right" colspan="5">
+                        <span style="display: inline-block">Ongkos Kirim</span>
+                        <span style="display: inline-block">
+                            {{ form_row(form.shippingFee, {'label': false, 'attr': {'data-name': 'shipping-fee', 'data-bind-target': '[data-name=shipping-fee-text]', 'data-bind-format': 'number', 'data-option-precision': 2} }) }}
+                        </span>
+                    </td>
+                    <td class="text-right"><span data-name="shipping-fee-text">{{ saleReturnHeader.shippingFee|default|number_format(2) }}</span></td>
+                </tr>
+                <tr>
+                    <td class="text-right" colspan="5">Grand Total</td>
+                    <td class="text-right"><span data-name="grand-total">{{ saleReturnHeader.grandTotal|default|number_format(2) }}</span></td>
+                </tr>
+            </tfoot>
+        </table>
+        
         <input class="btn btn-primary navbar-inverse" type="submit" value="Save" data-confirm="Do you want to proceed?" />
+               
+        <div id="sale-invoice-header-dialog" class="modal fade" role="dialog">
+            <div class="modal-dialog modal-lg" style="width: 90%">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Sale Invoice Header List</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div id="sale-invoice-header-grid" data-grid="{{ path('common_sale_invoice_header_grid', {'form': form.vars.id}) }}"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
     {{ form_end(form) }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        jQuery(function($) {
+            function bind() {
+                $.ajax({
+                    method: "POST",
+                    url: "{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')|merge({'_format': 'json'})) }}",
+                    data: $("form").serialize(),
+                    dataType: "JSON",
+                    success: function(data) {
+                        var table = $("#sale-return-detail-list");
+                        var tableBody = $("tbody", table);
+                        var tableFoot = $("tfoot", table);
+                        $.each(data.saleReturnDetails, function(index, saleReturnDetail) {
+                            $("[data-name=product-name-" + index + "]", tableBody).text(saleReturnDetail.productName);
+                            $("[data-name=product-size-" + index + "]", tableBody).text(saleReturnDetail.productSize);
+                            $("[data-name=unit-name-" + index + "]", tableBody).text(saleReturnDetail.unitName);
+                            $("[data-name=unit-price-" + index + "]", tableBody).text(saleReturnDetail.saleInvoiceDetailUnitPrice);
+                            $("[data-name=total-" + index + "]", tableBody).text(saleReturnDetail.total);
+                        });
+                        $("[data-name=total-quantity]", tableFoot).text(data.totalQuantity);
+                        $("[data-name=sub-total]", tableFoot).text(data.subTotal);
+                        $("[data-name=tax-percentage]", tableFoot).text(data.taxPercentage);
+                        $("[data-name=tax-nominal]", tableFoot).text(data.taxNominal);
+                        $("[data-name=grand-total]", tableFoot).text(data.grandTotal);
+                    }
+                });
+            }
+            
+            var table = $("#sale-return-detail-list");
+            var tableBody = $("tbody", table);
+            var tableFoot = $("tfoot", table);
+            
+            tableBody.on("change", "[data-group-name=quantity]", function() {
+                bind();
+            });
+            tableFoot.on("change", "[data-name=is-tax]", function() {
+                bind();
+            });
+            tableFoot.on("change", "[data-name=shipping-fee]", function() {
+                bind();
+            });
+            tableBody.on("click", ".remove-sale-return-detail-prototype", function() {
+                $(this).closest("tr").remove();
+                bind();
+            });
+            
+            $("#sale-invoice-header-grid").on("click", "table[data-role=table] tbody tr", function() {
+                $("#sale-invoice-header-dialog").modal("hide");
+                $("#{{ form.saleInvoiceHeader.vars.id }}").val($(this).attr("data-field-id"));
+                $("[data-name=code-number]", "#sale-invoice-header-info").text($(this).attr("data-field-code-number"));
+                $("[data-name=transaction-date]", "#sale-invoice-header-info").text($(this).attr("data-field-transaction-date"));
+                $("[data-name=customer-name]", "#sale-invoice-header-info").text($(this).attr("data-field-customer-name"));
+                tableBody.empty();
+                var name = "{{ form.saleReturnDetails.vars.prototype.vars.name }}";
+                var saleInvoiceDetailsCount = parseInt($(this).attr("data-field-sale-invoice-details-count"));
+                for (var i = 0; i < saleInvoiceDetailsCount; i++) {
+                    tableBody.appendByPrototype(tableBody.attr("data-prototype"), name, i);
+                }
+                bind();
+            });
+        });
+    </script>
 {% endblock %}

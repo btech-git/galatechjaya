@@ -49,7 +49,6 @@ class PurchaseInvoiceDetail
     private $receiveDetail;
     /**
      * @ORM\OneToMany(targetEntity="PurchaseReturnDetail", mappedBy="purchaseInvoiceDetail")
-     * @Assert\Valid() @Assert\Count(min=1)
      */
     private $purchaseReturnDetails;
     
@@ -80,4 +79,9 @@ class PurchaseInvoiceDetail
 
     public function getPurchaseReturnDetails() { return $this->purchaseReturnDetails; }
     public function setPurchaseReturnDetails(Collection $purchaseReturnDetails) { $this->purchaseReturnDetails = $purchaseReturnDetails; }
+    
+    public function sync()
+    {
+        $this->total = $this->quantity * $this->unitPrice * (1 - $this->discount / 100);
+    }
 }

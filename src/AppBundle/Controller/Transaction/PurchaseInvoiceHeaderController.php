@@ -45,27 +45,31 @@ class PurchaseInvoiceHeaderController extends Controller
     }
 
     /**
-     * @Route("/new", name="transaction_purchase_invoice_header_new")
+     * @Route("/new.{_format}", name="transaction_purchase_invoice_header_new")
      * @Method({"GET", "POST"})
      * @Security("has_role('ROLE_TRANSACTION')")
      */
-    public function newAction(Request $request)
+    public function newAction(Request $request, $_format = 'html')
     {
         $purchaseInvoiceHeader = new PurchaseInvoiceHeader();
-        $form = $this->createForm(PurchaseInvoiceHeaderType::class, $purchaseInvoiceHeader);
+        
+        $purchaseInvoiceHeaderService = $this->get('app.transaction.purchase_invoice_header_form');
+        $form = $this->createForm(PurchaseInvoiceHeaderType::class, $purchaseInvoiceHeader, array(
+            'service' => $purchaseInvoiceHeaderService,
+            'init' => array('year' => date('y'), 'month' => date('m'), 'staff' => $this->getUser()),
+        ));
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $repository = $em->getRepository(PurchaseInvoiceHeader::class);
-            $repository->add($purchaseInvoiceHeader);
+        if ($_format === 'html' && $form->isSubmitted() && $form->isValid()) {
+            $purchaseInvoiceHeaderService->save($purchaseInvoiceHeader);
 
             return $this->redirectToRoute('transaction_purchase_invoice_header_show', array('id' => $purchaseInvoiceHeader->getId()));
         }
 
-        return $this->render('transaction/purchase_invoice_header/new.html.twig', array(
+        return $this->render('transaction/purchase_invoice_header/new.'.$_format.'.twig', array(
             'purchaseInvoiceHeader' => $purchaseInvoiceHeader,
             'form' => $form->createView(),
+            'purchaseInvoiceDetailsCount' => 0,
         ));
     }
 
@@ -82,26 +86,31 @@ class PurchaseInvoiceHeaderController extends Controller
     }
 
     /**
-     * @Route("/{id}/edit", name="transaction_purchase_invoice_header_edit", requirements={"id": "\d+"})
+     * @Route("/{id}/edit.{_format}", name="transaction_purchase_invoice_header_edit", requirements={"id": "\d+"})
      * @Method({"GET", "POST"})
      * @Security("has_role('ROLE_TRANSACTION')")
      */
-    public function editAction(Request $request, PurchaseInvoiceHeader $purchaseInvoiceHeader)
+    public function editAction(Request $request, PurchaseInvoiceHeader $purchaseInvoiceHeader, $_format = 'html')
     {
-        $form = $this->createForm(PurchaseInvoiceHeaderType::class, $purchaseInvoiceHeader);
+        $purchaseInvoiceDetailsCount = $purchaseInvoiceHeader->getPurchaseInvoiceDetails()->count();
+        
+        $purchaseInvoiceHeaderService = $this->get('app.transaction.purchase_invoice_header_form');
+        $form = $this->createForm(PurchaseInvoiceHeaderType::class, $purchaseInvoiceHeader, array(
+            'service' => $purchaseInvoiceHeaderService,
+            'init' => array('year' => date('y'), 'month' => date('m'), 'staff' => $this->getUser()),
+        ));
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $repository = $em->getRepository(PurchaseInvoiceHeader::class);
-            $repository->update($purchaseInvoiceHeader);
+        if ($_format === 'html' && $form->isSubmitted() && $form->isValid()) {
+            $purchaseInvoiceHeaderService->save($purchaseInvoiceHeader);
 
             return $this->redirectToRoute('transaction_purchase_invoice_header_show', array('id' => $purchaseInvoiceHeader->getId()));
         }
 
-        return $this->render('transaction/purchase_invoice_header/edit.html.twig', array(
+        return $this->render('transaction/purchase_invoice_header/edit.'.$_format.'.twig', array(
             'purchaseInvoiceHeader' => $purchaseInvoiceHeader,
             'form' => $form->createView(),
+            'purchaseInvoiceDetailsCount' => $purchaseInvoiceDetailsCount,
         ));
     }
 
@@ -112,14 +121,13 @@ class PurchaseInvoiceHeaderController extends Controller
      */
     public function deleteAction(Request $request, PurchaseInvoiceHeader $purchaseInvoiceHeader)
     {
+        $purchaseInvoiceHeaderService = $this->get('app.transaction.purchase_invoice_header_form');
         $form = $this->createFormBuilder()->getForm();
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
             if ($form->isValid()) {
-                $em = $this->getDoctrine()->getManager();
-                $repository = $em->getRepository(PurchaseInvoiceHeader::class);
-                $repository->remove($purchaseInvoiceHeader);
+                $purchaseInvoiceHeaderService->delete($purchaseInvoiceHeader);
 
                 $this->addFlash('success', array('title' => 'Success!', 'message' => 'The record was deleted successfully.'));
             } else {

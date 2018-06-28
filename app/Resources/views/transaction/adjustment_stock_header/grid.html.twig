@@ -5,7 +5,9 @@
 <table data-role="table" class="table table-bordered table-striped table-condensed table-hover">
     <thead>
         <tr data-action="sort" class="alert alert-info">
-            <th data-group="adjustmentStockHeader" data-field="transactionDate">Transaction Date</th>
+            <th data-group="adjustmentStockHeader" data-field="codeNumber">Penyesuaian #</th>
+            <th data-group="adjustmentStockHeader" data-field="transactionDate">Tanggal</th>
+            <th data-group="warehouse" data-field="name">Gudang</th>
             <th data-group="adjustmentStockHeader" data-field="note">Note</th>
             <th></th>
         </tr>
@@ -13,7 +15,9 @@
     <tbody>
         {% for adjustmentStockHeader in grid.data %}
             <tr data-field-id="{{ adjustmentStockHeader.id }}">
-                <td class="text-left">{{ adjustmentStockHeader.transactionDate|default ? adjustmentStockHeader.transactionDate|date('Y-m-d') }}</td>
+                <td class="text-left">{{ adjustmentStockHeader.codeNumber|default }}</td>
+                <td class="text-left">{{ adjustmentStockHeader.transactionDate|default ? adjustmentStockHeader.transactionDate|date('j F Y') }}</td>
+                <td class="text-left">{{ adjustmentStockHeader.warehouse.name|default }}</td>
                 <td class="text-left">{{ adjustmentStockHeader.note|default }}</td>
                 <td class="text-left">
                     {{ include('transaction/actions.html.twig', {
@@ -29,7 +33,7 @@
             </tr>
         {% else %}
             <tr>
-                <td colspan="3" class="alert alert-warning">
+                <td colspan="5" class="alert alert-warning">
                     <strong>There are no items to display.</strong>
                 </td>
             </tr>

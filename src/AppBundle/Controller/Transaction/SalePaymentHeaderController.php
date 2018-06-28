@@ -8,6 +8,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use AppBundle\Entity\Transaction\SalePaymentHeader;
+use AppBundle\Entity\Master\Account;
 use AppBundle\Form\Transaction\SalePaymentHeaderType;
 use AppBundle\Grid\Transaction\SalePaymentHeaderGridType;
 
@@ -45,27 +46,32 @@ class SalePaymentHeaderController extends Controller
     }
 
     /**
-     * @Route("/new", name="transaction_sale_payment_header_new")
+     * @Route("/new.{_format}", name="transaction_sale_payment_header_new")
      * @Method({"GET", "POST"})
      * @Security("has_role('ROLE_TRANSACTION')")
      */
-    public function newAction(Request $request)
+    public function newAction(Request $request, $_format = 'html')
     {
         $salePaymentHeader = new SalePaymentHeader();
-        $form = $this->createForm(SalePaymentHeaderType::class, $salePaymentHeader);
+        
+        $salePaymentHeaderService = $this->get('app.transaction.sale_payment_header_form');
+        $form = $this->createForm(SalePaymentHeaderType::class, $salePaymentHeader, array(
+            'service' => $salePaymentHeaderService,
+            'init' => array('year' => date('y'), 'month' => date('m'), 'staff' => $this->getUser()),
+            'accountRepository' => $this->getDoctrine()->getManager()->getRepository(Account::class),
+        ));
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $repository = $em->getRepository(SalePaymentHeader::class);
-            $repository->add($salePaymentHeader);
+        if ($_format === 'html' && $form->isSubmitted() && $form->isValid()) {
+            $salePaymentHeaderService->save($salePaymentHeader);
 
             return $this->redirectToRoute('transaction_sale_payment_header_show', array('id' => $salePaymentHeader->getId()));
         }
 
-        return $this->render('transaction/sale_payment_header/new.html.twig', array(
+        return $this->render('transaction/sale_payment_header/new.'.$_format.'.twig', array(
             'salePaymentHeader' => $salePaymentHeader,
             'form' => $form->createView(),
+            'salePaymentDetailsCount' => 0,
         ));
     }
 
@@ -82,26 +88,32 @@ class SalePaymentHeaderController extends Controller
     }
 
     /**
-     * @Route("/{id}/edit", name="transaction_sale_payment_header_edit", requirements={"id": "\d+"})
+     * @Route("/{id}/edit.{_format}", name="transaction_sale_payment_header_edit", requirements={"id": "\d+"})
      * @Method({"GET", "POST"})
      * @Security("has_role('ROLE_TRANSACTION')")
      */
-    public function editAction(Request $request, SalePaymentHeader $salePaymentHeader)
+    public function editAction(Request $request, SalePaymentHeader $salePaymentHeader, $_format = 'html')
     {
-        $form = $this->createForm(SalePaymentHeaderType::class, $salePaymentHeader);
+        $salePaymentDetailsCount = $salePaymentHeader->getSalePaymentDetails()->count();
+        
+        $salePaymentHeaderService = $this->get('app.transaction.sale_payment_header_form');
+        $form = $this->createForm(SalePaymentHeaderType::class, $salePaymentHeader, array(
+            'service' => $salePaymentHeaderService,
+            'init' => array('year' => date('y'), 'month' => date('m'), 'staff' => $this->getUser()),
+            'accountRepository' => $this->getDoctrine()->getManager()->getRepository(Account::class),
+        ));
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $repository = $em->getRepository(SalePaymentHeader::class);
-            $repository->update($salePaymentHeader);
+        if ($_format === 'html' && $form->isSubmitted() && $form->isValid()) {
+            $salePaymentHeaderService->save($salePaymentHeader);
 
             return $this->redirectToRoute('transaction_sale_payment_header_show', array('id' => $salePaymentHeader->getId()));
         }
 
-        return $this->render('transaction/sale_payment_header/edit.html.twig', array(
+        return $this->render('transaction/sale_payment_header/edit.'.$_format.'.twig', array(
             'salePaymentHeader' => $salePaymentHeader,
             'form' => $form->createView(),
+            'salePaymentDetailsCount' => $salePaymentDetailsCount,
         ));
     }
 
@@ -112,14 +124,13 @@ class SalePaymentHeaderController extends Controller
      */
     public function deleteAction(Request $request, SalePaymentHeader $salePaymentHeader)
     {
+        $salePaymentHeaderService = $this->get('app.transaction.sale_payment_header_form');
         $form = $this->createFormBuilder()->getForm();
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
             if ($form->isValid()) {
-                $em = $this->getDoctrine()->getManager();
-                $repository = $em->getRepository(SalePaymentHeader::class);
-                $repository->remove($salePaymentHeader);
+                $salePaymentHeaderService->delete($salePaymentHeader);
 
                 $this->addFlash('success', array('title' => 'Success!', 'message' => 'The record was deleted successfully.'));
             } else {

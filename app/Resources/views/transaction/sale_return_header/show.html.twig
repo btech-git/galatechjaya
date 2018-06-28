@@ -10,33 +10,82 @@
     <table class="table table-bordered table-striped">
         <tbody>
             <tr>
-                <th>Transaction Date</th>
-                <td>{{ saleReturnHeader.transactionDate|default ? saleReturnHeader.transactionDate|date('Y-m-d') }}</td>
+                <th>Retur #</th>
+                <td>{{ saleReturnHeader.codeNumber|default }}</td>
+            </tr>
+            <tr>
+                <th>Tanggal</th>
+                <td>{{ saleReturnHeader.transactionDate|default ? saleReturnHeader.transactionDate|date('j F Y') }}</td>
+            </tr>
+            <tr>
+                <th>Invoice #</th>
+                <td>{{ saleReturnHeader.saleInvoiceHeader.codeNumber|default }}</td>
+            </tr>
+            <tr>
+                <th>Tanggal Invoice</th>
+                <td>{{ saleReturnHeader.saleInvoiceHeader.transactionDate|default ? saleReturnHeader.saleInvoiceHeader.transactionDate|date('j F Y') }}</td>
+            </tr>
+            <tr>
+                <th>Customer</th>
+                <td>{{ saleReturnHeader.saleInvoiceHeader.customer.name|default }}</td>
             </tr>
             <tr>
                 <th>Note</th>
                 <td>{{ saleReturnHeader.note|default }}</td>
             </tr>
-            <tr>
-                <th>Sub Total</th>
-                <td>{{ saleReturnHeader.subTotal|default|number_format(2) }}</td>
-            </tr>
-            <tr>
-                <th>Tax Nominal</th>
-                <td>{{ saleReturnHeader.taxNominal|default|number_format(2) }}</td>
-            </tr>
-            <tr>
-                <th>Shipping Fee</th>
-                <td>{{ saleReturnHeader.shippingFee|default|number_format(2) }}</td>
-            </tr>
-            <tr>
-                <th>Grand Total</th>
-                <td>{{ saleReturnHeader.grandTotal|default|number_format(2) }}</td>
-            </tr>
-            <tr>
-                <th>Is Tax</th>
-                <td>{{ saleReturnHeader.isTax|default ? 'Yes' : 'No' }}</td>
-            </tr>
         </tbody>
+    </table>
+                              
+    <hr />
+           
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr class="bg-info">
+                <th>Nama Barang</th>
+                <th style="width: 10%">Ukuran</th>
+                <th style="width: 5%">Satuan</th>
+                <th style="width: 10%">Qty</th>
+                <th style="width: 10%">Harga</th>
+                <th style="width: 15%">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for saleReturnDetail in saleReturnHeader.saleReturnDetails %}
+                <tr>
+                    <td class="text-left">{{ saleReturnDetail.saleInvoiceDetail.itemName|default }}</td>
+                    <td class="text-left">{{ saleReturnDetail.saleInvoiceDetail.product.size|default }}</td>
+                    <td class="text-left">{{ saleReturnDetail.saleInvoiceDetail.product.unit.name|default }}</td>
+                    <td class="text-center">{{ saleReturnDetail.quantity|default|number_format(0) }}</td>
+                    <td class="text-right">{{ saleReturnDetail.unitPrice|default|number_format(2) }}</td>
+                    <td class="text-right">{{ saleReturnDetail.total|default|number_format(2) }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td class="text-right" colspan="3">Sub Total</td>
+                <td class="text-center">{{ saleReturnHeader.totalQuantity|default|number_format(0) }}</td>
+                <td class="text-right">&nbsp;</td>
+                <td class="text-right">{{ saleReturnHeader.subTotal|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <td class="text-right" colspan="5">
+                    <span style="display: inline-block">PPn</span>
+                    <span style="display: inline-block">
+                        {{ saleReturnHeader.isTax|default ? '10' : '0'  }}
+                    </span>
+                    <span style="display: inline-block">%</span>
+                </td>
+                <td class="text-right">{{ saleReturnHeader.taxNominal|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <td class="text-right" colspan="5">Ongkos Kirim</td>
+                <td class="text-right">{{ saleReturnHeader.shippingFee|default|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <td class="text-right" colspan="5">Grand Total</td>
+                <td class="text-right">{{ saleReturnHeader.grandTotal|default|number_format(2) }}</td>
+            </tr>
+        </tfoot>
     </table>
 {% endblock %}

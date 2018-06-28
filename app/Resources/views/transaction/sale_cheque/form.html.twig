@@ -6,7 +6,67 @@
 
 {% block content %}
     {{ form_start(form) }}
-        {{ form_widget(form) }}
+        <div>{{ form_errors(form) }}</div>
+        <div class="row">
+            <div class="col-sm-6">
+                {{ form_row(form.transactionDate, {'label': 'Tanggal'}) }}
+                {{ form_row(form.dateDue, {'label': 'Jatuh Tempo'}) }}
+                {{ form_row(form.chequeNumber, {'label': 'Cek/Giro #'}) }}
+            </div>
+            <div class="col-sm-6">
+                {{ form_row(form.saleReceiptHeader, {'attr': {'readonly': true, 'data-toggle': 'modal', 'data-target': '#sale-receipt-header-dialog'} }) }}
+                <div class="form-group" id="sale-receipt-header-info">
+                    <div>
+                        <label>Tanda Terima #:</label>
+                        <span data-name="code-number">{{ saleCheque.saleReceiptHeader.codeNumber|default }}</span>
+                    </div>
+                    <div>
+                        <label>Tanggal:</label>
+                        <span data-name="transaction-date">{{ saleCheque.saleReceiptHeader.transactionDate|default ? saleCheque.saleReceiptHeader.transactionDate|date('j M Y') }}</span>
+                    </div>
+                    <div>
+                        <label>Customer:</label>
+                        <span data-name="customer-name">{{ saleCheque.saleReceiptHeader.customer.name|default }}</span>
+                    </div>
+                </div>
+                {{ form_row(form.bank, {'label': 'Bank'}) }}
+                {{ form_row(form.amount, {'label': 'Jumlah'}) }}
+            </div>
+        </div>
+        
+        <div>{{ form_row(form.note) }}</div>
+            
+        <hr />
+        
         <input class="btn btn-primary navbar-inverse" type="submit" value="Save" data-confirm="Do you want to proceed?" />
+               
+        <div id="sale-receipt-header-dialog" class="modal fade" role="dialog">
+            <div class="modal-dialog modal-lg" style="width: 90%">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Sale Receipt Header List</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div id="sale-receipt-header-grid" data-grid="{{ path('common_sale_receipt_header_grid', {'form': form.vars.id}) }}"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
     {{ form_end(form) }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        jQuery(function($) {
+            $("#sale-receipt-header-grid").on("click", "table[data-role=table] tbody tr", function() {
+                $("#sale-receipt-header-dialog").modal("hide");
+                $("#{{ form.saleReceiptHeader.vars.id }}").val($(this).attr("data-field-id"));
+                $("[data-name=code-number]", "#sale-receipt-header-info").text($(this).attr("data-field-code-number"));
+                $("[data-name=transaction-date]", "#sale-receipt-header-info").text($(this).attr("data-field-transaction-date"));
+                $("[data-name=customer-name]", "#sale-receipt-header-info").text($(this).attr("data-field-customer-name"));
+            });
+        });
+    </script>
 {% endblock %}

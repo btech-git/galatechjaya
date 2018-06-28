@@ -85,7 +85,7 @@ class SaleReturnHeader extends CodeNumberEntity
         $this->saleReturnDetails = new ArrayCollection();
     }
     
-    public function getCodeNumberConstant() { return 'PRT'; }
+    public function getCodeNumberConstant() { return 'SRT'; }
     
     public function getId() { return $this->id; }
     
@@ -124,4 +124,20 @@ class SaleReturnHeader extends CodeNumberEntity
 
     public function getSaleReturnDetails() { return $this->saleReturnDetails; }
     public function setSaleReturnDetails(Collection $saleReturnDetails) { $this->saleReturnDetails = $saleReturnDetails; }
+    
+    public function sync()
+    {
+        $totalQuantity = 0.00;
+        $subTotal = 0.00;
+        foreach ($this->saleReturnDetails as $saleReturnDetail) {
+            $saleReturnDetail->sync();
+            $totalQuantity += $saleReturnDetail->getQuantity();
+            $subTotal += $saleReturnDetail->getTotal();
+        }
+        $this->totalQuantity = $totalQuantity;
+        $this->subTotal = $subTotal;
+        $this->isTax = $this->getSaleInvoiceHeader()->getIsTax();
+        $this->taxNominal = ($this->isTax ? $this->subTotal * 10 / 100 : 0);
+        $this->grandTotal = $this->subTotal + $this->taxNominal + $this->shippingFee;
+    }
 }

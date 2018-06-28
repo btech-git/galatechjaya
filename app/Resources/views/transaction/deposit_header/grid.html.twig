@@ -5,7 +5,9 @@
 <table data-role="table" class="table table-bordered table-striped table-condensed table-hover">
     <thead>
         <tr data-action="sort" class="alert alert-info">
-            <th data-group="depositHeader" data-field="transactionDate">Transaction Date</th>
+            <th data-group="depositHeader" data-field="codeNumber">Penerimaan #</th>
+            <th data-group="depositHeader" data-field="transactionDate">Tanggal</th>
+            <th data-group="account" data-field="name">Akun</th>
             <th data-group="depositHeader" data-field="note">Note</th>
             <th data-group="depositHeader" data-field="totalAmount">Total Amount</th>
             <th></th>
@@ -14,7 +16,9 @@
     <tbody>
         {% for depositHeader in grid.data %}
             <tr data-field-id="{{ depositHeader.id }}">
-                <td class="text-left">{{ depositHeader.transactionDate|default ? depositHeader.transactionDate|date('Y-m-d') }}</td>
+                <td class="text-left">{{ depositHeader.codeNumber|default }}</td>
+                <td class="text-left">{{ depositHeader.transactionDate|default ? depositHeader.transactionDate|date('j F Y') }}</td>
+                <td class="text-left">{{ depositHeader.account.name|default }}</td>
                 <td class="text-left">{{ depositHeader.note|default }}</td>
                 <td class="text-right">{{ depositHeader.totalAmount|default|number_format(2) }}</td>
                 <td class="text-left">
@@ -31,7 +35,7 @@
             </tr>
         {% else %}
             <tr>
-                <td colspan="4" class="alert alert-warning">
+                <td colspan="6" class="alert alert-warning">
                     <strong>There are no items to display.</strong>
                 </td>
             </tr>

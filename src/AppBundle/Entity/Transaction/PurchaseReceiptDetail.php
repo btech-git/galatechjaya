@@ -48,4 +48,9 @@ class PurchaseReceiptDetail
     
     public function getPurchaseReceiptHeader() { return $this->purchaseReceiptHeader; }
     public function setPurchaseReceiptHeader(PurchaseReceiptHeader $purchaseReceiptHeader = null) { $this->purchaseReceiptHeader = $purchaseReceiptHeader; }
+    
+    public function sync()
+    {
+        $this->amount = $this->purchaseInvoiceHeader->getGrandTotal();
+    }
 }

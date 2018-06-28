@@ -37,13 +37,8 @@
         <div>{{ form_errors(form) }}</div>
         <div class="row">
             <div class="col-sm-6">
-                <div class="form-group">
-                    <label>Penerimaan #</label>
-                    <div>{{ receiveHeader.codeNumber }}</div>
-                </div>
                 {{ form_row(form.transactionDate, {'label': 'Tanggal'}) }}
                 {{ form_row(form.reference, {'label': 'SJ #'}) }}
-                {{ form_row(form.warehouse, {'label': 'Gudang'}) }}
             </div>
             <div class="col-sm-6">
                 {{ form_row(form.purchaseOrderHeader, {'attr': {'readonly': true, 'data-toggle': 'modal', 'data-target': '#purchase-order-header-dialog'} }) }}
@@ -61,6 +56,7 @@
                         <span data-name="supplier-name">{{ receiveHeader.purchaseOrderHeader.supplier.name|default }}</span>
                     </div>
                 </div>
+                {{ form_row(form.warehouse, {'label': 'Gudang'}) }}
             </div>
         </div>
         
@@ -73,11 +69,11 @@
                 <tr class="bg-info">
                     <th class="hide">Purchase Order Detail</th>
                     <th>Nama Barang</th>
-                    <th>Ukuran</th>
-                    <th>Satuan</th>
-                    <th>Qty Order</th>
-                    <th>Qty Remaining</th>
-                    <th>Qty Diterima</th>
+                    <th style="width: 15%">Ukuran</th>
+                    <th style="width: 10%">Satuan</th>
+                    <th style="width: 10%">Qty Order</th>
+                    <th style="width: 10%">Qty Sisa</th>
+                    <th style="width: 10%">Qty Terima</th>
                 </tr>
             </thead>
             <tbody data-prototype="{{ self.details_row(form.receiveDetails.vars.prototype)|e }}">

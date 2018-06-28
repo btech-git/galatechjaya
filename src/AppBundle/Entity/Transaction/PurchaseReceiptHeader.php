@@ -76,7 +76,7 @@ class PurchaseReceiptHeader extends CodeNumberEntity
         $this->purchasePaymentDetails = new ArrayCollection();
     }
     
-    public function getCodeNumberConstant() { return 'PRC'; }
+    public function getCodeNumberConstant() { return 'PTT'; }
     
     public function getId() { return $this->id; }
     
@@ -109,4 +109,16 @@ class PurchaseReceiptHeader extends CodeNumberEntity
     
     public function getPurchasePaymentDetails() { return $this->purchasePaymentDetails; }
     public function setPurchasePaymentDetails(Collection $purchasePaymentDetails) { $this->purchasePaymentDetails = $purchasePaymentDetails; }
+    
+    public function sync()
+    {
+        $grandTotal = 0.00;
+        foreach ($this->purchaseReceiptDetails as $purchaseReceiptDetail) {
+            $purchaseReceiptDetail->sync();
+            $grandTotal += $purchaseReceiptDetail->getAmount();
+        }
+        $this->grandTotal = $grandTotal;
+        $this->totalPayment = 0.00;
+        $this->remaining = $grandTotal;
+    }
 }

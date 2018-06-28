@@ -5,26 +5,24 @@
 <table data-role="table" class="table table-bordered table-striped table-condensed table-hover">
     <thead>
         <tr data-action="sort" class="alert alert-info">
-            <th data-group="purchaseReturnHeader" data-field="transactionDate">Transaction Date</th>
+            <th data-group="purchaseReturnHeader" data-field="codeNumber">Retur #</th>
+            <th data-group="purchaseReturnHeader" data-field="transactionDate">Tanggal</th>
+            <th data-group="supplier" data-field="name">Supplier</th>
+            <th data-group="purchaseInvoiceHeader" data-field="codeNumber">Invoice #</th>
             <th data-group="purchaseReturnHeader" data-field="note">Note</th>
-            <th data-group="purchaseReturnHeader" data-field="subTotal">Sub Total</th>
-            <th data-group="purchaseReturnHeader" data-field="taxNominal">Tax Nominal</th>
-            <th data-group="purchaseReturnHeader" data-field="shippingFee">Shipping Fee</th>
             <th data-group="purchaseReturnHeader" data-field="grandTotal">Grand Total</th>
-            <th data-group="purchaseReturnHeader" data-field="isTax">Is Tax</th>
             <th></th>
         </tr>
     </thead>
     <tbody>
         {% for purchaseReturnHeader in grid.data %}
             <tr data-field-id="{{ purchaseReturnHeader.id }}">
-                <td class="text-left">{{ purchaseReturnHeader.transactionDate|default ? purchaseReturnHeader.transactionDate|date('Y-m-d') }}</td>
+                <td class="text-left">{{ purchaseReturnHeader.codeNumber|default }}</td>
+                <td class="text-left">{{ purchaseReturnHeader.transactionDate|default ? purchaseReturnHeader.transactionDate|date('j F Y') }}</td>
+                <td class="text-left">{{ purchaseReturnHeader.purchaseInvoiceHeader.receiveHeader.purchaseOrderHeader.supplier.name|default }}</td>
+                <td class="text-left">{{ purchaseReturnHeader.purchaseInvoiceHeader.codeNumber|default }}</td>
                 <td class="text-left">{{ purchaseReturnHeader.note|default }}</td>
-                <td class="text-right">{{ purchaseReturnHeader.subTotal|default|number_format(2) }}</td>
-                <td class="text-right">{{ purchaseReturnHeader.taxNominal|default|number_format(2) }}</td>
-                <td class="text-right">{{ purchaseReturnHeader.shippingFee|default|number_format(2) }}</td>
                 <td class="text-right">{{ purchaseReturnHeader.grandTotal|default|number_format(2) }}</td>
-                <td class="text-left">{{ purchaseReturnHeader.isTax|default ? 'Yes' : 'No' }}</td>
                 <td class="text-left">
                     {{ include('transaction/actions.html.twig', {
                         'contents': {
@@ -39,7 +37,7 @@
             </tr>
         {% else %}
             <tr>
-                <td colspan="8" class="alert alert-warning">
+                <td colspan="7" class="alert alert-warning">
                     <strong>There are no items to display.</strong>
                 </td>
             </tr>

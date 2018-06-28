@@ -45,27 +45,31 @@ class JournalVoucherHeaderController extends Controller
     }
 
     /**
-     * @Route("/new", name="transaction_journal_voucher_header_new")
+     * @Route("/new.{_format}", name="transaction_journal_voucher_header_new")
      * @Method({"GET", "POST"})
      * @Security("has_role('ROLE_TRANSACTION')")
      */
-    public function newAction(Request $request)
+    public function newAction(Request $request, $_format = 'html')
     {
         $journalVoucherHeader = new JournalVoucherHeader();
-        $form = $this->createForm(JournalVoucherHeaderType::class, $journalVoucherHeader);
+        
+        $journalVoucherHeaderService = $this->get('app.transaction.journal_voucher_header_form');
+        $form = $this->createForm(JournalVoucherHeaderType::class, $journalVoucherHeader, array(
+            'service' => $journalVoucherHeaderService,
+            'init' => array('year' => date('y'), 'month' => date('m'), 'staff' => $this->getUser()),
+        ));
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $repository = $em->getRepository(JournalVoucherHeader::class);
-            $repository->add($journalVoucherHeader);
+        if ($_format === 'html' && $form->isSubmitted() && $form->isValid()) {
+            $journalVoucherHeaderService->save($journalVoucherHeader);
 
             return $this->redirectToRoute('transaction_journal_voucher_header_show', array('id' => $journalVoucherHeader->getId()));
         }
 
-        return $this->render('transaction/journal_voucher_header/new.html.twig', array(
+        return $this->render('transaction/journal_voucher_header/new.'.$_format.'.twig', array(
             'journalVoucherHeader' => $journalVoucherHeader,
             'form' => $form->createView(),
+            'journalVoucherDetailsCount' => 0,
         ));
     }
 
@@ -82,26 +86,31 @@ class JournalVoucherHeaderController extends Controller
     }
 
     /**
-     * @Route("/{id}/edit", name="transaction_journal_voucher_header_edit", requirements={"id": "\d+"})
+     * @Route("/{id}/edit.{_format}", name="transaction_journal_voucher_header_edit", requirements={"id": "\d+"})
      * @Method({"GET", "POST"})
      * @Security("has_role('ROLE_TRANSACTION')")
      */
-    public function editAction(Request $request, JournalVoucherHeader $journalVoucherHeader)
+    public function editAction(Request $request, JournalVoucherHeader $journalVoucherHeader, $_format = 'html')
     {
-        $form = $this->createForm(JournalVoucherHeaderType::class, $journalVoucherHeader);
+        $journalVoucherDetailsCount = $journalVoucherHeader->getJournalVoucherDetails()->count();
+        
+        $journalVoucherHeaderService = $this->get('app.transaction.journal_voucher_header_form');
+        $form = $this->createForm(JournalVoucherHeaderType::class, $journalVoucherHeader, array(
+            'service' => $journalVoucherHeaderService,
+            'init' => array('year' => date('y'), 'month' => date('m'), 'staff' => $this->getUser()),
+        ));
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $repository = $em->getRepository(JournalVoucherHeader::class);
-            $repository->update($journalVoucherHeader);
+        if ($_format === 'html' && $form->isSubmitted() && $form->isValid()) {
+            $journalVoucherHeaderService->save($journalVoucherHeader);
 
             return $this->redirectToRoute('transaction_journal_voucher_header_show', array('id' => $journalVoucherHeader->getId()));
         }
 
-        return $this->render('transaction/journal_voucher_header/edit.html.twig', array(
+        return $this->render('transaction/journal_voucher_header/edit.'.$_format.'.twig', array(
             'journalVoucherHeader' => $journalVoucherHeader,
             'form' => $form->createView(),
+            'journalVoucherDetailsCount' => $journalVoucherDetailsCount,
         ));
     }
 
@@ -112,14 +121,13 @@ class JournalVoucherHeaderController extends Controller
      */
     public function deleteAction(Request $request, JournalVoucherHeader $journalVoucherHeader)
     {
+        $journalVoucherHeaderService = $this->get('app.transaction.journal_voucher_header_form');
         $form = $this->createFormBuilder()->getForm();
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
             if ($form->isValid()) {
-                $em = $this->getDoctrine()->getManager();
-                $repository = $em->getRepository(JournalVoucherHeader::class);
-                $repository->remove($journalVoucherHeader);
+                $journalVoucherHeaderService->delete($journalVoucherHeader);
 
                 $this->addFlash('success', array('title' => 'Success!', 'message' => 'The record was deleted successfully.'));
             } else {

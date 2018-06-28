@@ -18,6 +18,10 @@
                 <td>{{ account.name|default }}</td>
             </tr>
             <tr>
+                <th>Is Cash Or Bank</th>
+                <td>{{ account.isCashOrBank|default ? 'Yes' : 'No' }}</td>
+            </tr>
+            <tr>
                 <th>Is Active</th>
                 <td>{{ account.isActive|default ? 'Yes' : 'No' }}</td>
             </tr>

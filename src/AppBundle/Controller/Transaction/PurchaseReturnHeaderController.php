@@ -45,27 +45,31 @@ class PurchaseReturnHeaderController extends Controller
     }
 
     /**
-     * @Route("/new", name="transaction_purchase_return_header_new")
+     * @Route("/new.{_format}", name="transaction_purchase_return_header_new")
      * @Method({"GET", "POST"})
      * @Security("has_role('ROLE_TRANSACTION')")
      */
-    public function newAction(Request $request)
+    public function newAction(Request $request, $_format = 'html')
     {
         $purchaseReturnHeader = new PurchaseReturnHeader();
-        $form = $this->createForm(PurchaseReturnHeaderType::class, $purchaseReturnHeader);
+        
+        $purchaseReturnHeaderService = $this->get('app.transaction.purchase_return_header_form');
+        $form = $this->createForm(PurchaseReturnHeaderType::class, $purchaseReturnHeader, array(
+            'service' => $purchaseReturnHeaderService,
+            'init' => array('year' => date('y'), 'month' => date('m'), 'staff' => $this->getUser()),
+        ));
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $repository = $em->getRepository(PurchaseReturnHeader::class);
-            $repository->add($purchaseReturnHeader);
+        if ($_format === 'html' && $form->isSubmitted() && $form->isValid()) {
+            $purchaseReturnHeaderService->save($purchaseReturnHeader);
 
             return $this->redirectToRoute('transaction_purchase_return_header_show', array('id' => $purchaseReturnHeader->getId()));
         }
 
-        return $this->render('transaction/purchase_return_header/new.html.twig', array(
+        return $this->render('transaction/purchase_return_header/new.'.$_format.'.twig', array(
             'purchaseReturnHeader' => $purchaseReturnHeader,
             'form' => $form->createView(),
+            'purchaseReturnDetailsCount' => 0,
         ));
     }
 
@@ -82,26 +86,31 @@ class PurchaseReturnHeaderController extends Controller
     }
 
     /**
-     * @Route("/{id}/edit", name="transaction_purchase_return_header_edit", requirements={"id": "\d+"})
+     * @Route("/{id}/edit.{_format}", name="transaction_purchase_return_header_edit", requirements={"id": "\d+"})
      * @Method({"GET", "POST"})
      * @Security("has_role('ROLE_TRANSACTION')")
      */
-    public function editAction(Request $request, PurchaseReturnHeader $purchaseReturnHeader)
+    public function editAction(Request $request, PurchaseReturnHeader $purchaseReturnHeader, $_format = 'html')
     {
-        $form = $this->createForm(PurchaseReturnHeaderType::class, $purchaseReturnHeader);
+        $purchaseReturnDetailsCount = $purchaseReturnHeader->getPurchaseReturnDetails()->count();
+        
+        $purchaseReturnHeaderService = $this->get('app.transaction.purchase_return_header_form');
+        $form = $this->createForm(PurchaseReturnHeaderType::class, $purchaseReturnHeader, array(
+            'service' => $purchaseReturnHeaderService,
+            'init' => array('year' => date('y'), 'month' => date('m'), 'staff' => $this->getUser()),
+        ));
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $repository = $em->getRepository(PurchaseReturnHeader::class);
-            $repository->update($purchaseReturnHeader);
+        if ($_format === 'html' && $form->isSubmitted() && $form->isValid()) {
+            $purchaseReturnHeaderService->save($purchaseReturnHeader);
 
             return $this->redirectToRoute('transaction_purchase_return_header_show', array('id' => $purchaseReturnHeader->getId()));
         }
 
-        return $this->render('transaction/purchase_return_header/edit.html.twig', array(
+        return $this->render('transaction/purchase_return_header/edit.'.$_format.'.twig', array(
             'purchaseReturnHeader' => $purchaseReturnHeader,
             'form' => $form->createView(),
+            'purchaseReturnDetailsCount' => $purchaseReturnDetailsCount,
         ));
     }
 
@@ -112,14 +121,13 @@ class PurchaseReturnHeaderController extends Controller
      */
     public function deleteAction(Request $request, PurchaseReturnHeader $purchaseReturnHeader)
     {
+        $purchaseReturnHeaderService = $this->get('app.transaction.purchase_return_header_form');
         $form = $this->createFormBuilder()->getForm();
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
             if ($form->isValid()) {
-                $em = $this->getDoctrine()->getManager();
-                $repository = $em->getRepository(PurchaseReturnHeader::class);
-                $repository->remove($purchaseReturnHeader);
+                $purchaseReturnHeaderService->delete($purchaseReturnHeader);
 
                 $this->addFlash('success', array('title' => 'Success!', 'message' => 'The record was deleted successfully.'));
             } else {

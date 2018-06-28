@@ -6,17 +6,16 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use AppBundle\Entity\Transaction\AdjustmentStockDetail;
+use AppBundle\Entity\Master\Product;
+use LibBundle\Form\Type\EntityHiddenType;
 
 class AdjustmentStockDetailType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('quantityCurrent')
             ->add('quantityAdjustment')
-            ->add('quantityDifference')
-            ->add('product')
-            ->add('adjustmentStockHeader')
+            ->add('product', EntityHiddenType::class, array('class' => Product::class))
         ;
     }
 

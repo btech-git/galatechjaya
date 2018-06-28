@@ -142,4 +142,16 @@ class PurchaseOrderHeaderController extends Controller
             'form' => $form->createView(),
         ));
     }
+    
+    /**
+     * @Route("/{id}/memo", name="transaction_purchase_order_header_memo", requirements={"id": "\d+"})
+     * @Method("GET")
+     * @Security("has_role('ROLE_TRANSACTION')")
+     */
+    public function memoAction(PurchaseOrderHeader $purchaseOrderHeader)
+    {
+        return $this->render('transaction/purchase_order_header/memo.html.twig', array(
+            'purchaseOrderHeader' => $purchaseOrderHeader,
+        ));
+    }
 }
