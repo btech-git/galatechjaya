@@ -64,11 +64,18 @@ class ProductGridType extends DataGridType
     {
         list($criteria, $associations) = $this->getSpecifications($options);
 
-        $builder->processSearch(function($values, $operator, $field, $group) use ($criteria, &$associations) {
-            if ($group === 'productCategory' && $field === 'name' && $operator === ContainNonEmptyType::class && $values[0] !== null && $values[0] !== '') {
-                $associations['productCategory']['merge'] = true;
+        $builder->processSearch(function($values, $operator, $field, $group) use ($criteria) {
+            if ($group === 'product' && $field === 'name' && $operator === ContainNonEmptyType::class) {
+                if ($values[0] !== null && $values[0] !== '') {
+                    $parts = explode(' ', $values[0]);
+                    foreach ($parts as $part) {
+                        $expr = Criteria::expr();
+                        $criteria->andWhere($expr->contains($field, $part));
+                    }
+                }
+            } else {
+                $operator::search($criteria, $field, $values);
             }
-            $operator::search($criteria[$group], $field, $values);
         });
 
         $builder->processSort(function($operator, $field, $group) use ($criteria) {
