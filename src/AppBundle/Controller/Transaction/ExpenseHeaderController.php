@@ -8,6 +8,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use AppBundle\Entity\Transaction\ExpenseHeader;
+use AppBundle\Entity\Master\Account;
 use AppBundle\Form\Transaction\ExpenseHeaderType;
 use AppBundle\Grid\Transaction\ExpenseHeaderGridType;
 
@@ -19,7 +20,7 @@ class ExpenseHeaderController extends Controller
     /**
      * @Route("/grid", name="transaction_expense_header_grid", condition="request.isXmlHttpRequest()")
      * @Method("POST")
-     * @Security("has_role('ROLE_TRANSACTION')")
+     * @Security("has_role('ROLE_EXPENSE_HEADER_NEW') or has_role('ROLE_EXPENSE_HEADER_EDIT') or has_role('ROLE_EXPENSE_HEADER_DELETE')")
      */
     public function gridAction(Request $request)
     {
@@ -37,7 +38,7 @@ class ExpenseHeaderController extends Controller
     /**
      * @Route("/", name="transaction_expense_header_index")
      * @Method("GET")
-     * @Security("has_role('ROLE_TRANSACTION')")
+     * @Security("has_role('ROLE_EXPENSE_HEADER_NEW') or has_role('ROLE_EXPENSE_HEADER_EDIT') or has_role('ROLE_EXPENSE_HEADER_DELETE')")
      */
     public function indexAction()
     {
@@ -47,7 +48,7 @@ class ExpenseHeaderController extends Controller
     /**
      * @Route("/new.{_format}", name="transaction_expense_header_new")
      * @Method({"GET", "POST"})
-     * @Security("has_role('ROLE_TRANSACTION')")
+     * @Security("has_role('ROLE_EXPENSE_HEADER_NEW')")
      */
     public function newAction(Request $request, $_format = 'html')
     {
@@ -57,6 +58,7 @@ class ExpenseHeaderController extends Controller
         $form = $this->createForm(ExpenseHeaderType::class, $expenseHeader, array(
             'service' => $expenseHeaderService,
             'init' => array('year' => date('y'), 'month' => date('m'), 'staff' => $this->getUser()),
+            'accountRepository' => $this->getDoctrine()->getManager()->getRepository(Account::class),
         ));
         $form->handleRequest($request);
 
@@ -76,7 +78,7 @@ class ExpenseHeaderController extends Controller
     /**
      * @Route("/{id}", name="transaction_expense_header_show", requirements={"id": "\d+"})
      * @Method("GET")
-     * @Security("has_role('ROLE_TRANSACTION')")
+     * @Security("has_role('ROLE_EXPENSE_HEADER_NEW') or has_role('ROLE_EXPENSE_HEADER_EDIT') or has_role('ROLE_EXPENSE_HEADER_DELETE')")
      */
     public function showAction(ExpenseHeader $expenseHeader)
     {
@@ -88,7 +90,7 @@ class ExpenseHeaderController extends Controller
     /**
      * @Route("/{id}/edit.{_format}", name="transaction_expense_header_edit", requirements={"id": "\d+"})
      * @Method({"GET", "POST"})
-     * @Security("has_role('ROLE_TRANSACTION')")
+     * @Security("has_role('ROLE_EXPENSE_HEADER_EDIT')")
      */
     public function editAction(Request $request, ExpenseHeader $expenseHeader, $_format = 'html')
     {
@@ -98,6 +100,7 @@ class ExpenseHeaderController extends Controller
         $form = $this->createForm(ExpenseHeaderType::class, $expenseHeader, array(
             'service' => $expenseHeaderService,
             'init' => array('year' => date('y'), 'month' => date('m'), 'staff' => $this->getUser()),
+            'accountRepository' => $this->getDoctrine()->getManager()->getRepository(Account::class),
         ));
         $form->handleRequest($request);
 
@@ -117,7 +120,7 @@ class ExpenseHeaderController extends Controller
     /**
      * @Route("/{id}/delete", name="transaction_expense_header_delete", requirements={"id": "\d+"})
      * @Method({"GET", "POST"})
-     * @Security("has_role('ROLE_TRANSACTION')")
+     * @Security("has_role('ROLE_EXPENSE_HEADER_DELETE')")
      */
     public function deleteAction(Request $request, ExpenseHeader $expenseHeader)
     {

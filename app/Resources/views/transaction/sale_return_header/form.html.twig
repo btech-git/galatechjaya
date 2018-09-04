@@ -38,6 +38,7 @@
         <div class="row">
             <div class="col-sm-6">
                 {{ form_row(form.transactionDate, {'label': 'Tanggal'}) }}
+                {{ form_row(form.warehouse, {'label': 'Gudang'}) }}
             </div>
             <div class="col-sm-6">
                 {{ form_row(form.saleInvoiceHeader, {'attr': {'readonly': true, 'data-toggle': 'modal', 'data-target': '#sale-invoice-header-dialog'} }) }}

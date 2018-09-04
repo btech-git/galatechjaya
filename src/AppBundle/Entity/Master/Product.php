@@ -71,6 +71,7 @@ class Product
     public function __construct()
     {
         $this->purchaseOrderDetails = new ArrayCollection();
+        $this->saleInvoiceDetails = new ArrayCollection();
     }
     
     public function __toString()

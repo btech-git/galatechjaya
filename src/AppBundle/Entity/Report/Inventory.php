@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use AppBundle\Entity\Common\CodeNumberEntity;
 use AppBundle\Entity\Master\Product;
+use AppBundle\Entity\Master\Warehouse;
 use AppBundle\Entity\Admin\Staff;
 
 /**
@@ -20,6 +21,7 @@ class Inventory extends CodeNumberEntity
     const TRANSACTION_TYPE_PURCHASE_RETURN = 'purchase_return';
     const TRANSACTION_TYPE_SALE_RETURN = 'sale_return';
     const TRANSACTION_TYPE_ADJUSTMENT = 'adjustment';
+    const TRANSACTION_TYPE_TRANSFER = 'transfer';
     
     /**
      * @ORM\Column(type="integer") @ORM\Id @ORM\GeneratedValue
@@ -66,6 +68,11 @@ class Inventory extends CodeNumberEntity
      */
     private $product;
     /**
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Master\Warehouse")
+     * @Assert\NotNull()
+     */
+    private $warehouse;
+    /**
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Admin\Staff")
      * @Assert\NotNull()
      */
@@ -111,6 +118,9 @@ class Inventory extends CodeNumberEntity
     public function getProduct() { return $this->product; }
     public function setProduct(Product $product = null) { $this->product = $product; }
     
+    public function getWarehouse() { return $this->warehouse; }
+    public function setWarehouse(Warehouse $warehouse = null) { $this->warehouse = $warehouse; }
+
     public function getStaff() { return $this->staff; }
     public function setStaff(Staff $staff = null) { $this->staff = $staff; }
 }

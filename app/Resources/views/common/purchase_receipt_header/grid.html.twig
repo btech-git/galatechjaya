@@ -9,12 +9,16 @@
             <th data-group="purchasePaymentHeader" data-field="transactionDate">Tanggal</th>
             <th data-group="supplier" data-field="name">Supplier</th>
             <th data-group="purchasePaymentHeader" data-field="grandTotal">Grand Total</th>
+            <th data-group="purchasePaymentHeader" data-field="totalPayment">Payment</th>
+            <th data-group="purchasePaymentHeader" data-field="remaining">Remaining</th>
         </tr>
         <tr data-action="search">
             <th data-group="purchasePaymentHeader" data-field="codeNumber"></th>
             <th data-group="purchasePaymentHeader" data-field="transactionDate"></th>
             <th data-group="supplier" data-field="name"></th>
             <th data-group="purchasePaymentHeader" data-field="grandTotal"></th>
+            <th data-group="purchasePaymentHeader" data-field="totalPayment"></th>
+            <th data-group="purchasePaymentHeader" data-field="remaining"></th>
         </tr>
     </thead>
     <tbody>
@@ -23,16 +27,20 @@
                 data-field-code-number="{{ purchasePaymentHeader.codeNumber|default }}"
                 data-field-transaction-date="{{ purchasePaymentHeader.transactionDate|default ? purchasePaymentHeader.transactionDate|date('j M Y') }}"
                 data-field-supplier-name="{{ purchasePaymentHeader.supplier.name|default }}"
-                data-field-grand-total="{{ purchasePaymentHeader.grandTotal|default }}"
+                data-field-grand-total="{{ purchasePaymentHeader.grandTotal|default|number_format(2) }}"
+                data-field-total-payment="{{ purchasePaymentHeader.totalPayment|default|number_format(2) }}"
+                data-field-remaining="{{ purchasePaymentHeader.remaining|default|number_format(2) }}"
                 data-field-purchase-payment-details-count="{{ purchasePaymentHeader.purchasePaymentDetails.count|default }}">
                 <td class="text-left">{{ purchasePaymentHeader.codeNumber|default }}</td>
                 <td class="text-left">{{ purchasePaymentHeader.transactionDate|default ? purchasePaymentHeader.transactionDate|date('j M Y') }}</td>
                 <td class="text-left">{{ purchasePaymentHeader.supplier.name|default }}</td>
-                <td class="text-right">{{ purchasePaymentHeader.grandTotal|default }}</td>
+                <td class="text-right">{{ purchasePaymentHeader.grandTotal|default|number_format(2) }}</td>
+                <td class="text-right">{{ purchasePaymentHeader.totalPayment|default|number_format(2) }}</td>
+                <td class="text-right">{{ purchasePaymentHeader.remaining|default|number_format(2) }}</td>
             </tr>
         {% else %}
             <tr>
-                <td colspan="4" class="alert alert-warning">
+                <td colspan="6" class="alert alert-warning">
                     <strong>There are no items to display.</strong>
                 </td>
             </tr>

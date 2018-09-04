@@ -18,6 +18,11 @@ class TransferDetail
     private $id;
     /**
      * @ORM\Column(type="smallint")
+     * @Assert\NotNull()
+     */
+    private $quantityCurrent;
+    /**
+     * @ORM\Column(type="smallint")
      * @Assert\NotNull() @Assert\GreaterThan(0)
      */
     private $quantity;
@@ -38,6 +43,9 @@ class TransferDetail
     
     public function getId() { return $this->id; }
     public function setId($id) { $this->id = $id; }
+
+    public function getQuantityCurrent() { return $this->quantityCurrent; }
+    public function setQuantityCurrent($quantityCurrent) { $this->quantityCurrent = $quantityCurrent; }
 
     public function getQuantity() { return $this->quantity; }
     public function setQuantity($quantity) { $this->quantity = $quantity; }

@@ -52,6 +52,6 @@ class ExpenseHeaderType extends AbstractType
         $resolver->setDefaults(array(
             'data_class' => ExpenseHeader::class,
         ));
-        $resolver->setRequired(array('service', 'init'));
+        $resolver->setRequired(array('service', 'init', 'accountRepository'));
     }
 }

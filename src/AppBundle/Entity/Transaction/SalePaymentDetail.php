@@ -69,5 +69,8 @@ class SalePaymentDetail
     public function sync()
     {
         $this->totalReceipt = $this->saleReceiptHeader->getGrandTotal();
+        $saleReceiptHeader = $this->getSaleReceiptHeader();
+        $saleReceiptHeader->setTotalPayment($this->getAmount());
+        $saleReceiptHeader->setRemaining($saleReceiptHeader->getGrandTotal() - $this->getAmount());
     }
 }

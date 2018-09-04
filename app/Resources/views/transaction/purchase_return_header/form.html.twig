@@ -38,6 +38,7 @@
         <div class="row">
             <div class="col-sm-6">
                 {{ form_row(form.transactionDate, {'label': 'Tanggal'}) }}
+                {{ form_row(form.warehouse, {'label': 'Gudang'}) }}
             </div>
             <div class="col-sm-6">
                 {{ form_row(form.purchaseInvoiceHeader, {'attr': {'readonly': true, 'data-toggle': 'modal', 'data-target': '#purchase-invoice-header-dialog'} }) }}
@@ -82,13 +83,15 @@
             <tfoot>
                 <tr>
                     <td class="text-right" colspan="3"></td>
-                    <td class="text-right"><span data-name="total-quantity">{{ purchaseReturnHeader.totalQuantity|default|number_format(0) }}</span></td>
+                    <td class="text-center"><span data-name="total-quantity">{{ purchaseReturnHeader.totalQuantity|default|number_format(0) }}</span></td>
                     <td class="text-right">Sub Total</td>
                     <td class="text-right"><span data-name="sub-total">{{ purchaseReturnHeader.subTotal|default|number_format(2) }}</span></td>
                 </tr>
                 <tr>
                     <td class="text-right" colspan="5">
-                        <span style="display: inline-block">PPn 10%</span>
+                        <span style="display: inline-block">PPn</span>
+                        <span style="display: inline-block" data-name="tax-percentage">0</span>
+                        <span style="display: inline-block">%</span>
                     </td>
                     <td class="text-right"><span data-name="tax-nominal">{{ purchaseReturnHeader.taxNominal|default|number_format(2) }}</span></td>
                 </tr>
@@ -149,6 +152,7 @@
                         });
                         $("[data-name=total-quantity]", tableFoot).text(data.totalQuantity);
                         $("[data-name=sub-total]", tableFoot).text(data.subTotal);
+                        $("[data-name=tax-percentage]", tableFoot).text(data.taxPercentage);
                         $("[data-name=tax-nominal]", tableFoot).text(data.taxNominal);
                         $("[data-name=grand-total]", tableFoot).text(data.grandTotal);
                     }

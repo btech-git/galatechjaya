@@ -1,0 +1,50 @@
+{% extends 'staff/layout.html.twig' %}
+
+{% block title 'Warehouse Menu' %}
+
+{% block stylesheets %}
+    <style>
+        table thead tr th:nth-child(2), table tbody tr td:nth-child(2) { width: 30% }
+        table thead tr th:nth-child(3), table tbody tr td:nth-child(3) { width: 30% }
+    </style>
+{% endblock %}
+
+{% block content %}
+    {% set menu = app.session.get('menu') %}
+    
+    {% if menu['inventory_warehouse'] %}
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th colspan="3" class="bg-info lead">
+                        <strong>Gudang</strong>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if menu['delivery_header'] %}
+                    <tr>
+                        <td>Surat Jalan</td>
+                        <td></td>
+                        <td>
+                            {% if is_granted('ROLE_DELIVERY_HEADER') %}
+                                {{ include('action.html.twig', {'url': path('transaction_delivery_header_index'), 'label': 'Manage', 'button': 'btn btn-primary', 'icon': 'glyphicon glyphicon-list'}) }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endif %}
+                {% if menu['transfer_header'] %}
+                    <tr>
+                        <td>Transfer Antar Gudang</td>
+                        <td>
+                            {% if is_granted('ROLE_TRANSFER_HEADER') %}
+                                {{ include('action.html.twig', {'url': path('transaction_transfer_header_new'), 'label': 'Add', 'button': 'btn btn-success', 'icon': 'glyphicon glyphicon-plus'}) }}
+                            {% endif %}
+                        </td>
+                        <td>{{ include('action.html.twig', {'url': path('transaction_transfer_header_index'), 'label': 'Manage', 'button': 'btn btn-primary', 'icon': 'glyphicon glyphicon-list'}) }}</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}

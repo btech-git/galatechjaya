@@ -139,6 +139,14 @@
             var table = $("#sale-receipt-detail-list");
             var tableBody = $("tbody", table);
             
+            $("#{{ form.customer.vars.id }}").on("change", function() {
+                tableBody.empty();
+                bind();
+                var url = "{{ path('common_sale_invoice_header_grid', {'form': form.vars.id, 'options': {'customer_id': '__customer_id'} })|raw }}";
+                url = url.replace("__customer_id", parseInt($(this).val()));
+                $("#sale-invoice-header-grid").load(url, {id: "sale-invoice-header-grid"});
+            });
+            
             tableBody.on("change", "[data-group-name=amount]", function() {
                 bind();
             });
@@ -149,7 +157,7 @@
             
             $("#customer-grid").on("click", "table[data-role=table] tbody tr", function() {
                 $("#customer-dialog").modal("hide");
-                $("#{{ form.customer.vars.id }}").val($(this).attr("data-field-id"));
+                $("#{{ form.customer.vars.id }}").val($(this).attr("data-field-id")).trigger("change");
                 $("[data-name=customer-name]", "#customer-info").text($(this).attr("data-field-name"));
                 $("[data-name=customer-contact-person]", "#customer-info").text($(this).attr("data-field-contact-person"));
             });

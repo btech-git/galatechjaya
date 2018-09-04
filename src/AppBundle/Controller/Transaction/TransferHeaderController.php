@@ -19,7 +19,7 @@ class TransferHeaderController extends Controller
     /**
      * @Route("/grid", name="transaction_transfer_header_grid", condition="request.isXmlHttpRequest()")
      * @Method("POST")
-     * @Security("has_role('ROLE_TRANSACTION')")
+     * @Security("has_role('ROLE_TRANSFER_HEADER_NEW') or has_role('ROLE_TRANSFER_HEADER_EDIT') or has_role('ROLE_TRANSFER_HEADER_DELETE')")
      */
     public function gridAction(Request $request)
     {
@@ -37,7 +37,7 @@ class TransferHeaderController extends Controller
     /**
      * @Route("/", name="transaction_transfer_header_index")
      * @Method("GET")
-     * @Security("has_role('ROLE_TRANSACTION')")
+     * @Security("has_role('ROLE_TRANSFER_HEADER_NEW') or has_role('ROLE_TRANSFER_HEADER_EDIT') or has_role('ROLE_TRANSFER_HEADER_DELETE')")
      */
     public function indexAction()
     {
@@ -47,7 +47,7 @@ class TransferHeaderController extends Controller
     /**
      * @Route("/new.{_format}", name="transaction_transfer_header_new")
      * @Method({"GET", "POST"})
-     * @Security("has_role('ROLE_TRANSACTION')")
+     * @Security("has_role('ROLE_TRANSFER_HEADER_NEW')")
      */
     public function newAction(Request $request, $_format = 'html')
     {
@@ -76,7 +76,7 @@ class TransferHeaderController extends Controller
     /**
      * @Route("/{id}", name="transaction_transfer_header_show", requirements={"id": "\d+"})
      * @Method("GET")
-     * @Security("has_role('ROLE_TRANSACTION')")
+     * @Security("has_role('ROLE_TRANSFER_HEADER_NEW') or has_role('ROLE_TRANSFER_HEADER_EDIT') or has_role('ROLE_TRANSFER_HEADER_DELETE')")
      */
     public function showAction(TransferHeader $transferHeader)
     {
@@ -88,7 +88,7 @@ class TransferHeaderController extends Controller
     /**
      * @Route("/{id}/edit.{_format}", name="transaction_transfer_header_edit", requirements={"id": "\d+"})
      * @Method({"GET", "POST"})
-     * @Security("has_role('ROLE_TRANSACTION')")
+     * @Security("has_role('ROLE_TRANSFER_HEADER_EDIT')")
      */
     public function editAction(Request $request, TransferHeader $transferHeader, $_format = 'html')
     {
@@ -117,7 +117,7 @@ class TransferHeaderController extends Controller
     /**
      * @Route("/{id}/delete", name="transaction_transfer_header_delete", requirements={"id": "\d+"})
      * @Method({"GET", "POST"})
-     * @Security("has_role('ROLE_TRANSACTION')")
+     * @Security("has_role('ROLE_TRANSFER_HEADER_DELETE')")
      */
     public function deleteAction(Request $request, TransferHeader $transferHeader)
     {
@@ -140,6 +140,18 @@ class TransferHeaderController extends Controller
         return $this->render('transaction/transfer_header/delete.html.twig', array(
             'transferHeader' => $transferHeader,
             'form' => $form->createView(),
+        ));
+    }
+    
+    /**
+     * @Route("/{id}/memo", name="transaction_transfer_header_memo", requirements={"id": "\d+"})
+     * @Method("GET")
+     * @Security("has_role('ROLE_TRANSFER_HEADER_NEW') or has_role('ROLE_TRANSFER_HEADER_EDIT')")
+     */
+    public function memoAction(TransferHeader $transferHeader)
+    {
+        return $this->render('transaction/transfer_header/memo.html.twig', array(
+            'transferHeader' => $transferHeader,
         ));
     }
 }

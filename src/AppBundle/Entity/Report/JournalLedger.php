@@ -17,7 +17,13 @@ class JournalLedger extends CodeNumberEntity
 {
     const TRANSACTION_TYPE_DEPOSIT = 'deposit';
     const TRANSACTION_TYPE_EXPENSE = 'expense';
-    const TRANSACTION_TYPE_GENERAL = 'general';
+    const TRANSACTION_TYPE_JOURNAL_VOUCHER = 'journal_voucher';
+    const TRANSACTION_TYPE_RECEIVABLE = 'receivable';
+    const TRANSACTION_TYPE_RECEIVABLE_PAYMENT = 'receivable_payment';
+    const TRANSACTION_TYPE_PAYABLE = 'payable';
+    const TRANSACTION_TYPE_PAYABLE_PAYMENT = 'payable_payment';
+    const TRANSACTION_TYPE_SALE_RETURN = 'sale_return';
+    const TRANSACTION_TYPE_PURCHASE_RETURN = 'purchase_return';
     
     /**
      * @ORM\Column(type="integer") @ORM\Id @ORM\GeneratedValue

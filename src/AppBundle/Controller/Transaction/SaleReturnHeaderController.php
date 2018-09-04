@@ -19,7 +19,7 @@ class SaleReturnHeaderController extends Controller
     /**
      * @Route("/grid", name="transaction_sale_return_header_grid", condition="request.isXmlHttpRequest()")
      * @Method("POST")
-     * @Security("has_role('ROLE_TRANSACTION')")
+     * @Security("has_role('ROLE_SALE_RETURN_HEADER_NEW') or has_role('ROLE_SALE_RETURN_HEADER_EDIT') or has_role('ROLE_SALE_RETURN_HEADER_DELETE')")
      */
     public function gridAction(Request $request)
     {
@@ -37,7 +37,7 @@ class SaleReturnHeaderController extends Controller
     /**
      * @Route("/", name="transaction_sale_return_header_index")
      * @Method("GET")
-     * @Security("has_role('ROLE_TRANSACTION')")
+     * @Security("has_role('ROLE_SALE_RETURN_HEADER_NEW') or has_role('ROLE_SALE_RETURN_HEADER_EDIT') or has_role('ROLE_SALE_RETURN_HEADER_DELETE')")
      */
     public function indexAction()
     {
@@ -47,7 +47,7 @@ class SaleReturnHeaderController extends Controller
     /**
      * @Route("/new.{_format}", name="transaction_sale_return_header_new")
      * @Method({"GET", "POST"})
-     * @Security("has_role('ROLE_TRANSACTION')")
+     * @Security("has_role('ROLE_SALE_RETURN_HEADER_NEW')")
      */
     public function newAction(Request $request, $_format = 'html')
     {
@@ -76,7 +76,7 @@ class SaleReturnHeaderController extends Controller
     /**
      * @Route("/{id}", name="transaction_sale_return_header_show", requirements={"id": "\d+"})
      * @Method("GET")
-     * @Security("has_role('ROLE_TRANSACTION')")
+     * @Security("has_role('ROLE_SALE_RETURN_HEADER_NEW') or has_role('ROLE_SALE_RETURN_HEADER_EDIT') or has_role('ROLE_SALE_RETURN_HEADER_DELETE')")
      */
     public function showAction(SaleReturnHeader $saleReturnHeader)
     {
@@ -88,7 +88,7 @@ class SaleReturnHeaderController extends Controller
     /**
      * @Route("/{id}/edit.{_format}", name="transaction_sale_return_header_edit", requirements={"id": "\d+"})
      * @Method({"GET", "POST"})
-     * @Security("has_role('ROLE_TRANSACTION')")
+     * @Security("has_role('ROLE_SALE_RETURN_HEADER_EDIT')")
      */
     public function editAction(Request $request, SaleReturnHeader $saleReturnHeader, $_format = 'html')
     {
@@ -117,7 +117,7 @@ class SaleReturnHeaderController extends Controller
     /**
      * @Route("/{id}/delete", name="transaction_sale_return_header_delete", requirements={"id": "\d+"})
      * @Method({"GET", "POST"})
-     * @Security("has_role('ROLE_TRANSACTION')")
+     * @Security("has_role('ROLE_SALE_RETURN_HEADER_DELETE')")
      */
     public function deleteAction(Request $request, SaleReturnHeader $saleReturnHeader)
     {

@@ -51,16 +51,22 @@
                 </tr>
             </thead>
             <tbody>
-                {% for purchaseOrderDetail in purchaseOrderHeader.purchaseOrderDetails %}
-                    <tr>
-                        <td class="left">{{ purchaseOrderDetail.product.name|default }}</td>
-                        <td class="left">{{ purchaseOrderDetail.product.size|default }}</td>
-                        <td class="left">{{ purchaseOrderDetail.product.unit.name|default }}</td>
-                        <td class="center">{{ purchaseOrderDetail.quantity|default|number_format(0) }}</td>
-                        <td class="right">{{ purchaseOrderDetail.unitPrice|default|number_format(2) }}</td>
-                        <td class="right">{{ purchaseOrderDetail.discount|default|number_format(2) }}</td>
-                        <td class="right">{{ purchaseOrderDetail.total|default|number_format(2) }}</td>
-                    </tr>
+                {% for row in purchaseOrderHeader.purchaseOrderDetails|batch(12, '') %}
+                    {% for purchaseOrderDetail in row %}
+                        <tr>
+                            {% for i in 1..7 if purchaseOrderDetail is empty %}
+                                <td>&nbsp;</td>
+                            {% else %}
+                                <td class="left">{{ purchaseOrderDetail.product.name|default }}</td>
+                                <td class="left">{{ purchaseOrderDetail.product.size|default }}</td>
+                                <td class="left">{{ purchaseOrderDetail.product.unit.name|default }}</td>
+                                <td class="center">{{ purchaseOrderDetail.quantity|default|number_format(0) }}</td>
+                                <td class="right">{{ purchaseOrderDetail.unitPrice|default|number_format(2) }}</td>
+                                <td class="right">{{ purchaseOrderDetail.discount|default|number_format(2) }}</td>
+                                <td class="right">{{ purchaseOrderDetail.total|default|number_format(2) }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
                 {% endfor %}
             </tbody>
             <tfoot>
@@ -124,13 +130,9 @@
         <div class="signature">
             <div class="table full">
                 <div class="cell sig">
-                    <div>Penerima,</div>
-                </div>
-                <div class="cell sig">
                     <div>Hormat Kami,</div>
                     <div class="blank"></div>
                     <div class="blank"></div>
-                    <div></div>
                 </div>
             </div>
         </div>
@@ -153,7 +155,6 @@
         .col:nth-child(2) .label { width: 35% }
         .col:nth-child(2) .value { width: 65% }
         
-        .sig:nth-child(1) { width: 50% }
-        .sig:nth-child(2) { width: 50% }
+        .sig:nth-child(1) { width: 100% }
     </style>
 {% endblock %}

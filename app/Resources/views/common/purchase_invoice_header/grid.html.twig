@@ -23,12 +23,12 @@
                 data-field-code-number="{{ purchaseInvoiceHeader.codeNumber|default }}"
                 data-field-transaction-date="{{ purchaseInvoiceHeader.transactionDate|default ? purchaseInvoiceHeader.transactionDate|date('j M Y') }}"
                 data-field-supplier-name="{{ purchaseInvoiceHeader.receiveHeader.purchaseOrderHeader.supplier.name|default }}"
-                data-field-grand-total="{{ purchaseInvoiceHeader.grandTotal|default }}"
+                data-field-grand-total="{{ purchaseInvoiceHeader.grandTotal|default|number_format(2) }}"
                 data-field-purchase-invoice-details-count="{{ purchaseInvoiceHeader.purchaseInvoiceDetails.count|default }}">
                 <td class="text-left">{{ purchaseInvoiceHeader.codeNumber|default }}</td>
                 <td class="text-left">{{ purchaseInvoiceHeader.transactionDate|default ? purchaseInvoiceHeader.transactionDate|date('j M Y') }}</td>
                 <td class="text-left">{{ purchaseInvoiceHeader.receiveHeader.purchaseOrderHeader.supplier.name|default }}</td>
-                <td class="text-right">{{ purchaseInvoiceHeader.grandTotal|default }}</td>
+                <td class="text-right">{{ purchaseInvoiceHeader.grandTotal|default|number_format(2) }}</td>
             </tr>
         {% else %}
             <tr>

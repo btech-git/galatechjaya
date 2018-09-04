@@ -20,13 +20,13 @@
         <td>
             <span data-name="unit-name-{{ object.vars.name }}">{{ object.vars.value.product.unit.name|default }}</span>
         </td>
-        <td class="text-right">
+        <td class="text-center">
             <span data-name="quantity-current-{{ object.vars.name }}">{{ object.vars.value.quantityCurrent|default|number_format(0) }}</span>
         </td>
         <td>
-            {{ form_row(object.quantityAdjustment, {'label': false, 'attr': {'data-group-name': 'quantityAdjustment'} }) }}
+            {{ form_row(object.quantityAdjustment, {'label': false, 'attr': {'data-group-name': 'quantity-adjustment'} }) }}
         </td>
-        <td class="text-right">
+        <td class="text-center">
             <span data-name="quantity-difference-{{ object.vars.name }}">{{ object.vars.value.quantityDifference|default|number_format(0) }}</span>
         </td>
         <td>
@@ -42,7 +42,7 @@
             <div class="col-sm-6">
                 {{ form_row(form.transactionDate, {'label': 'Tanggal'}) }}
             </div>
-            <div class="col-sm-6">{{ form_row(form.warehouse) }}</div>
+            <div class="col-sm-6">{{ form_row(form.warehouse, {'label': 'Gudang'}) }}</div>
         </div>
         
         <div>{{ form_row(form.note) }}</div>
@@ -108,7 +108,8 @@
                         var table = $("#adjustment-stock-detail-list");
                         var tableBody = $("tbody", table);
                         $.each(data.adjustmentStockDetails, function(index, adjustmentStockDetail) {
-                            $("[data-name=total-" + index + "]", tableBody).text(adjustmentStockDetail.quantityDifference);
+                            $("[data-name=quantity-current-" + index + "]", tableBody).text(adjustmentStockDetail.quantityCurrent);
+                            $("[data-name=quantity-difference-" + index + "]", tableBody).text(adjustmentStockDetail.quantityDifference);
                         });
                     }
                 });
@@ -117,7 +118,11 @@
             var table = $("#adjustment-stock-detail-list");
             var tableBody = $("tbody", table);
             
-            tableBody.on("change", "[data-group-name=quantity-difference]", function() {
+            $("#{{ form.warehouse.vars.id }}").on("change", function() {
+                bind();
+            });
+            
+            tableBody.on("change", "[data-group-name=quantity-adjustment]", function() {
                 bind();
             });
             tableBody.on("click", ".remove-adjustment-stock-detail-prototype", function() {

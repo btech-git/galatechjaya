@@ -39,6 +39,7 @@
             <div class="col-sm-6">
                 {{ form_row(form.transactionDate, {'label': 'Tanggal'}) }}
                 {{ form_row(form.reference, {'label': 'SJ #'}) }}
+                {{ form_row(form.warehouse, {'label': 'Gudang'}) }}
             </div>
             <div class="col-sm-6">
                 {{ form_row(form.purchaseOrderHeader, {'attr': {'readonly': true, 'data-toggle': 'modal', 'data-target': '#purchase-order-header-dialog'} }) }}
@@ -56,7 +57,6 @@
                         <span data-name="supplier-name">{{ receiveHeader.purchaseOrderHeader.supplier.name|default }}</span>
                     </div>
                 </div>
-                {{ form_row(form.warehouse, {'label': 'Gudang'}) }}
             </div>
         </div>
         
@@ -96,7 +96,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4 class="modal-title">Purchase Order Header List</h4>
+                        <h4 class="modal-title">Purchase Order List</h4>
                     </div>
                     <div class="modal-body">
                         <div id="purchase-order-header-grid" data-grid="{{ path('common_purchase_order_header_grid', {'form': form.vars.id}) }}"></div>

@@ -42,4 +42,24 @@ class MenuController extends Controller
     {
         return $this->render('staff/menu/transaction.html.twig');
     }
+    
+    /**
+     * @Route("/finance", name="staff_menu_finance")
+     * @Method("GET")
+     * @Security("has_role('ROLE_STAFF')")
+     */
+    public function financeAction()
+    {
+        return $this->render('staff/menu/finance.html.twig');
+    }
+    
+    /**
+     * @Route("/warehouse", name="staff_menu_warehouse")
+     * @Method("GET")
+     * @Security("has_role('ROLE_STAFF')")
+     */
+    public function warehouseAction()
+    {
+        return $this->render('staff/menu/warehouse.html.twig');
+    }
 }

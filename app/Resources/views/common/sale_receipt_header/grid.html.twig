@@ -9,12 +9,16 @@
             <th data-group="salePaymentHeader" data-field="transactionDate">Tanggal</th>
             <th data-group="customer" data-field="name">Customer</th>
             <th data-group="salePaymentHeader" data-field="grandTotal">Grand Total</th>
+            <th data-group="salePaymentHeader" data-field="totalPayment">Payment</th>
+            <th data-group="salePaymentHeader" data-field="remaining">Remaining</th>
         </tr>
         <tr data-action="search">
             <th data-group="salePaymentHeader" data-field="codeNumber"></th>
             <th data-group="salePaymentHeader" data-field="transactionDate"></th>
             <th data-group="customer" data-field="name"></th>
             <th data-group="salePaymentHeader" data-field="grandTotal"></th>
+            <th data-group="salePaymentHeader" data-field="totalPayment"></th>
+            <th data-group="salePaymentHeader" data-field="remaining"></th>
         </tr>
     </thead>
     <tbody>
@@ -24,15 +28,19 @@
                 data-field-transaction-date="{{ salePaymentHeader.transactionDate|default ? salePaymentHeader.transactionDate|date('j M Y') }}"
                 data-field-customer-name="{{ salePaymentHeader.customer.name|default }}"
                 data-field-grand-total="{{ salePaymentHeader.grandTotal|default|number_format(2) }}"
+                data-field-total-payment="{{ salePaymentHeader.totalPayment|default|number_format(2) }}"
+                data-field-remaining="{{ salePaymentHeader.remaining|default|number_format(2) }}"
                 data-field-sale-payment-details-count="{{ salePaymentHeader.salePaymentDetails.count|default }}">
                 <td class="text-left">{{ salePaymentHeader.codeNumber|default }}</td>
                 <td class="text-left">{{ salePaymentHeader.transactionDate|default ? salePaymentHeader.transactionDate|date('j M Y') }}</td>
                 <td class="text-left">{{ salePaymentHeader.customer.name|default }}</td>
                 <td class="text-right">{{ salePaymentHeader.grandTotal|default|number_format(2) }}</td>
+                <td class="text-right">{{ salePaymentHeader.totalPayment|default|number_format(2) }}</td>
+                <td class="text-right">{{ salePaymentHeader.remaining|default|number_format(2) }}</td>
             </tr>
         {% else %}
             <tr>
-                <td colspan="4" class="alert alert-warning">
+                <td colspan="6" class="alert alert-warning">
                     <strong>There are no items to display.</strong>
                 </td>
             </tr>

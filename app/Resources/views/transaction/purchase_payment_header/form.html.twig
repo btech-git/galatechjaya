@@ -24,7 +24,7 @@
             {{ form_row(object.account, {'label': false, 'attr': {'data-group-name': 'account'} }) }}
         </td>
         <td class="text-right">
-            <span data-name="purchase-receipt-header-grand-total-{{ object.vars.name }}">{{ object.vars.value.totalReceipt|default }}</span>
+            <span data-name="purchase-receipt-header-remaining-{{ object.vars.name }}">{{ object.vars.value.purchaseReceiptHeader.remaining|default }}</span>
         </td>
         <td>
             {{ form_row(object.amount, {'label': false, 'attr': {'data-group-name': 'amount', 'data-bind-target': '[data-name=amount-text-' ~ object.vars.name ~ ']', 'data-bind-format': 'number', 'data-option-precision': 2} }) }}
@@ -120,7 +120,7 @@
                         <h4 class="modal-title">Purchase Receipt Header List</h4>
                     </div>
                     <div class="modal-body">
-                        <div id="purchase-receipt-header-grid" data-grid="{{ path('common_purchase_receipt_header_grid', {'form': form.vars.id}) }}"></div>
+                        <div id="purchase-receipt-header-grid" data-grid="{{ path('common_purchase_receipt_header_grid', {'form': form.vars.id, 'options': {'supplier_id': purchasePaymentHeader.supplier.id|default(0)} }) }}"></div>
                     </div>
                 </div>
             </div>
@@ -149,9 +149,18 @@
             var table = $("#purchase-payment-detail-list");
             var tableBody = $("tbody", table);
             
+            $("#{{ form.supplier.vars.id }}").on("change", function() {
+                tableBody.empty();
+                bind();
+                var url = "{{ path('common_purchase_receipt_header_grid', {'form': form.vars.id, 'options': {'supplier_id': '__supplier_id'} })|raw }}";
+                url = url.replace("__supplier_id", parseInt($(this).val()));
+                $("#purchase-receipt-header-grid").load(url, {id: "purchase-receipt-header-grid"});
+            });
+            
             tableBody.on("change", "[data-group-name=amount]", function() {
                 bind();
             });
+            
             tableBody.on("click", ".remove-purchase-payment-detail-prototype", function() {
                 $(this).closest("tr").remove();
                 bind();
@@ -159,7 +168,7 @@
             
             $("#supplier-grid").on("click", "table[data-role=table] tbody tr", function() {
                 $("#supplier-dialog").modal("hide");
-                $("#{{ form.supplier.vars.id }}").val($(this).attr("data-field-id"));
+                $("#{{ form.supplier.vars.id }}").val($(this).attr("data-field-id")).trigger("change");
                 $("[data-name=supplier-name]", "#supplier-info").text($(this).attr("data-field-name"));
                 $("[data-name=supplier-contact-person]", "#supplier-info").text($(this).attr("data-field-contact-person"));
             });
@@ -177,8 +186,8 @@
                     purchaseReceiptHeaderCodeNumberPrototype.text(context.attr("data-field-code-number"));
                     var purchaseReceiptHeaderTransactionDatePrototype = prototype.find("[data-name=purchase-receipt-header-transaction-date-" + name + "]");
                     purchaseReceiptHeaderTransactionDatePrototype.text(context.attr("data-field-transaction-date"));
-                    var purchaseReceiptHeaderGrandTotalPrototype = prototype.find("[data-name=purchase-receipt-header-grand-total-" + name + "]");
-                    purchaseReceiptHeaderGrandTotalPrototype.text(context.attr("data-field-grand-total"));
+                    var purchaseReceiptHeaderRemainingPrototype = prototype.find("[data-name=purchase-receipt-header-remaining-" + name + "]");
+                    purchaseReceiptHeaderRemainingPrototype.text(context.attr("data-field-remaining"));
                 });
                 bind();
             });

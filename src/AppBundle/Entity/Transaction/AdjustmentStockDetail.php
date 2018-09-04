@@ -60,7 +60,6 @@ class AdjustmentStockDetail
     
     public function sync()
     {
-        $this->quantityCurrent = 0;
         $this->quantityDifference = $this->quantityAdjustment - $this->quantityCurrent;
     }
 }

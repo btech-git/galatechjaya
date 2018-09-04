@@ -22,6 +22,7 @@ class SaleReturnHeaderType extends AbstractType
             ->add('transactionDate', DateType::class)
             ->add('note')
             ->add('shippingFee')
+            ->add('warehouse')
             ->add('saleReturnDetails', CollectionType::class, array(
                 'entry_type' => SaleReturnDetailType::class,
                 'allow_add' => true,

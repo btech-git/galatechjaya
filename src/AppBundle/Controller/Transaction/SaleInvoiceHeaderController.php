@@ -19,7 +19,7 @@ class SaleInvoiceHeaderController extends Controller
     /**
      * @Route("/grid", name="transaction_sale_invoice_header_grid", condition="request.isXmlHttpRequest()")
      * @Method("POST")
-     * @Security("has_role('ROLE_TRANSACTION')")
+     * @Security("has_role('ROLE_SALE_INVOICE_HEADER_NEW') or has_role('ROLE_SALE_INVOICE_HEADER_EDIT') or has_role('ROLE_SALE_INVOICE_HEADER_DELETE') or has_role('ROLE_DELIVERY_HEADER_NEW') or has_role('ROLE_DELIVERY_HEADER_EDIT')")
      */
     public function gridAction(Request $request)
     {
@@ -37,7 +37,7 @@ class SaleInvoiceHeaderController extends Controller
     /**
      * @Route("/", name="transaction_sale_invoice_header_index")
      * @Method("GET")
-     * @Security("has_role('ROLE_TRANSACTION')")
+     * @Security("has_role('ROLE_SALE_INVOICE_HEADER_NEW') or has_role('ROLE_SALE_INVOICE_HEADER_EDIT') or has_role('ROLE_SALE_INVOICE_HEADER_DELETE') or has_role('ROLE_DELIVERY_HEADER_NEW') or has_role('ROLE_DELIVERY_HEADER_EDIT')")
      */
     public function indexAction()
     {
@@ -47,7 +47,7 @@ class SaleInvoiceHeaderController extends Controller
     /**
      * @Route("/new.{_format}", name="transaction_sale_invoice_header_new")
      * @Method({"GET", "POST"})
-     * @Security("has_role('ROLE_TRANSACTION')")
+     * @Security("has_role('ROLE_SALE_INVOICE_HEADER_NEW')")
      */
     public function newAction(Request $request, $_format = 'html')
     {
@@ -76,7 +76,7 @@ class SaleInvoiceHeaderController extends Controller
     /**
      * @Route("/{id}", name="transaction_sale_invoice_header_show", requirements={"id": "\d+"})
      * @Method("GET")
-     * @Security("has_role('ROLE_TRANSACTION')")
+     * @Security("has_role('ROLE_SALE_INVOICE_HEADER_NEW') or has_role('ROLE_SALE_INVOICE_HEADER_EDIT') or has_role('ROLE_SALE_INVOICE_HEADER_DELETE') or has_role('ROLE_DELIVERY_HEADER_NEW') or has_role('ROLE_DELIVERY_HEADER_EDIT')")
      */
     public function showAction(SaleInvoiceHeader $saleInvoiceHeader)
     {
@@ -88,7 +88,7 @@ class SaleInvoiceHeaderController extends Controller
     /**
      * @Route("/{id}/edit.{_format}", name="transaction_sale_invoice_header_edit", requirements={"id": "\d+"})
      * @Method({"GET", "POST"})
-     * @Security("has_role('ROLE_TRANSACTION')")
+     * @Security("has_role('ROLE_SALE_INVOICE_HEADER_EDIT')")
      */
     public function editAction(Request $request, SaleInvoiceHeader $saleInvoiceHeader, $_format = 'html')
     {
@@ -117,7 +117,7 @@ class SaleInvoiceHeaderController extends Controller
     /**
      * @Route("/{id}/delete", name="transaction_sale_invoice_header_delete", requirements={"id": "\d+"})
      * @Method({"GET", "POST"})
-     * @Security("has_role('ROLE_TRANSACTION')")
+     * @Security("has_role('ROLE_SALE_INVOICE_HEADER_DELETE')")
      */
     public function deleteAction(Request $request, SaleInvoiceHeader $saleInvoiceHeader)
     {
@@ -140,6 +140,30 @@ class SaleInvoiceHeaderController extends Controller
         return $this->render('transaction/sale_invoice_header/delete.html.twig', array(
             'saleInvoiceHeader' => $saleInvoiceHeader,
             'form' => $form->createView(),
+        ));
+    }
+    
+    /**
+     * @Route("/{id}/memoInvoice", name="transaction_sale_invoice_header_memo_invoice", requirements={"id": "\d+"})
+     * @Method("GET")
+     * @Security("has_role('ROLE_SALE_INVOICE_HEADER_NEW') or has_role('ROLE_SALE_INVOICE_HEADER_EDIT')")
+     */
+    public function memoInvoiceAction(SaleInvoiceHeader $saleInvoiceHeader)
+    {
+        return $this->render('transaction/sale_invoice_header/memo_invoice.html.twig', array(
+            'saleInvoiceHeader' => $saleInvoiceHeader,
+        ));
+    }
+    
+    /**
+     * @Route("/{id}/memoDelivery", name="transaction_sale_invoice_header_memo_delivery", requirements={"id": "\d+"})
+     * @Method("GET")
+     * @Security("has_role('ROLE_SALE_INVOICE_HEADER_NEW') or has_role('ROLE_SALE_INVOICE_HEADER_EDIT') or has_role('ROLE_DELIVERY_HEADER_NEW') or has_role('ROLE_DELIVERY_HEADER_EDIT')")
+     */
+    public function memoDeliveryAction(SaleInvoiceHeader $saleInvoiceHeader)
+    {
+        return $this->render('transaction/sale_invoice_header/memo_delivery.html.twig', array(
+            'saleInvoiceHeader' => $saleInvoiceHeader,
         ));
     }
 }

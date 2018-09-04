@@ -86,23 +86,46 @@ class SaleChequeGridType extends DataGridType
 
     public function buildData(DataBuilder $builder, ObjectRepository $repository, array $options)
     {
-        $criteria = Criteria::create();
+        list($criteria, $associations) = $this->getSpecifications($options);
 
-        $builder->processSearch(function($values, $operator, $field) use ($criteria) {
-            $operator::search($criteria, $field, $values);
+        $builder->processSearch(function($values, $operator, $field, $group) use ($criteria, &$associations) {
+            $operator::search($criteria[$group], $field, $values);
         });
 
-        $builder->processSort(function($operator, $field) use ($criteria) {
-            $operator::sort($criteria, $field);
+        $builder->processSort(function($operator, $field, $group) use ($criteria) {
+            $operator::sort($criteria[$group], $field);
         });
 
-        $builder->processPage($repository->count($criteria), function($offset, $size) use ($criteria) {
-            $criteria->setMaxResults($size);
-            $criteria->setFirstResult($offset);
+        $builder->processPage($repository->count($criteria['saleCheque'], $associations), function($offset, $size) use ($criteria) {
+            $criteria['saleCheque']->setMaxResults($size);
+            $criteria['saleCheque']->setFirstResult($offset);
         });
         
-        $objects = $repository->match($criteria);
+        $objects = $repository->match($criteria['saleCheque'], $associations);
 
         $builder->setData($objects);
+    }
+
+    private function getSpecifications(array $options)
+    {
+        $names = array('saleCheque', 'customer');
+        $criteria = array();
+        foreach ($names as $name) {
+            $criteria[$name] = Criteria::create();
+        }
+
+        $associations = array(
+            'purchaseReceiptHeader' => array('criteria' => null, 'associations' => array(
+                'customer' => array('criteria' => $criteria['customer']),
+            )),
+        );
+
+        if (array_key_exists('form', $options)) {
+            switch ($options['form']) {
+                
+            }
+        }
+
+        return array($criteria, $associations);
     }
 }

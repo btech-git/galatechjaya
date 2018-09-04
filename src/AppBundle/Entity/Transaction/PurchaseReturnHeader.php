@@ -7,6 +7,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use AppBundle\Entity\Common\CodeNumberEntity;
+use AppBundle\Entity\Master\Warehouse;
 use AppBundle\Entity\Admin\Staff;
 
 /**
@@ -70,6 +71,11 @@ class PurchaseReturnHeader extends CodeNumberEntity
      */
     private $staffLast;
     /**
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Master\Warehouse")
+     * @Assert\NotNull()
+     */
+    private $warehouse;
+    /**
      * @ORM\ManyToOne(targetEntity="PurchaseInvoiceHeader", inversedBy="purchaseReturnHeaders")
      * @Assert\NotNull()
      */
@@ -118,6 +124,9 @@ class PurchaseReturnHeader extends CodeNumberEntity
 
     public function getStaffLast() { return $this->staffLast; }
     public function setStaffLast(Staff $staffLast = null) { $this->staffLast = $staffLast; }
+
+    public function getWarehouse() { return $this->warehouse; }
+    public function setWarehouse(Warehouse $warehouse = null) { $this->warehouse = $warehouse; }
 
     public function getPurchaseInvoiceHeader() { return $this->purchaseInvoiceHeader; }
     public function setPurchaseInvoiceHeader(PurchaseInvoiceHeader $purchaseInvoiceHeader = null) { $this->purchaseInvoiceHeader = $purchaseInvoiceHeader; }

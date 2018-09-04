@@ -2,6 +2,7 @@
 
 namespace AppBundle\Service\Transaction;
 
+use LibBundle\Doctrine\ObjectPersister;
 use AppBundle\Entity\Transaction\SaleCheque;
 use AppBundle\Repository\Transaction\SaleChequeRepository;
 
@@ -41,9 +42,13 @@ class SaleChequeForm
     public function save(SaleCheque $saleCheque)
     {
         if (empty($saleCheque->getId())) {
-            $this->saleChequeRepository->add($saleCheque);
+            ObjectPersister::save(function() use ($saleCheque) {
+                $this->saleChequeRepository->add($saleCheque);
+            });
         } else {
-            $this->saleChequeRepository->update($saleCheque);
+            ObjectPersister::save(function() use ($saleCheque) {
+                $this->saleChequeRepository->update($saleCheque);
+            });
         }
     }
     
@@ -51,7 +56,9 @@ class SaleChequeForm
     {
         $this->beforeDelete($saleCheque);
         if (!empty($saleCheque->getId())) {
-            $this->saleChequeRepository->remove($saleCheque);
+            ObjectPersister::save(function() use ($saleCheque) {
+                $this->saleChequeRepository->remove($saleCheque);
+            });
         }
     }
     

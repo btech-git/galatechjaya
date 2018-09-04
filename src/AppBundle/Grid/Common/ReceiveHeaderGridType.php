@@ -65,30 +65,53 @@ class ReceiveHeaderGridType extends DataGridType
         ;
     }
 
-    /**
-     * @param DataBuilder $builder
-     * @param ObjectRepository $repository
-     * @param array $options
-     */
     public function buildData(DataBuilder $builder, ObjectRepository $repository, array $options)
     {
-        $criteria = Criteria::create();
+        list($criteria, $associations) = $this->getSpecifications($options);
 
-        $builder->processSearch(function($values, $operator, $field) use ($criteria) {
-            $operator::search($criteria, $field, $values);
+        $builder->processSearch(function($values, $operator, $field, $group) use ($criteria, &$associations) {
+            if ($group === 'supplier' && $field === 'name' && $operator === ContainNonEmptyType::class && $values[0] !== null && $values[0] !== '') {
+                $associations['purchaseOrderHeader']['associations']['supplier']['merge'] = true;
+            }
+            $operator::search($criteria[$group], $field, $values);
         });
 
-        $builder->processSort(function($operator, $field) use ($criteria) {
-            $operator::sort($criteria, $field);
+        $builder->processSort(function($operator, $field, $group) use ($criteria) {
+            $operator::sort($criteria[$group], $field);
         });
 
-        $builder->processPage($repository->count($criteria), function($offset, $size) use ($criteria) {
-            $criteria->setMaxResults($size);
-            $criteria->setFirstResult($offset);
+        $builder->processPage($repository->count($criteria['receiveHeader'], $associations), function($offset, $size) use ($criteria) {
+            $criteria['receiveHeader']->setMaxResults($size);
+            $criteria['receiveHeader']->setFirstResult($offset);
         });
         
-        $objects = $repository->match($criteria);
+        $objects = $repository->match($criteria['receiveHeader'], $associations);
 
         $builder->setData($objects);
+    }
+
+    private function getSpecifications(array $options)
+    {
+        $names = array('receiveHeader', 'supplier');
+        $criteria = array();
+        foreach ($names as $name) {
+            $criteria[$name] = Criteria::create();
+        }
+
+        $associations = array(
+            'purchaseOrderHeader' => array('criteria' => null, 'associations' => array(
+                'supplier' => array('criteria' => $criteria['supplier']),
+            )),
+        );
+
+        if (array_key_exists('form', $options)) {
+            switch ($options['form']) {
+                case 'purchase_invoice_header':
+                    $associations['purchaseInvoiceHeader']['merge'] = false;
+                    break;
+            }
+        }
+
+        return array($criteria, $associations);
     }
 }

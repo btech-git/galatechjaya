@@ -59,7 +59,6 @@ class PurchaseReturnDetail
     
     public function sync()
     {
-        $this->unitPrice = 1000;
         $this->total = $this->quantity * $this->unitPrice;
     }
 }

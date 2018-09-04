@@ -9,7 +9,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
- * @ORM\Table(name="master_account") @ORM\Entity
+ * @ORM\Table(name="master_account")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\Master\AccountRepository")
  * @UniqueEntity("code")
  * @UniqueEntity("name")
  */

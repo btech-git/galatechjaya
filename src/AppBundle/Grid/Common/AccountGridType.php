@@ -61,30 +61,68 @@ class AccountGridType extends DataGridType
         ;
     }
 
-    /**
-     * @param DataBuilder $builder
-     * @param ObjectRepository $repository
-     * @param array $options
-     */
     public function buildData(DataBuilder $builder, ObjectRepository $repository, array $options)
     {
-        $criteria = Criteria::create();
+        list($criteria, $associations) = $this->getSpecifications($options);
 
-        $builder->processSearch(function($values, $operator, $field) use ($criteria) {
-            $operator::search($criteria, $field, $values);
+        $builder->processSearch(function($values, $operator, $field, $group) use ($criteria, &$associations) {
+            $operator::search($criteria[$group], $field, $values);
         });
 
-        $builder->processSort(function($operator, $field) use ($criteria) {
-            $operator::sort($criteria, $field);
+        $builder->processSort(function($operator, $field, $group) use ($criteria) {
+            $operator::sort($criteria[$group], $field);
         });
 
-        $builder->processPage($repository->count($criteria), function($offset, $size) use ($criteria) {
-            $criteria->setMaxResults($size);
-            $criteria->setFirstResult($offset);
+        $builder->processPage($repository->count($criteria['account'], $associations), function($offset, $size) use ($criteria) {
+            $criteria['account']->setMaxResults($size);
+            $criteria['account']->setFirstResult($offset);
         });
         
-        $objects = $repository->match($criteria);
+        $objects = $repository->match($criteria['account'], $associations);
 
         $builder->setData($objects);
+    }
+
+    private function getSpecifications(array $options)
+    {
+        $names = array('account');
+        $criteria = array();
+        foreach ($names as $name) {
+            $criteria[$name] = Criteria::create();
+        }
+
+        $associations = array();
+
+        if (array_key_exists('form', $options)) {
+//            $expr = Criteria::expr();
+            switch ($options['form']) {
+                case 'sale_invoice_downpayment':
+                    $associations['saleInvoiceDownpayment']['merge'] = true;
+                    break;
+                case 'sale_payment_detail':
+                    $associations['salePaymentDetail']['merge'] = true;
+                    break;
+                case 'purchase_payment_detail':
+                    $associations['purchasePaymentDetail']['merge'] = true;
+                    break;
+                case 'expense_header':
+                    $associations['expenseHeader']['merge'] = true;
+                    break;
+                case 'expense_detail':
+                    $associations['expenseDetail']['merge'] = true;
+                    break;
+                case 'deposit_header':
+                    $associations['depositHeader']['merge'] = true;
+                    break;
+                case 'deposit_detail':
+                    $associations['depositDetail']['merge'] = true;
+                    break;
+                case 'journal_voucher_detail':
+                    $associations['journalVoucherDetail']['merge'] = true;
+                    break;
+            }
+        }
+
+        return array($criteria, $associations);
     }
 }

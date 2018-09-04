@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use AppBundle\Entity\Common\CodeNumberEntity;
 use AppBundle\Entity\Transaction\SaleReceiptHeader;
+use AppBundle\Entity\Master\Bank;
 use AppBundle\Entity\Admin\Staff;
 
 /**
@@ -70,7 +71,7 @@ class SaleCheque extends CodeNumberEntity
     {
     }
     
-    public function getCodeNumberConstant() { return 'INV'; }
+    public function getCodeNumberConstant() { return 'SCQ'; }
     
     public function getId() { return $this->id; }
     

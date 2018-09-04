@@ -35,6 +35,11 @@ class PurchaseInvoiceHeader extends CodeNumberEntity
      */
     private $supplierInvoice;
     /**
+     * @ORM\Column(type="smallint")
+     * @Assert\NotNull() @Assert\GreaterThan(0)
+     */
+    private $totalQuantity;
+    /**
      * @ORM\Column(type="decimal", precision=18, scale=2)
      * @Assert\NotNull() @Assert\GreaterThan(0)
      */
@@ -105,7 +110,6 @@ class PurchaseInvoiceHeader extends CodeNumberEntity
     private $purchaseReceiptDetails;
     /**
      * @ORM\OneToMany(targetEntity="PurchaseReturnHeader", mappedBy="purchaseInvoiceHeader")
-     * @Assert\Valid() @Assert\Count(min=1)
      */
     private $purchaseReturnHeaders;
     
@@ -127,6 +131,9 @@ class PurchaseInvoiceHeader extends CodeNumberEntity
 
     public function getSupplierInvoice() { return $this->supplierInvoice; }
     public function setSupplierInvoice($supplierInvoice) { $this->supplierInvoice = $supplierInvoice; }
+
+    public function getTotalQuantity() { return $this->totalQuantity; }
+    public function setTotalQuantity($totalQuantity) { $this->totalQuantity = $totalQuantity; }
 
     public function getSubTotal() { return $this->subTotal; }
     public function setSubTotal($subTotal) { $this->subTotal = $subTotal; }

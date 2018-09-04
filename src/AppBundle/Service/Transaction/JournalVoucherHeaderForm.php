@@ -2,16 +2,21 @@
 
 namespace AppBundle\Service\Transaction;
 
+use LibBundle\Doctrine\ObjectPersister;
 use AppBundle\Entity\Transaction\JournalVoucherHeader;
+use AppBundle\Entity\Report\JournalLedger;
 use AppBundle\Repository\Transaction\JournalVoucherHeaderRepository;
+use AppBundle\Repository\Report\JournalLedgerRepository;
 
 class JournalVoucherHeaderForm
 {
     private $journalVoucherHeaderRepository;
+    private $journalLedgerRepository;
     
-    public function __construct(JournalVoucherHeaderRepository $journalVoucherHeaderRepository)
+    public function __construct(JournalVoucherHeaderRepository $journalVoucherHeaderRepository, JournalLedgerRepository $journalLedgerRepository)
     {
         $this->journalVoucherHeaderRepository = $journalVoucherHeaderRepository;
+        $this->journalLedgerRepository = $journalLedgerRepository;
     }
     
     public function initialize(JournalVoucherHeader $journalVoucherHeader, array $params = array())
@@ -43,13 +48,19 @@ class JournalVoucherHeaderForm
     public function save(JournalVoucherHeader $journalVoucherHeader)
     {
         if (empty($journalVoucherHeader->getId())) {
-            $this->journalVoucherHeaderRepository->add($journalVoucherHeader, array(
-                'journalVoucherDetails' => array('add' => true),
-            ));
+            ObjectPersister::save(function() use ($journalVoucherHeader) {
+                $this->journalVoucherHeaderRepository->add($journalVoucherHeader, array(
+                    'journalVoucherDetails' => array('add' => true),
+                ));
+                $this->markJournalLedgers($journalVoucherHeader);
+            });
         } else {
-            $this->journalVoucherHeaderRepository->update($journalVoucherHeader, array(
-                'journalVoucherDetails' => array('add' => true, 'remove' => true),
-            ));
+            ObjectPersister::save(function() use ($journalVoucherHeader) {
+                $this->journalVoucherHeaderRepository->update($journalVoucherHeader, array(
+                    'journalVoucherDetails' => array('add' => true, 'remove' => true),
+                ));
+                $this->markJournalLedgers($journalVoucherHeader);
+            });
         }
     }
     
@@ -57,9 +68,12 @@ class JournalVoucherHeaderForm
     {
         $this->beforeDelete($journalVoucherHeader);
         if (!empty($journalVoucherHeader->getId())) {
-            $this->journalVoucherHeaderRepository->remove($journalVoucherHeader, array(
-                'journalVoucherDetails' => array('remove' => true),
-            ));
+            ObjectPersister::save(function() use ($journalVoucherHeader) {
+                $this->journalVoucherHeaderRepository->remove($journalVoucherHeader, array(
+                    'journalVoucherDetails' => array('remove' => true),
+                ));
+                $this->markJournalLedgers($journalVoucherHeader);
+            });
         }
     }
     
@@ -67,5 +81,31 @@ class JournalVoucherHeaderForm
     {
         $journalVoucherHeader->getJournalVoucherDetails()->clear();
         $this->sync($journalVoucherHeader);
+    }
+    
+    private function markJournalLedgers(JournalVoucherHeader $journalVoucherHeader)
+    {
+        $oldJournalLedgers = $this->journalLedgerRepository->findBy(array(
+            'transactionType' => JournalLedger::TRANSACTION_TYPE_JOURNAL_VOUCHER,
+            'codeNumberYear' => $journalVoucherHeader->getCodeNumberYear(),
+            'codeNumberMonth' => $journalVoucherHeader->getCodeNumberMonth(),
+            'codeNumberOrdinal' => $journalVoucherHeader->getCodeNumberOrdinal(),
+        ));
+        $this->journalLedgerRepository->remove($oldJournalLedgers);
+        foreach ($journalVoucherHeader->getJournalVoucherDetails() as $journalVoucherDetail) {
+            if ($journalVoucherDetail->getDebit() > 0.00 || $journalVoucherDetail->getCredit() > 0.00) {
+                $journalLedger = new JournalLedger();
+                $journalLedger->setCodeNumber($journalVoucherHeader->getCodeNumber());
+                $journalLedger->setTransactionDate($journalVoucherHeader->getTransactionDate());
+                $journalLedger->setTransactionType(JournalLedger::TRANSACTION_TYPE_JOURNAL_VOUCHER);
+                $journalLedger->setTransactionSubject($journalVoucherDetail->getMemo());
+                $journalLedger->setNote($journalVoucherHeader->getNote());
+                $journalLedger->setDebit($journalVoucherDetail->getDebit());
+                $journalLedger->setCredit($journalVoucherDetail->getCredit());
+                $journalLedger->setAccount($journalVoucherDetail->getAccount());
+                $journalLedger->setStaff($journalVoucherHeader->getStaff());
+                $this->journalLedgerRepository->add($journalLedger);
+            }
+        }
     }
 }

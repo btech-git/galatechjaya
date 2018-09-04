@@ -1,0 +1,66 @@
+{% extends 'transaction/layout.html.twig' %}
+
+{% block title 'Show Delivery Header' %}
+
+{% block content %}
+    <table class="table table-bordered table-striped">
+        <tbody>
+            <tr>
+                <th>SJ #</th>
+                <td>{{ saleInvoiceHeader.codeNumber|default }}</td>
+            </tr>
+            <tr>
+                <th>Tanggal</th>
+                <td>{{ saleInvoiceHeader.transactionDate|default ? saleInvoiceHeader.transactionDate|date('j F Y') }}</td>
+            </tr>
+            <tr>
+                <th>Customer</th>
+                <td>{{ saleInvoiceHeader.customer.name|default }}</td>
+            </tr>
+            <tr>
+                <th>Customer PO #</th>
+                <td>{{ saleInvoiceHeader.customerOrderNumber|default }}</td>
+            </tr>
+            <tr>
+                <th>Kendaraan Plat #</th>
+                <td>{{ saleInvoiceHeader.vehicleNumber|default }}</td>
+            </tr>
+            <tr>
+                <th>Pengemudi</th>
+                <td>{{ saleInvoiceHeader.vehicleDriver|default }}</td>
+            </tr>
+            <tr>
+                <th>Note</th>
+                <td>{{ saleInvoiceHeader.note|default }}</td>
+            </tr>
+        </tbody>
+    </table>
+                              
+    <hr />
+           
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr class="bg-info">
+                <th>Nama Barang</th>
+                <th style="width: 10%">Ukuran</th>
+                <th style="width: 5%">Satuan</th>
+                <th style="width: 10%">Qty</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for saleInvoiceDetail in saleInvoiceHeader.saleInvoiceDetails %}
+                <tr>
+                    <td class="text-left">{{ saleInvoiceDetail.itemName|default }}</td>
+                    <td class="text-left">{{ saleInvoiceDetail.product.size|default }}</td>
+                    <td class="text-left">{{ saleInvoiceDetail.product.unit.name|default }}</td>
+                    <td class="text-center">{{ saleInvoiceDetail.quantity|default|number_format(0) }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot></tfoot>
+    </table>
+                  
+    <a target="_blank" class="btn btn-info" href="{{ path('transaction_delivery_header_memo_delivery', {'id': saleInvoiceHeader.id}) }}">
+        <span class="glyphicon glyphicon-print"></span> Print Surat Jalan
+    </a>
+{% endblock %}

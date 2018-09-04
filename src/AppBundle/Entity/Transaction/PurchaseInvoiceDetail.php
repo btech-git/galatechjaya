@@ -6,10 +6,11 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use AppBundle\Entity\Master\Product;
 
 /**
  * @ORM\Table(name="transaction_purchase_invoice_detail")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\Transaction\PurchaseInvoiceDetailRepository")
  */
 class PurchaseInvoiceDetail
 {
@@ -43,6 +44,11 @@ class PurchaseInvoiceDetail
      */
     private $purchaseInvoiceHeader;
     /**
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Master\Product")
+     * @Assert\NotNull()
+     */
+    private $product;
+    /**
      * @ORM\OneToOne(targetEntity="ReceiveDetail", inversedBy="purchaseInvoiceDetail")
      * @Assert\NotNull()
      */
@@ -74,6 +80,9 @@ class PurchaseInvoiceDetail
     public function getPurchaseInvoiceHeader() { return $this->purchaseInvoiceHeader; }
     public function setPurchaseInvoiceHeader(PurchaseInvoiceHeader $purchaseInvoiceHeader = null) { $this->purchaseInvoiceHeader = $purchaseInvoiceHeader; }
 
+    public function getProduct() { return $this->product; }
+    public function setProduct(Product $product = null) { $this->product = $product; }
+    
     public function getReceiveDetail() { return $this->receiveDetail; }
     public function setReceiveDetail(ReceiveDetail $receiveDetail = null) { $this->receiveDetail = $receiveDetail; }
 

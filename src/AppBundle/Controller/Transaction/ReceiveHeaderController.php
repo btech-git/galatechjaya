@@ -19,7 +19,7 @@ class ReceiveHeaderController extends Controller
     /**
      * @Route("/grid", name="transaction_receive_header_grid", condition="request.isXmlHttpRequest()")
      * @Method("POST")
-     * @Security("has_role('ROLE_TRANSACTION')")
+     * @Security("has_role('ROLE_RECEIVE_HEADER_NEW') or has_role('ROLE_RECEIVE_HEADER_EDIT') or has_role('ROLE_RECEIVE_HEADER_DELETE')")
      */
     public function gridAction(Request $request)
     {
@@ -37,7 +37,7 @@ class ReceiveHeaderController extends Controller
     /**
      * @Route("/", name="transaction_receive_header_index")
      * @Method("GET")
-     * @Security("has_role('ROLE_TRANSACTION')")
+     * @Security("has_role('ROLE_RECEIVE_HEADER_NEW') or has_role('ROLE_RECEIVE_HEADER_EDIT') or has_role('ROLE_RECEIVE_HEADER_DELETE')")
      */
     public function indexAction()
     {
@@ -47,7 +47,7 @@ class ReceiveHeaderController extends Controller
     /**
      * @Route("/new.{_format}", name="transaction_receive_header_new")
      * @Method({"GET", "POST"})
-     * @Security("has_role('ROLE_TRANSACTION')")
+     * @Security("has_role('ROLE_RECEIVE_HEADER_NEW')")
      */
     public function newAction(Request $request, $_format = 'html')
     {
@@ -76,7 +76,7 @@ class ReceiveHeaderController extends Controller
     /**
      * @Route("/{id}", name="transaction_receive_header_show", requirements={"id": "\d+"})
      * @Method("GET")
-     * @Security("has_role('ROLE_TRANSACTION')")
+     * @Security("has_role('ROLE_RECEIVE_HEADER_NEW') or has_role('ROLE_RECEIVE_HEADER_EDIT') or has_role('ROLE_RECEIVE_HEADER_DELETE')")
      */
     public function showAction(ReceiveHeader $receiveHeader)
     {
@@ -88,7 +88,7 @@ class ReceiveHeaderController extends Controller
     /**
      * @Route("/{id}/edit.{_format}", name="transaction_receive_header_edit", requirements={"id": "\d+"})
      * @Method({"GET", "POST"})
-     * @Security("has_role('ROLE_TRANSACTION')")
+     * @Security("has_role('ROLE_RECEIVE_HEADER_EDIT')")
      */
     public function editAction(Request $request, ReceiveHeader $receiveHeader, $_format = 'html')
     {
@@ -117,7 +117,7 @@ class ReceiveHeaderController extends Controller
     /**
      * @Route("/{id}/delete", name="transaction_receive_header_delete", requirements={"id": "\d+"})
      * @Method({"GET", "POST"})
-     * @Security("has_role('ROLE_TRANSACTION')")
+     * @Security("has_role('ROLE_RECEIVE_HEADER_DELETE')")
      */
     public function deleteAction(Request $request, ReceiveHeader $receiveHeader)
     {

@@ -2,6 +2,7 @@
 
 namespace AppBundle\Service\Transaction;
 
+use LibBundle\Doctrine\ObjectPersister;
 use AppBundle\Entity\Transaction\PurchaseReceiptHeader;
 use AppBundle\Repository\Transaction\PurchaseReceiptHeaderRepository;
 
@@ -44,13 +45,17 @@ class PurchaseReceiptHeaderForm
     public function save(PurchaseReceiptHeader $purchaseReceiptHeader)
     {
         if (empty($purchaseReceiptHeader->getId())) {
-            $this->purchaseReceiptHeaderRepository->add($purchaseReceiptHeader, array(
-                'purchaseReceiptDetails' => array('add' => true),
-            ));
+            ObjectPersister::save(function() use ($purchaseReceiptHeader) {
+                $this->purchaseReceiptHeaderRepository->add($purchaseReceiptHeader, array(
+                    'purchaseReceiptDetails' => array('add' => true),
+                ));
+            });
         } else {
-            $this->purchaseReceiptHeaderRepository->update($purchaseReceiptHeader, array(
-                'purchaseReceiptDetails' => array('add' => true, 'remove' => true),
-            ));
+            ObjectPersister::save(function() use ($purchaseReceiptHeader) {
+                $this->purchaseReceiptHeaderRepository->update($purchaseReceiptHeader, array(
+                    'purchaseReceiptDetails' => array('add' => true, 'remove' => true),
+                ));
+            });
         }
     }
     
@@ -58,10 +63,20 @@ class PurchaseReceiptHeaderForm
     {
         $this->beforeDelete($purchaseReceiptHeader);
         if (!empty($purchaseReceiptHeader->getId())) {
-            $this->purchaseReceiptHeaderRepository->remove($purchaseReceiptHeader, array(
-                'purchaseReceiptDetails' => array('remove' => true),
-            ));
+            ObjectPersister::save(function() use ($purchaseReceiptHeader) {
+                $this->purchaseReceiptHeaderRepository->remove($purchaseReceiptHeader, array(
+                    'purchaseReceiptDetails' => array('remove' => true),
+                ));
+            });
         }
+    }
+    
+    public function isValidForDelete(PurchaseReceiptHeader $purchaseReceiptHeader)
+    {
+        $valid = $purchaseReceiptHeader->getPurchaseReceiptDetails()->isEmpty();
+        $valid = $valid && $purchaseReceiptHeader->getPurchasePaymentDetails()->isEmpty();
+        
+        return $valid;
     }
     
     protected function beforeDelete(PurchaseReceiptHeader $purchaseReceiptHeader)

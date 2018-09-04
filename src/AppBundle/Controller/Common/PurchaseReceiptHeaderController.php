@@ -22,11 +22,19 @@ class PurchaseReceiptHeaderController extends Controller
      */
     public function gridAction(Request $request)
     {
+        $options = array();
+        if ($request->query->has('form')) {
+            $options['form'] = $request->query->get('form');
+        }
+        if ($request->query->has('options')) {
+            $options['options'] = $request->query->get('options');
+        }
+
         $em = $this->getDoctrine()->getManager();
         $repository = $em->getRepository(PurchaseReceiptHeader::class);
 
         $grid = $this->get('lib.grid.datagrid');
-        $grid->build(PurchaseReceiptHeaderGridType::class, $repository, $request);
+        $grid->build(PurchaseReceiptHeaderGridType::class, $repository, $request, $options);
 
         return $this->render('common/purchase_receipt_header/grid.html.twig', array(
             'grid' => $grid->createView(),

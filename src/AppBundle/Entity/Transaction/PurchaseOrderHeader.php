@@ -82,7 +82,7 @@ class PurchaseOrderHeader extends CodeNumberEntity
      */
     private $staffLast;
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Master\Supplier")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Master\Supplier", inversedBy="purchaseOrderHeaders")
      * @Assert\NotNull()
      */
     private $supplier;

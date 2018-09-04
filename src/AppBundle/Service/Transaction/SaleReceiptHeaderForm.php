@@ -2,6 +2,7 @@
 
 namespace AppBundle\Service\Transaction;
 
+use LibBundle\Doctrine\ObjectPersister;
 use AppBundle\Entity\Transaction\SaleReceiptHeader;
 use AppBundle\Repository\Transaction\SaleReceiptHeaderRepository;
 
@@ -44,13 +45,17 @@ class SaleReceiptHeaderForm
     public function save(SaleReceiptHeader $saleReceiptHeader)
     {
         if (empty($saleReceiptHeader->getId())) {
-            $this->saleReceiptHeaderRepository->add($saleReceiptHeader, array(
-                'saleReceiptDetails' => array('add' => true),
-            ));
+            ObjectPersister::save(function() use ($saleReceiptHeader) {
+                $this->saleReceiptHeaderRepository->add($saleReceiptHeader, array(
+                    'saleReceiptDetails' => array('add' => true),
+                ));
+            });
         } else {
-            $this->saleReceiptHeaderRepository->update($saleReceiptHeader, array(
-                'saleReceiptDetails' => array('add' => true, 'remove' => true),
-            ));
+            ObjectPersister::save(function() use ($saleReceiptHeader) {
+                $this->saleReceiptHeaderRepository->update($saleReceiptHeader, array(
+                    'saleReceiptDetails' => array('add' => true, 'remove' => true),
+                ));
+            });
         }
     }
     
@@ -58,9 +63,11 @@ class SaleReceiptHeaderForm
     {
         $this->beforeDelete($saleReceiptHeader);
         if (!empty($saleReceiptHeader->getId())) {
-            $this->saleReceiptHeaderRepository->remove($saleReceiptHeader, array(
-                'saleReceiptDetails' => array('remove' => true),
-            ));
+            ObjectPersister::save(function() use ($saleReceiptHeader) {
+                $this->saleReceiptHeaderRepository->remove($saleReceiptHeader, array(
+                    'saleReceiptDetails' => array('remove' => true),
+                ));
+            });
         }
     }
     

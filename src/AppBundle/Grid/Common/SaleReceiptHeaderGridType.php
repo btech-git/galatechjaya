@@ -82,23 +82,59 @@ class SaleReceiptHeaderGridType extends DataGridType
      */
     public function buildData(DataBuilder $builder, ObjectRepository $repository, array $options)
     {
-        $criteria = Criteria::create();
+        list($criteria, $associations) = $this->getSpecifications($options);
 
-        $builder->processSearch(function($values, $operator, $field) use ($criteria) {
-            $operator::search($criteria, $field, $values);
+        $builder->processSearch(function($values, $operator, $field, $group) use ($criteria, &$associations) {
+//            if ($group === 'customer' && $field === 'name' && $operator === ContainNonEmptyType::class && $values[0] !== null && $values[0] !== '') {
+//                $associations['customer']['merge'] = true;
+//            }
+            $operator::search($criteria[$group], $field, $values);
         });
 
-        $builder->processSort(function($operator, $field) use ($criteria) {
-            $operator::sort($criteria, $field);
+        $builder->processSort(function($operator, $field, $group) use ($criteria) {
+            $operator::sort($criteria[$group], $field);
         });
 
-        $builder->processPage($repository->count($criteria), function($offset, $size) use ($criteria) {
-            $criteria->setMaxResults($size);
-            $criteria->setFirstResult($offset);
+        $builder->processPage($repository->count($criteria['saleReceiptHeader'], $associations), function($offset, $size) use ($criteria) {
+            $criteria['saleReceiptHeader']->setMaxResults($size);
+            $criteria['saleReceiptHeader']->setFirstResult($offset);
         });
         
-        $objects = $repository->match($criteria);
+        $objects = $repository->match($criteria['saleReceiptHeader'], $associations);
 
         $builder->setData($objects);
+    }
+    
+    private function getSpecifications(array $options)
+    {
+        $names = array('saleReceiptHeader', 'customer');
+        $criteria = array();
+        foreach ($names as $name) {
+            $criteria[$name] = Criteria::create();
+        }
+
+        $associations = array(
+            'customer' => array('criteria' => $criteria['customer'], 'merge' => true),
+            'salePaymentDetails' => array('criteria' => null),
+            'saleCheques' => array('criteria' => null),
+        );
+
+        if (array_key_exists('form', $options)) {
+            $expr = Criteria::expr();
+            switch ($options['form']) {
+                case 'sale_payment_header':
+                    if (array_key_exists('customer_id', $options['options'])) {
+                        $criteria['customer']->andWhere($expr->eq('id', $options['options']['customer_id']));
+                    }
+//                    $associations['salePaymentDetails']['merge'] = false;
+                    $criteria['saleReceiptHeader']->andWhere($expr->gt('grandTotal - totalPayment', 0));
+                    break;
+                case 'sale_cheque':
+                    $associations['saleCheques']['merge'] = false;
+                    break;
+            }
+        }
+
+        return array($criteria, $associations);
     }
 }

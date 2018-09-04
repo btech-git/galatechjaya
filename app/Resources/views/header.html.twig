@@ -16,6 +16,12 @@
             {% if menu['transaction'] %}
                 <li><a href="{{ path('staff_menu_transaction') }}">Transaction</a></li>
             {% endif %}
+            {% if menu['finance'] %}
+                <li><a href="{{ path('staff_menu_finance') }}">Finance</a></li>
+            {% endif %}
+            {% if menu['warehouse'] %}
+                <li><a href="{{ path('staff_menu_warehouse') }}">Gudang</a></li>
+            {% endif %}
             {% if menu['report'] %}
                 <li><a href="{{ path('staff_menu_report') }}">Report</a></li>
             {% endif %}

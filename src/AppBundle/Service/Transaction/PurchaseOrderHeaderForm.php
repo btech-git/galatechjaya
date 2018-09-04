@@ -2,6 +2,7 @@
 
 namespace AppBundle\Service\Transaction;
 
+use LibBundle\Doctrine\ObjectPersister;
 use AppBundle\Entity\Transaction\PurchaseOrderHeader;
 use AppBundle\Repository\Transaction\PurchaseOrderHeaderRepository;
 
@@ -47,13 +48,17 @@ class PurchaseOrderHeaderForm
     public function save(PurchaseOrderHeader $purchaseOrderHeader)
     {
         if (empty($purchaseOrderHeader->getId())) {
-            $this->purchaseOrderHeaderRepository->add($purchaseOrderHeader, array(
-                'purchaseOrderDetails' => array('add' => true),
-            ));
+            ObjectPersister::save(function() use ($purchaseOrderHeader) {
+                $this->purchaseOrderHeaderRepository->add($purchaseOrderHeader, array(
+                    'purchaseOrderDetails' => array('add' => true),
+                ));
+            });
         } else {
-            $this->purchaseOrderHeaderRepository->update($purchaseOrderHeader, array(
-                'purchaseOrderDetails' => array('add' => true, 'remove' => true),
-            ));
+            ObjectPersister::save(function() use ($purchaseOrderHeader) {
+                $this->purchaseOrderHeaderRepository->update($purchaseOrderHeader, array(
+                    'purchaseOrderDetails' => array('add' => true, 'remove' => true),
+                ));
+            });
         }
     }
     
@@ -61,9 +66,11 @@ class PurchaseOrderHeaderForm
     {
         $this->beforeDelete($purchaseOrderHeader);
         if (!empty($purchaseOrderHeader->getId())) {
-            $this->purchaseOrderHeaderRepository->remove($purchaseOrderHeader, array(
-                'purchaseOrderDetails' => array('remove' => true),
-            ));
+            ObjectPersister::save(function() use ($purchaseOrderHeader) {
+                $this->purchaseOrderHeaderRepository->remove($purchaseOrderHeader, array(
+                    'purchaseOrderDetails' => array('remove' => true),
+                ));
+            });
         }
     }
     

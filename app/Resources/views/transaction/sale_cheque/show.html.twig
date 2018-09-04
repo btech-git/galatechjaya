@@ -10,24 +10,40 @@
     <table class="table table-bordered table-striped">
         <tbody>
             <tr>
-                <th>Transaction Date</th>
-                <td>{{ saleCheque.transactionDate|default ? saleCheque.transactionDate|date('Y-m-d') }}</td>
+                <th>Transaksi #</th>
+                <td>{{ saleCheque.codeNumber|default }}</td>
             </tr>
             <tr>
-                <th>Date Due</th>
-                <td>{{ saleCheque.dateDue|default ? saleCheque.dateDue|date('Y-m-d') }}</td>
+                <th>Tanggal</th>
+                <td>{{ saleCheque.transactionDate|default ? saleCheque.transactionDate|date('j F Y') }}</td>
             </tr>
             <tr>
-                <th>Cheque Number</th>
+                <th>Jatuh Tempo</th>
+                <td>{{ saleCheque.dateDue|default ? saleCheque.dateDue|date('j F Y') }}</td>
+            </tr>
+            <tr>
+                <th>Tanda Terima #</th>
+                <td>{{ saleCheque.saleReceiptHeader.codeNumber|default }}</td>
+            </tr>
+            <tr>
+                <th>Tanggal</th>
+                <td>{{ saleCheque.saleReceiptHeader.transactionDate|default ? saleCheque.saleReceiptHeader.transactionDate|date('j F Y') }}</td>
+            </tr>
+            <tr>
+                <th>Customer</th>
+                <td>{{ saleCheque.saleReceiptHeader.customer.name|default }}</td>
+            </tr>
+            <tr>
+                <th>Bank Name</th>
+                <td>{{ saleCheque.bank.name|default }}</td>
+            </tr>
+            <tr>
+                <th>Cek / Giro #</th>
                 <td>{{ saleCheque.chequeNumber|default }}</td>
             </tr>
             <tr>
                 <th>Amount</th>
                 <td>{{ saleCheque.amount|default|number_format(2) }}</td>
-            </tr>
-            <tr>
-                <th>Bank Name</th>
-                <td>{{ saleCheque.bankName|default }}</td>
             </tr>
             <tr>
                 <th>Note</th>

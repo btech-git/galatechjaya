@@ -24,7 +24,7 @@
             {{ form_row(object.account, {'label': false }) }}
         </td>
         <td class="text-right">
-            <span data-name="sale-receipt-header-grand-total-{{ object.vars.name }}">{{ object.vars.value.totalReceipt|default }}</span>
+            <span data-name="sale-receipt-header-remaining-{{ object.vars.name }}">{{ object.vars.value.saleReceiptHeader.remaining|default }}</span>
         </td>
         <td>
             {{ form_row(object.amount, {'label': false, 'attr': {'data-group-name': 'amount', 'data-bind-target': '[data-name=amount-text-' ~ object.vars.name ~ ']', 'data-bind-format': 'number', 'data-option-precision': 2} }) }}
@@ -120,7 +120,7 @@
                         <h4 class="modal-title">Sale Receipt Header List</h4>
                     </div>
                     <div class="modal-body">
-                        <div id="sale-receipt-header-grid" data-grid="{{ path('common_sale_receipt_header_grid', {'form': form.vars.id}) }}"></div>
+                        <div id="sale-receipt-header-grid" data-grid="{{ path('common_sale_receipt_header_grid', {'form': form.vars.id, 'options': {'customer_id': salePaymentHeader.customer.id|default(0)} }) }}"></div>
                     </div>
                 </div>
             </div>
@@ -149,6 +149,14 @@
             var table = $("#sale-payment-detail-list");
             var tableBody = $("tbody", table);
             
+            $("#{{ form.customer.vars.id }}").on("change", function() {
+                tableBody.empty();
+                bind();
+                var url = "{{ path('common_sale_receipt_header_grid', {'form': form.vars.id, 'options': {'customer_id': '__customer_id'} })|raw }}";
+                url = url.replace("__customer_id", parseInt($(this).val()));
+                $("#sale-receipt-header-grid").load(url, {id: "sale-receipt-header-grid"});
+            });
+            
             tableBody.on("change", "[data-group-name=amount]", function() {
                 bind();
             });
@@ -159,7 +167,7 @@
             
             $("#customer-grid").on("click", "table[data-role=table] tbody tr", function() {
                 $("#customer-dialog").modal("hide");
-                $("#{{ form.customer.vars.id }}").val($(this).attr("data-field-id"));
+                $("#{{ form.customer.vars.id }}").val($(this).attr("data-field-id")).trigger("change");
                 $("[data-name=customer-name]", "#customer-info").text($(this).attr("data-field-name"));
                 $("[data-name=customer-contact-person]", "#customer-info").text($(this).attr("data-field-contact-person"));
             });
@@ -177,8 +185,8 @@
                     saleReceiptHeaderCodeNumberPrototype.text(context.attr("data-field-code-number"));
                     var saleReceiptHeaderTransactionDatePrototype = prototype.find("[data-name=sale-receipt-header-transaction-date-" + name + "]");
                     saleReceiptHeaderTransactionDatePrototype.text(context.attr("data-field-transaction-date"));
-                    var saleReceiptHeaderGrandTotalPrototype = prototype.find("[data-name=sale-receipt-header-grand-total-" + name + "]");
-                    saleReceiptHeaderGrandTotalPrototype.text(context.attr("data-field-grand-total"));
+                    var saleReceiptHeaderRemainingPrototype = prototype.find("[data-name=sale-receipt-header-remaining-" + name + "]");
+                    saleReceiptHeaderRemainingPrototype.text(context.attr("data-field-remaining"));
                 });
                 bind();
             });

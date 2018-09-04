@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use AppBundle\Entity\Common\CodeNumberEntity;
 use AppBundle\Entity\Master\Customer;
+use AppBundle\Entity\Master\Warehouse;
 use AppBundle\Entity\Admin\Staff;
 
 /**
@@ -35,6 +36,16 @@ class SaleInvoiceHeader extends CodeNumberEntity
      * @Assert\NotNull()
      */
     private $customerOrderNumber;
+    /**
+     * @ORM\Column(type="string", length=60)
+     * @Assert\NotNull()
+     */
+    private $vehicleNumber;
+    /**
+     * @ORM\Column(type="string", length=60)
+     * @Assert\NotNull()
+     */
+    private $vehicleDriver;
     /**
      * @ORM\Column(type="text")
      * @Assert\NotNull()
@@ -81,6 +92,10 @@ class SaleInvoiceHeader extends CodeNumberEntity
      */
     private $grandTotal;
     /**
+     * @ORM\Column(type="decimal", precision=18, scale=2)
+     */
+    private $totalAveragePurchasePrice;
+    /**
      * @ORM\Column(type="boolean")
      * @Assert\NotNull()
      */
@@ -96,10 +111,15 @@ class SaleInvoiceHeader extends CodeNumberEntity
      */
     private $staffLast;
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Master\Customer")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Master\Customer", inversedBy="saleInvoiceHeaders")
      * @Assert\NotNull()
      */
     private $customer;
+    /**
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Master\Warehouse")
+     * @Assert\NotNull()
+     */
+    private $warehouse;
     /**
      * @ORM\OneToMany(targetEntity="SaleInvoiceDetail", mappedBy="saleInvoiceHeader")
      * @Assert\Valid() @Assert\Count(min=1)
@@ -134,6 +154,12 @@ class SaleInvoiceHeader extends CodeNumberEntity
     public function getCustomerOrderNumber() { return $this->customerOrderNumber; }
     public function setCustomerOrderNumber($customerOrderNumber) { $this->customerOrderNumber = $customerOrderNumber; }
 
+    public function getVehicleNumber() { return $this->vehicleNumber; }
+    public function setVehicleNumber($vehicleNumber) { $this->vehicleNumber = $vehicleNumber; }
+
+    public function getVehicleDriver() { return $this->vehicleDriver; }
+    public function setVehicleDriver($vehicleDriver) { $this->vehicleDriver = $vehicleDriver; }
+
     public function getNote() { return $this->note; }
     public function setNote($note) { $this->note = $note; }
 
@@ -161,6 +187,9 @@ class SaleInvoiceHeader extends CodeNumberEntity
     public function getGrandTotal() { return $this->grandTotal; }
     public function setGrandTotal($grandTotal) { $this->grandTotal = $grandTotal; }
 
+    public function getTotalAveragePurchasePrice() { return $this->totalAveragePurchasePrice; }
+    public function setTotalAveragePurchasePrice($totalAveragePurchasePrice) { $this->totalAveragePurchasePrice = $totalAveragePurchasePrice; }
+
     public function getIsTax() { return $this->isTax; }
     public function setIsTax($isTax) { $this->isTax = $isTax; }
 
@@ -172,6 +201,9 @@ class SaleInvoiceHeader extends CodeNumberEntity
 
     public function getCustomer() { return $this->customer; }
     public function setCustomer(Customer $customer = null) { $this->customer = $customer; }
+
+    public function getWarehouse() { return $this->warehouse; }
+    public function setWarehouse(Warehouse $warehouse = null) { $this->warehouse = $warehouse; }
 
     public function getSaleInvoiceDetails() { return $this->saleInvoiceDetails; }
     public function setSaleInvoiceDetails(Collection $saleInvoiceDetails) { $this->saleInvoiceDetails = $saleInvoiceDetails; }
@@ -186,10 +218,12 @@ class SaleInvoiceHeader extends CodeNumberEntity
     {
         $totalQuantity = 0.00;
         $subTotal = 0.00;
+        $totalAveragePurchasePrice = 0.00;
         foreach ($this->saleInvoiceDetails as $saleInvoiceDetail) {
             $saleInvoiceDetail->sync();
             $totalQuantity += $saleInvoiceDetail->getQuantity();
             $subTotal += $saleInvoiceDetail->getTotal();
+            $totalAveragePurchasePrice += $saleInvoiceDetail->getAveragePurchasePrice();
         }
         $this->totalQuantity = $totalQuantity;
         $this->subTotal = $subTotal;
@@ -197,17 +231,18 @@ class SaleInvoiceHeader extends CodeNumberEntity
         $this->taxNominal = ($this->isTax ? ($this->subTotal - $this->discountNominal) * 10 / 100 : 0);
         $this->grandTotal = $this->subTotal - $this->discountNominal + $this->taxNominal + $this->shippingFee;
         $this->totalReturn = 0.00;
+        $this->totalAveragePurchasePrice = $totalAveragePurchasePrice;
     }
     
-    public function getAveragePurchaseGrandTotal()
-    {
-        $total = 0.00;
-        foreach ($this->saleInvoiceDetails as $saleInvoiceDetail) {
-            $total += $saleInvoiceDetail->getAveragePurchaseTotal();
-        }
-        
-        return $total;
-    }
+//    public function getAveragePurchaseGrandTotal()
+//    {
+//        $total = 0.00;
+//        foreach ($this->saleInvoiceDetails as $saleInvoiceDetail) {
+//            $total += $saleInvoiceDetail->getAveragePurchaseTotal();
+//        }
+//        
+//        return $total;
+//    }
     
     public function getProfitLoss()
     {

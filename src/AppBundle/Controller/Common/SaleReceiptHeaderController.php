@@ -22,11 +22,19 @@ class SaleReceiptHeaderController extends Controller
      */
     public function gridAction(Request $request)
     {
+        $options = array();
+        if ($request->query->has('form')) {
+            $options['form'] = $request->query->get('form');
+        }
+        if ($request->query->has('options')) {
+            $options['options'] = $request->query->get('options');
+        }
+        
         $em = $this->getDoctrine()->getManager();
         $repository = $em->getRepository(SaleReceiptHeader::class);
 
         $grid = $this->get('lib.grid.datagrid');
-        $grid->build(SaleReceiptHeaderGridType::class, $repository, $request);
+        $grid->build(SaleReceiptHeaderGridType::class, $repository, $request, $options);
 
         return $this->render('common/sale_receipt_header/grid.html.twig', array(
             'grid' => $grid->createView(),

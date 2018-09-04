@@ -85,9 +85,9 @@ class SaleInvoiceHeaderGridType extends DataGridType
         list($criteria, $associations) = $this->getSpecifications($options);
 
         $builder->processSearch(function($values, $operator, $field, $group) use ($criteria, &$associations) {
-            if ($group === 'customer' && $field === 'name' && $operator === ContainNonEmptyType::class && $values[0] !== null && $values[0] !== '') {
-                $associations['customer']['merge'] = true;
-            }
+//            if ($group === 'customer' && $field === 'name' && $operator === ContainNonEmptyType::class && $values[0] !== null && $values[0] !== '') {
+//                $associations['customer']['merge'] = true;
+//            }
             $operator::search($criteria[$group], $field, $values);
         });
 
@@ -114,7 +114,9 @@ class SaleInvoiceHeaderGridType extends DataGridType
         }
 
         $associations = array(
-            'customer' => array('criteria' => $criteria['customer']),
+            'customer' => array('criteria' => $criteria['customer'], 'merge' => true),
+            'saleReceiptDetails' => array('criteria' => null),
+            'saleReturnHeaders' => array('criteria' => null),
         );
 
         if (array_key_exists('form', $options)) {
@@ -124,8 +126,10 @@ class SaleInvoiceHeaderGridType extends DataGridType
                     if (array_key_exists('customer_id', $options['options'])) {
                         $criteria['customer']->andWhere($expr->eq('id', $options['options']['customer_id']));
                     }
-                    $associations['customer']['merge'] = true;
                     $associations['saleReceiptDetails']['merge'] = false;
+                    break;
+                case 'sale_return_header':
+                    $associations['saleReturnHeaders']['merge'] = false;
                     break;
             }
         }

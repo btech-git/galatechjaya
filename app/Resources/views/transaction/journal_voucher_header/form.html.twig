@@ -119,9 +119,11 @@
             
             var table = $("#journal-voucher-detail-list");
             var tableBody = $("tbody", table);
-            var tableFoot = $("tfoot", table);
             
-            tableBody.on("change", "[data-group-name=amount]", function() {
+            tableBody.on("change", "[data-group-name=debit]", function() {
+                bind();
+            });
+            tableBody.on("change", "[data-group-name=credit]", function() {
                 bind();
             });
             tableBody.on("click", ".remove-journal-voucher-detail-prototype", function() {

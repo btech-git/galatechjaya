@@ -21,11 +21,14 @@ class SaleInvoiceHeaderType extends AbstractType
         $builder
             ->add('transactionDate', DateType::class)
             ->add('customerOrderNumber')
+            ->add('vehicleNumber')
+            ->add('vehicleDriver')
             ->add('taxInvoiceCode')
             ->add('discountPercentage')
             ->add('shippingFee')
             ->add('note')
             ->add('isTax')
+            ->add('warehouse')
             ->add('customer', EntityTextType::class, array('class' => Customer::class))
             ->add('saleInvoiceDetails', CollectionType::class, array(
                 'entry_type' => SaleInvoiceDetailType::class,

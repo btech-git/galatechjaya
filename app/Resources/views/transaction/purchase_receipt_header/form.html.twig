@@ -110,7 +110,7 @@
                         <h4 class="modal-title">Invoice List</h4>
                     </div>
                     <div class="modal-body">
-                        <div id="purchase-invoice-header-grid" data-grid="{{ path('common_purchase_invoice_header_grid', {'form': form.vars.id}) }}"></div>
+                        <div id="purchase-invoice-header-grid" data-grid="{{ path('common_purchase_invoice_header_grid', {'form': form.vars.id, 'options': {'supplier_id': purchaseReceiptHeader.supplier.id|default(0)} }) }}"></div>
                     </div>
                 </div>
             </div>
@@ -139,6 +139,14 @@
             var table = $("#purchase-receipt-detail-list");
             var tableBody = $("tbody", table);
             
+            $("#{{ form.supplier.vars.id }}").on("change", function() {
+                tableBody.empty();
+                bind();
+                var url = "{{ path('common_purchase_invoice_header_grid', {'form': form.vars.id, 'options': {'supplier_id': '__supplier_id'} })|raw }}";
+                url = url.replace("__supplier_id", parseInt($(this).val()));
+                $("#purchase-invoice-header-grid").load(url, {id: "purchase-invoice-header-grid"});
+            });
+            
             tableBody.on("change", "[data-group-name=amount]", function() {
                 bind();
             });
@@ -149,7 +157,7 @@
             
             $("#supplier-grid").on("click", "table[data-role=table] tbody tr", function() {
                 $("#supplier-dialog").modal("hide");
-                $("#{{ form.supplier.vars.id }}").val($(this).attr("data-field-id"));
+                $("#{{ form.supplier.vars.id }}").val($(this).attr("data-field-id")).trigger("change");
                 $("[data-name=supplier-name]", "#supplier-info").text($(this).attr("data-field-name"));
                 $("[data-name=supplier-contact-person]", "#supplier-info").text($(this).attr("data-field-contact-person"));
             });

@@ -58,7 +58,7 @@ class SaleInvoiceDetail
      */
     private $saleInvoiceHeader;
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Master\Product")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Master\Product", inversedBy="saleInvoiceDetails")
      * @Assert\NotNull()
      */
     private $product;

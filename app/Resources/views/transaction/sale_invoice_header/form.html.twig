@@ -45,7 +45,9 @@
         <div class="row">
             <div class="col-sm-6">
                 {{ form_row(form.transactionDate, {'label': 'Tanggal'}) }}
-                {{ form_row(form.customerOrderNumber, {'label': 'Customer PO #'}) }}
+                {{ form_row(form.warehouse, {'label': 'Gudang'}) }}
+                {{ form_row(form.vehicleNumber, {'label': 'Plat #'}) }}
+                {{ form_row(form.vehicleDriver, {'label': 'Pengemudi'}) }}
             </div>
             <div class="col-sm-6">
                 {{ form_row(form.customer, {'attr': {'readonly': true, 'data-toggle': 'modal', 'data-target': '#customer-dialog'} }) }}
@@ -60,6 +62,7 @@
                     </div>
                 </div>
                 {{ form_row(form.taxInvoiceCode, {'label': 'Faktur Pajak #'}) }}
+                {{ form_row(form.customerOrderNumber, {'label': 'Customer PO #'}) }}
             </div>
         </div>
         

@@ -19,7 +19,7 @@ class AdjustmentStockHeaderController extends Controller
     /**
      * @Route("/grid", name="transaction_adjustment_stock_header_grid", condition="request.isXmlHttpRequest()")
      * @Method("POST")
-     * @Security("has_role('ROLE_TRANSACTION')")
+     * @Security("has_role('ROLE_ADJUSTMENT_STOCK_HEADER_NEW') or has_role('ROLE_ADJUSTMENT_STOCK_HEADER_EDIT') or has_role('ROLE_ADJUSTMENT_STOCK_HEADER_DELETE')")
      */
     public function gridAction(Request $request)
     {
@@ -37,7 +37,7 @@ class AdjustmentStockHeaderController extends Controller
     /**
      * @Route("/", name="transaction_adjustment_stock_header_index")
      * @Method("GET")
-     * @Security("has_role('ROLE_TRANSACTION')")
+     * @Security("has_role('ROLE_ADJUSTMENT_STOCK_HEADER_NEW') or has_role('ROLE_ADJUSTMENT_STOCK_HEADER_EDIT') or has_role('ROLE_ADJUSTMENT_STOCK_HEADER_DELETE')")
      */
     public function indexAction()
     {
@@ -47,7 +47,7 @@ class AdjustmentStockHeaderController extends Controller
     /**
      * @Route("/new.{_format}", name="transaction_adjustment_stock_header_new")
      * @Method({"GET", "POST"})
-     * @Security("has_role('ROLE_TRANSACTION')")
+     * @Security("has_role('ROLE_ADJUSTMENT_STOCK_HEADER_NEW')")
      */
     public function newAction(Request $request, $_format = 'html')
     {
@@ -76,7 +76,7 @@ class AdjustmentStockHeaderController extends Controller
     /**
      * @Route("/{id}", name="transaction_adjustment_stock_header_show", requirements={"id": "\d+"})
      * @Method("GET")
-     * @Security("has_role('ROLE_TRANSACTION')")
+     * @Security("has_role('ROLE_ADJUSTMENT_STOCK_HEADER_NEW') or has_role('ROLE_ADJUSTMENT_STOCK_HEADER_EDIT') or has_role('ROLE_ADJUSTMENT_STOCK_HEADER_DELETE')")
      */
     public function showAction(AdjustmentStockHeader $adjustmentStockHeader)
     {
@@ -88,7 +88,7 @@ class AdjustmentStockHeaderController extends Controller
     /**
      * @Route("/{id}/edit.{_format}", name="transaction_adjustment_stock_header_edit", requirements={"id": "\d+"})
      * @Method({"GET", "POST"})
-     * @Security("has_role('ROLE_TRANSACTION')")
+     * @Security("has_role('ROLE_ADJUSTMENT_STOCK_HEADER_EDIT')")
      */
     public function editAction(Request $request, AdjustmentStockHeader $adjustmentStockHeader, $_format = 'html')
     {
@@ -117,7 +117,7 @@ class AdjustmentStockHeaderController extends Controller
     /**
      * @Route("/{id}/delete", name="transaction_adjustment_stock_header_delete", requirements={"id": "\d+"})
      * @Method({"GET", "POST"})
-     * @Security("has_role('ROLE_TRANSACTION')")
+     * @Security("has_role('ROLE_ADJUSTMENT_STOCK_HEADER_DELETE')")
      */
     public function deleteAction(Request $request, AdjustmentStockHeader $adjustmentStockHeader)
     {

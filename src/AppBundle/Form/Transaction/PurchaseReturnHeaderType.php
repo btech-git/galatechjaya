@@ -22,6 +22,7 @@ class PurchaseReturnHeaderType extends AbstractType
             ->add('transactionDate', DateType::class)
             ->add('note')
             ->add('shippingFee')
+            ->add('warehouse')
             ->add('purchaseReturnDetails', CollectionType::class, array(
                 'entry_type' => PurchaseReturnDetailType::class,
                 'allow_add' => true,

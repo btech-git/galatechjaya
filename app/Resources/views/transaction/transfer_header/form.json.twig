@@ -1,3 +1,11 @@
 {
     "totalQuantity": {{ transferHeader.totalQuantity|default|number_format(0)|json_encode|raw }},
+    "transferDetails": {
+        {%- for index, transferDetail in transferHeader.transferDetails -%}
+            "{{ index }}": {
+                "quantityCurrent": {{ transferDetail.quantityCurrent|default|number_format(0)|json_encode|raw }}
+            }
+            {%- if not loop.last -%},{%- endif -%}
+        {%- endfor -%}
+    }
 }

@@ -1,12 +1,17 @@
 {
     "totalQuantity": {{ purchaseReturnHeader.totalQuantity|default|number_format(0)|json_encode|raw }},
+    "subTotal": {{ purchaseReturnHeader.subTotal|default|number_format(2)|json_encode|raw }},
+    "taxPercentage": {{ (purchaseReturnHeader.isTax ? 10 : 0)|default|number_format(0)|json_encode|raw }},
+    "taxNominal": {{ purchaseReturnHeader.taxNominal|default|number_format(2)|json_encode|raw }},
+    "grandTotal": {{ purchaseReturnHeader.grandTotal|default|number_format(2)|json_encode|raw }},
     "purchaseReturnDetails": {
         {%- for index, purchaseReturnDetail in purchaseReturnHeader.purchaseReturnDetails -%}
             "{{ index }}": {
                 "productName": {{ purchaseReturnDetail.purchaseInvoiceDetail.receiveDetail.purchaseOrderDetail.product.name|default|json_encode|raw }},
                 "productSize": {{ purchaseReturnDetail.purchaseInvoiceDetail.receiveDetail.purchaseOrderDetail.product.size|default|json_encode|raw }},
                 "unitName": {{ purchaseReturnDetail.purchaseInvoiceDetail.receiveDetail.purchaseOrderDetail.product.unit.name|default|json_encode|raw }},
-                "purchaseInvoiceDetailUnitPrice": {{ purchaseReturnDetail.purchaseInvoiceDetail.unitPrice|default|number_format(2)|json_encode|raw }}
+                "purchaseInvoiceDetailUnitPrice": {{ purchaseReturnDetail.purchaseInvoiceDetail.unitPrice|default|number_format(2)|json_encode|raw }},
+                "total": {{ purchaseReturnDetail.total|default|number_format(2)|json_encode|raw }}
             }
             {%- if not loop.last -%},{%- endif -%}
         {%- endfor -%}

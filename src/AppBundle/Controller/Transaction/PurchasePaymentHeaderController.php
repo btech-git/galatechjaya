@@ -20,7 +20,7 @@ class PurchasePaymentHeaderController extends Controller
     /**
      * @Route("/grid", name="transaction_purchase_payment_header_grid", condition="request.isXmlHttpRequest()")
      * @Method("POST")
-     * @Security("has_role('ROLE_TRANSACTION')")
+     * @Security("has_role('ROLE_PURCHASE_PAYMENT_HEADER_NEW') or has_role('ROLE_PURCHASE_PAYMENT_HEADER_EDIT') or has_role('ROLE_PURCHASE_PAYMENT_HEADER_DELETE')")
      */
     public function gridAction(Request $request)
     {
@@ -38,7 +38,7 @@ class PurchasePaymentHeaderController extends Controller
     /**
      * @Route("/", name="transaction_purchase_payment_header_index")
      * @Method("GET")
-     * @Security("has_role('ROLE_TRANSACTION')")
+     * @Security("has_role('ROLE_PURCHASE_PAYMENT_HEADER_NEW') or has_role('ROLE_PURCHASE_PAYMENT_HEADER_EDIT') or has_role('ROLE_PURCHASE_PAYMENT_HEADER_DELETE')")
      */
     public function indexAction()
     {
@@ -48,7 +48,7 @@ class PurchasePaymentHeaderController extends Controller
     /**
      * @Route("/new.{_format}", name="transaction_purchase_payment_header_new")
      * @Method({"GET", "POST"})
-     * @Security("has_role('ROLE_TRANSACTION')")
+     * @Security("has_role('ROLE_PURCHASE_PAYMENT_HEADER_NEW')")
      */
     public function newAction(Request $request, $_format = 'html')
     {
@@ -78,7 +78,7 @@ class PurchasePaymentHeaderController extends Controller
     /**
      * @Route("/{id}", name="transaction_purchase_payment_header_show", requirements={"id": "\d+"})
      * @Method("GET")
-     * @Security("has_role('ROLE_TRANSACTION')")
+     * @Security("has_role('ROLE_PURCHASE_PAYMENT_HEADER_NEW') or has_role('ROLE_PURCHASE_PAYMENT_HEADER_EDIT') or has_role('ROLE_PURCHASE_PAYMENT_HEADER_DELETE')")
      */
     public function showAction(PurchasePaymentHeader $purchasePaymentHeader)
     {
@@ -90,7 +90,7 @@ class PurchasePaymentHeaderController extends Controller
     /**
      * @Route("/{id}/edit.{_format}", name="transaction_purchase_payment_header_edit", requirements={"id": "\d+"})
      * @Method({"GET", "POST"})
-     * @Security("has_role('ROLE_TRANSACTION')")
+     * @Security("has_role('ROLE_PURCHASE_PAYMENT_HEADER_EDIT')")
      */
     public function editAction(Request $request, PurchasePaymentHeader $purchasePaymentHeader, $_format = 'html')
     {
@@ -120,7 +120,7 @@ class PurchasePaymentHeaderController extends Controller
     /**
      * @Route("/{id}/delete", name="transaction_purchase_payment_header_delete", requirements={"id": "\d+"})
      * @Method({"GET", "POST"})
-     * @Security("has_role('ROLE_TRANSACTION')")
+     * @Security("has_role('ROLE_PURCHASE_PAYMENT_HEADER_DELETE')")
      */
     public function deleteAction(Request $request, PurchasePaymentHeader $purchasePaymentHeader)
     {
@@ -129,7 +129,7 @@ class PurchasePaymentHeaderController extends Controller
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
-            if ($form->isValid()) {
+            if ($form->isValid() && $purchasePaymentHeaderService->isValidForDelete($purchasePaymentHeader)) {
                 $purchasePaymentHeaderService->delete($purchasePaymentHeader);
 
                 $this->addFlash('success', array('title' => 'Success!', 'message' => 'The record was deleted successfully.'));
