@@ -74,7 +74,7 @@ class ProductGridType extends DataGridType
                     }
                 }
             } else {
-                $operator::search($criteria, $field, $values);
+                $operator::search($criteria[$group], $field, $values);
             }
         });
 
