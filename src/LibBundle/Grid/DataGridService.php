@@ -183,7 +183,7 @@ class DataGridService
         $searchItems = &$this->dataGridView->searchWidget;
         if (isset($searchItems['groups'])) {
             foreach ($searchItems['groups'] as $groupName => &$groupItems) {
-                if (isset($searchItems['fields'])) {
+                if (isset($groupItems['fields'])) {
                     foreach ($groupItems['fields'] as $fieldName => &$fieldItems) {
                         $dataTransformers = $this->dataGridReference->getDataTransformers($groupName, $fieldName);
                         foreach ($fieldItems['operators'] as $operatorName => &$operatorItems) {
